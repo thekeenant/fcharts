@@ -3,7 +3,8 @@ library fcharts.random_charts;
 import 'dart:math' as math;
 
 import 'package:fcharts/fcharts.dart';
-import 'package:fcharts/src/util/color_palette.dart';
+import 'package:fcharts/src/utils/color_palette.dart';
+import 'package:fcharts/src/utils/range.dart';
 import 'package:flutter/material.dart';
 
 final _random = new math.Random();

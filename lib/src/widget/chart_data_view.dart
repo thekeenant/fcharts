@@ -1,9 +1,27 @@
-import 'package:fcharts/src/decor/decor.dart';
 import 'package:fcharts/src/chart.dart';
-import 'package:fcharts/src/painting.dart';
+import 'package:fcharts/src/decor/decor.dart';
+import 'package:fcharts/src/utils/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
-import 'package:quiver/time.dart';
+import 'dart:math';
+
+/// The rotation of a chart.
+@immutable
+class ChartRotation {
+  /// rotated 0 degrees
+  static const none = const ChartRotation._(0.0);
+  /// rotated 180 degrees
+  static const upsideDown = const ChartRotation._(pi);
+  /// rotated 90 degrees clockwise
+  static const clockwise = const ChartRotation._(pi / 2);
+  /// rotated 90 degrees counter clockwise (270 clockwise)
+  static const counterClockwise = const ChartRotation._(-pi / 2);
+
+  /// The rotation in radians.
+  final double theta;
+
+  const ChartRotation._(this.theta);
+}
 
 /// A widget for displaying chart data.
 class ChartDataView extends StatefulWidget {
@@ -35,8 +53,8 @@ class ChartDataView extends StatefulWidget {
 class _ChartDataViewState extends State<ChartDataView> with TickerProviderStateMixin {
   final GlobalKey _paintKey = new GlobalKey();
 
-  AnimationController controller;
-  Animation<double> curve;
+  AnimationController _controller;
+  Animation<double> _curve;
   _ChartPainter _painter;
 
   _ChartPainter _createPainter() {
@@ -59,7 +77,7 @@ class _ChartDataViewState extends State<ChartDataView> with TickerProviderStateM
     }
 
     // to these
-    final toDecor = fromDecor.tweenTo(decor).animate(curve);
+    final toDecor = fromDecor.tweenTo(decor).animate(_curve);
     final toCharts = <Animation<ChartDrawable>>[];
 
     for (var i = 0; i < charts.length; i++) {
@@ -83,7 +101,7 @@ class _ChartDataViewState extends State<ChartDataView> with TickerProviderStateM
       }
 
       final tween = prevDrawable.tweenTo(drawable);
-      toCharts.add(tween.animate(curve));
+      toCharts.add(tween.animate(_curve));
     }
 
     return new _ChartPainter(
@@ -91,7 +109,7 @@ class _ChartDataViewState extends State<ChartDataView> with TickerProviderStateM
       decor: toDecor,
       rotation: rotation,
       chartPadding: chartPadding,
-      repaint: controller
+      repaint: _controller
     );
   }
 
@@ -100,7 +118,7 @@ class _ChartDataViewState extends State<ChartDataView> with TickerProviderStateM
     setState(() {
       _painter = painter;
     });
-    controller.forward(from: 0.0);
+    _controller.forward(from: 0.0);
   }
 
   @override
@@ -112,12 +130,12 @@ class _ChartDataViewState extends State<ChartDataView> with TickerProviderStateM
   @override
   void initState() {
     super.initState();
-    controller = new AnimationController(
+    _controller = new AnimationController(
       vsync: this,
-      duration: aSecond * 0.5
+      duration: new Duration(milliseconds: 500)
     );
-    curve = new CurvedAnimation(
-      parent: controller,
+    _curve = new CurvedAnimation(
+      parent: _controller,
       curve: Curves.fastOutSlowIn
     );
     _updatePainter();

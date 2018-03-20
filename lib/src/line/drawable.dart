@@ -3,8 +3,8 @@ import 'dart:ui' show lerpDouble;
 
 import 'package:fcharts/src/chart.dart';
 import 'package:fcharts/src/line/curves.dart';
-import 'package:fcharts/src/util/merge_tween.dart';
-import 'package:fcharts/src/painting.dart';
+import 'package:fcharts/src/utils/merge_tween.dart';
+import 'package:fcharts/src/utils/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 

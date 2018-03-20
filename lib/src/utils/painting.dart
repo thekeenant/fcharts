@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import 'dart:ui' show lerpDouble;
 
-import 'package:fcharts/src/util/merge_tween.dart';
+import 'package:fcharts/src/utils/merge_tween.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -144,14 +144,6 @@ class CanvasArea {
 /// Generate paint options based on an area in which the paint will be applied.
 typedef List<PaintOptions> PaintGenerator(CanvasArea area);
 
-/// Lerp between tow paint options.
-class _PaintOptionsTween extends Tween<PaintOptions> {
-  _PaintOptionsTween(PaintOptions begin, PaintOptions end) : super(begin: begin, end: end);
-
-  @override
-  PaintOptions lerp(double t) => PaintOptions.lerp(begin, end, t);
-}
-
 /// Options for conveniently building a [Paint].
 @immutable
 class PaintOptions implements MergeTweenable<PaintOptions> {
@@ -252,7 +244,6 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
     // otherwise fade to transparent gradient
     else {
       return this.copyWith(
-        color: null,
         gradient: new LinearGradient(
           colors: [
             Colors.transparent,
@@ -267,6 +258,14 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
   @override
   Tween<PaintOptions> tweenTo(PaintOptions other) =>
     new _PaintOptionsTween(this, other);
+}
+
+/// Lerp between tow paint options.
+class _PaintOptionsTween extends Tween<PaintOptions> {
+  _PaintOptionsTween(PaintOptions begin, PaintOptions end) : super(begin: begin, end: end);
+
+  @override
+  PaintOptions lerp(double t) => PaintOptions.lerp(begin, end, t);
 }
 
 /// Options for conveniently building a [TextPainter].

@@ -1,7 +1,8 @@
 import 'package:fcharts/src/chart.dart';
 import 'package:fcharts/src/line/curves.dart';
 import 'package:fcharts/src/line/drawable.dart';
-import 'package:fcharts/src/painting.dart';
+import 'package:fcharts/src/utils/painting.dart';
+import 'package:fcharts/src/utils/range.dart';
 import 'package:meta/meta.dart';
 
 class LineChartData implements ChartData {

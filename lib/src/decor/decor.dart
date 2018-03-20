@@ -1,8 +1,9 @@
 import 'package:fcharts/src/chart.dart';
 import 'package:fcharts/src/decor/axis.dart';
 import 'package:fcharts/src/decor/legend.dart';
-import 'package:fcharts/src/painting.dart';
-import 'package:fcharts/src/util/merge_tween.dart';
+import 'package:fcharts/src/utils/painting.dart';
+import 'package:fcharts/src/utils/merge_tween.dart';
+import 'package:fcharts/src/utils/side.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -17,7 +18,7 @@ class ChartDecor {
   }) : assert(axes != null);
 
   /// List of axes to draw around the chart. If two axes have the same
-  /// [ChartSide], they are drawn from the center of the chart outward in
+  /// [Side], they are drawn from the center of the chart outward in
   /// the order of the list.
   ///
   /// For example, if axes is A,B,C and all are on the left side, A will be
@@ -30,7 +31,7 @@ class ChartDecor {
 
   void draw(CanvasArea fullArea, CanvasArea chartArea) {
     // organize axes by their position
-    final axesByPos = <ChartSide, List<ChartAxis>>{};
+    final axesByPos = <Side, List<ChartAxis>>{};
     for (final axis in axes) {
       axesByPos.putIfAbsent(axis.position, () => []);
       axesByPos[axis.position].add(axis);
