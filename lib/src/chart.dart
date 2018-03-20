@@ -5,7 +5,7 @@ import 'package:fcharts/src/util/merge_tween.dart';
 import 'package:fcharts/src/painting.dart';
 import 'package:meta/meta.dart';
 
-/// The overarching
+/// Contains data for creating a drawable chart.
 abstract class ChartData {
   /// Create a [ChartDrawable] from this chart
   ChartDrawable createDrawable();
@@ -16,6 +16,21 @@ abstract class ChartDrawable<T extends ChartDrawable<T>> extends MergeTweenable<
   /// Draw the chart within a [CanvasArea]. It should scale according
   /// to the width and height of the area.
   void draw(CanvasArea area);
+}
+
+/// A side of the chart/a possible position of a [ChartAxis].
+enum ChartSide {
+  /// The top of the chart.
+  top,
+
+  /// The left of the chart (y-axis).
+  left,
+
+  /// The right of the chart.
+  right,
+
+  /// The bottom of the chart (x-axis).
+  bottom
 }
 
 /// The rotation of a chart.

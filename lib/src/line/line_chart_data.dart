@@ -1,81 +1,50 @@
-import 'dart:math' as math;
-import 'dart:ui';
-
-import 'package:fcharts/src/line/drawable.dart';
 import 'package:fcharts/src/chart.dart';
-import 'package:fcharts/src/util/color_palette.dart';
 import 'package:fcharts/src/line/curves.dart';
+import 'package:fcharts/src/line/drawable.dart';
 import 'package:fcharts/src/painting.dart';
 import 'package:meta/meta.dart';
 
-class LineChart implements ChartData {
-  LineChart({
+class LineChartData implements ChartData {
+  LineChartData({
     @required this.points,
     @required this.range,
     this.linePaint: const PaintOptions.stroke(),
     this.fillPaint,
     this.curve: const MonotoneCurve(),
-  });
+  }) :
+      assert(points != null),
+      assert(range != null),
+      assert(curve != null);
 
+  /// The points for the line chart, in ascending x value.
   final List<LinePoint> points;
+
+  /// The range for this chart.
   final Range range;
+
+  /// The paint to use for the line.
   final PaintOptions linePaint;
+
+  /// The paint to use to fill the area beneath the line.
   final PaintOptions fillPaint;
+
+  /// The curve generator to smoothly interpolate between lines.
+  /// See [LineCurves].
   final LineCurveGenerator curve;
 
-  LineChart copyWith({
+  LineChartData copyWith({
     List<LinePoint> points,
     Range range,
     PaintOptions linePaint,
     PaintOptions fillPaint,
     LineCurveGenerator curve
   }) {
-    return new LineChart(
+    return new LineChartData(
       points: points ?? this.points,
       range: range ?? this.range,
       linePaint: linePaint ?? this.linePaint,
       fillPaint: fillPaint ?? this.fillPaint,
       curve: curve ?? this.curve
-    );
-  }
-  
-  factory LineChart.random(final int pointCount) {
-    final random = new math.Random();
-
-    final pointDistance = 1 / (pointCount - 1);
-
-    var nextValue = random.nextDouble() * 0.2 - 0.1 + 0.5;
-
-    final baseColor = ColorPalette.primary.random(random);
-    final monochrome = new ColorPalette.monochrome(baseColor, 4);
-    final color = monochrome[0];
-
-    final points = new List.generate(pointCount, (i) {
-      final x = pointDistance * i;
-      final value = nextValue;
-
-      nextValue += (random.nextDouble() - 0.5) * 0.2;
-
-      return new LinePoint(
-        x: x,
-        value: (value).clamp(0.0, 1.0).toDouble(),
-        paint: [
-          new PaintOptions(color: color)
-        ],
-      );
-    });
-
-    return new LineChart(
-      points: points,
-      linePaint: new PaintOptions.stroke(
-        color: color,
-        strokeWidth: 3.0,
-        strokeCap: StrokeCap.round
-      ),
-      fillPaint: new PaintOptions(
-        color: monochrome[3].withOpacity(0.4)
-      ),
-      range: new Range(0.0, 1.0)
     );
   }
 
@@ -110,9 +79,17 @@ class LinePoint {
     @required this.value,
     this.paint: const [],
     this.pointRadius: 1.0
-  });
+  }) :
+      assert(x != null & x >= 0 && x <= 1.0),
+      assert(paint != null),
+      assert(pointRadius != null);
 
+
+  /// The x position of this point. Should be 0..1 inclusive.
   final double x;
+
+  /// The value of this point, relative to the chart's range. It can be
+  /// null to indicate no value present.
   final double value;
   final List<PaintOptions> paint;
   final double pointRadius;

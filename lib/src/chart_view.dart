@@ -6,8 +6,8 @@ import 'package:meta/meta.dart';
 import 'package:quiver/time.dart';
 
 /// A widget for displaying chart data.
-class ChartView extends StatefulWidget {
-  ChartView({
+class ChartDataView extends StatefulWidget {
+  ChartDataView({
     @required this.charts,
     this.decor,
     this.rotation: ChartRotation.none,
@@ -29,10 +29,10 @@ class ChartView extends StatefulWidget {
   final EdgeInsets chartPadding;
 
   @override
-  _ChartViewState createState() => new _ChartViewState();
+  _ChartDataViewState createState() => new _ChartDataViewState();
 }
 
-class _ChartViewState extends State<ChartView> with TickerProviderStateMixin {
+class _ChartDataViewState extends State<ChartDataView> with TickerProviderStateMixin {
   final GlobalKey _paintKey = new GlobalKey();
 
   AnimationController controller;
@@ -104,7 +104,7 @@ class _ChartViewState extends State<ChartView> with TickerProviderStateMixin {
   }
 
   @override
-  void didUpdateWidget(ChartView oldWidget) {
+  void didUpdateWidget(ChartDataView oldWidget) {
     super.didUpdateWidget(oldWidget);
     _updatePainter();
   }

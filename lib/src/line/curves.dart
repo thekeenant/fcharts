@@ -10,15 +10,18 @@ abstract class LineCurveGenerator {
 
 /// Some default curves without explicit configuration.
 class LineCurves {
-  static const linear = const Linear._();
+  /// Go straight from one point to the next. No interpolation.
+  static const none = const Linear._();
 
+  /// Default cardinal spline curve generator.
   static const cardinalSpline = const CardinalSpline();
 
+  /// Default monotone cubic spline curve generator.
   static const monotone = const MonotoneCurve();
 }
 
-/// Use Curves.linear.
-/// This returns the points given to it. There is no curve.
+/// Use [Curves].none.
+/// Go straight from one point to the next. No interpolation.
 class Linear implements LineCurveGenerator {
   const Linear._();
 

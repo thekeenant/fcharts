@@ -1,3 +1,4 @@
+import 'package:fcharts/src/chart.dart';
 import 'package:fcharts/src/decor/axis.dart';
 import 'package:fcharts/src/decor/legend.dart';
 import 'package:fcharts/src/painting.dart';
@@ -5,7 +6,7 @@ import 'package:fcharts/src/util/merge_tween.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-/// Decorations to apply to a [Chart].
+/// Decorations to apply to a chart.
 @immutable
 class ChartDecor {
   static const ChartDecor none = const ChartDecor();
@@ -15,12 +16,21 @@ class ChartDecor {
     this.legend
   }) : assert(axes != null);
 
+  /// List of axes to draw around the chart. If two axes have the same
+  /// [ChartSide], they are drawn from the center of the chart outward in
+  /// the order of the list.
+  ///
+  /// For example, if axes is A,B,C and all are on the left side, A will be
+  /// drawn to the right of B, B will be to the right of C. C will be the
+  /// furthest left, and away from the graph. A gets priority!
   final List<ChartAxis> axes;
+
+  /// A legend for the chart.
   final Legend legend;
 
   void draw(CanvasArea fullArea, CanvasArea chartArea) {
     // organize axes by their position
-    final axesByPos = <AxisPosition, List<ChartAxis>>{};
+    final axesByPos = <ChartSide, List<ChartAxis>>{};
     for (final axis in axes) {
       axesByPos.putIfAbsent(axis.position, () => []);
       axesByPos[axis.position].add(axis);

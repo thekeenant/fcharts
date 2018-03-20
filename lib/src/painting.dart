@@ -5,7 +5,6 @@ import 'package:fcharts/src/util/merge_tween.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-
 /// An area on a canvas to paint.
 class CanvasArea {
   CanvasArea(this.canvas, this.rect);
@@ -164,18 +163,29 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
     this.style: PaintingStyle.fill
   });
 
-  final Color color;
-  final double strokeWidth;
-  final StrokeCap strokeCap;
-  final Gradient gradient;
-  final PaintingStyle style;
-
+  /// Construct paint options automatically with stroke, instead
+  /// of the default fill painting style.
   const PaintOptions.stroke({
     this.color: Colors.black,
     this.strokeWidth: 1.0,
     this.strokeCap: StrokeCap.square,
     this.gradient
   }) : this.style = PaintingStyle.stroke;
+
+  /// The color of the paint.
+  final Color color;
+
+  /// The width of the stroke.
+  final double strokeWidth;
+
+  /// How the ends of a stroke appear.
+  final StrokeCap strokeCap;
+
+  /// The gradient of the paint, overrides [color].
+  final Gradient gradient;
+
+  /// The style of the paint (fill/stroke).
+  final PaintingStyle style;
 
   Paint build({Rect rect}) {
     final paint = new Paint();
@@ -273,13 +283,28 @@ class TextOptions {
     this.scaleFactor: 1.0,
   });
 
+  /// The minimum width of the text area.
   final double minWidth;
+
+  /// The maximum width of the text area.
   final double maxWidth;
+
+  /// The maximum number of lines.
   final int maxLines;
+
+  /// The ending of the text if it needs to be shortened (i.e. "...")
   final String ellipsis;
+
+  /// The text's alignment within its text area.
   final TextAlign textAlign;
+
+  /// The direction of the text.
   final TextDirection textDirection;
+
+  /// The style of the text.
   final TextStyle style;
+
+  /// The scale of the text (i.e. 2.0 means twice as large).
   final double scaleFactor;
 
   TextPainter build(String text) {

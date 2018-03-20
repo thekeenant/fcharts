@@ -1,8 +1,9 @@
 import 'dart:ui' show lerpDouble;
 
+import 'package:fcharts/src/chart.dart';
 import 'package:fcharts/src/decor/axis.dart';
-import 'package:fcharts/src/util/merge_tween.dart';
 import 'package:fcharts/src/painting.dart';
+import 'package:fcharts/src/util/merge_tween.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -11,7 +12,9 @@ class AxisTick implements MergeTweenable<AxisTick> {
   AxisTick({
     @required this.value,
     @required this.width,
-    this.labelers: const [],
+    this.labelers: const [
+      const NotchTickLabeler()
+    ],
     this.opacity: 1.0
   });
 
@@ -31,10 +34,10 @@ class AxisTick implements MergeTweenable<AxisTick> {
   /// should take the value into account.
   final double opacity;
 
-  /// Draw this axis tick within its [tickArea] given an [axisPosition].
-  void draw(CanvasArea tickArea, AxisPosition axisPosition) {
+  /// Draw this axis tick within its [tickArea] given an [side].
+  void draw(CanvasArea tickArea, ChartSide side) {
     for (final labeler in labelers)
-      labeler.draw(tickArea, axisPosition, opacity);
+      labeler.draw(tickArea, side, opacity);
   }
 
   @override
@@ -72,10 +75,11 @@ class _AxisTickTween extends Tween<AxisTick> {
   }
 }
 
+/// Places a label on a tick.
 abstract class TickLabeler {
-  /// Draw this label in its [tickArea], given the [position] of the axis
+  /// Draw this label in its [tickArea], given the [side] of the axis
   /// which this tick resides, and its [opacity] (used for animation).
-  void draw(CanvasArea tickArea, AxisPosition position, double opacity);
+  void draw(CanvasArea tickArea, ChartSide side, double opacity);
 }
 
 /// Text to place at the tick.
@@ -110,7 +114,7 @@ class TextTickLabeler implements TickLabeler {
   }
 
   @override
-  void draw(CanvasArea tickArea, AxisPosition position, double opacity) {
+  void draw(CanvasArea tickArea, ChartSide position, double opacity) {
     double minWidth;
     var maxWidth = tickArea.width;
     Offset axisOffset;
@@ -118,27 +122,27 @@ class TextTickLabeler implements TickLabeler {
     TextAlign align;
 
     switch (position) {
-      case AxisPosition.top:
+      case ChartSide.top:
         minWidth = tickArea.width;
         axisOffset = new Offset(0.0, tickArea.height - distance);
         shift = new Offset(0.0, 1.0);
         align = TextAlign.center;
         break;
-      case AxisPosition.left:
+      case ChartSide.left:
         minWidth = 0.0;
         maxWidth -= distance;
         axisOffset = new Offset(tickArea.width - distance, tickArea.height / 2);
         shift = new Offset(1.0, 0.5);
         align = TextAlign.right;
         break;
-      case AxisPosition.right:
+      case ChartSide.right:
         minWidth = 0.0;
         maxWidth -= distance;
         axisOffset = new Offset(distance, tickArea.height / 2);
         shift = new Offset(0.0, 0.5);
         align = TextAlign.left;
         break;
-      case AxisPosition.bottom:
+      case ChartSide.bottom:
         minWidth = tickArea.width;
         axisOffset = new Offset(0.0, distance);
         shift = Offset.zero;
@@ -185,24 +189,24 @@ class NotchTickLabeler implements TickLabeler {
   }
 
   @override
-  void draw(CanvasArea tickArea, AxisPosition position, double opacity) {
+  void draw(CanvasArea tickArea, ChartSide position, double opacity) {
     Offset lineStart;
     Offset lineEnd;
 
     switch (position) {
-      case AxisPosition.top:
+      case ChartSide.top:
         lineStart = new Offset(tickArea.width / 2, tickArea.height);
         lineEnd = lineStart.translate(0.0, -length);
         break;
-      case AxisPosition.left:
+      case ChartSide.left:
         lineStart = new Offset(tickArea.width, tickArea.height / 2);
         lineEnd = lineStart.translate(-length, 0.0);
         break;
-      case AxisPosition.right:
+      case ChartSide.right:
         lineStart = new Offset(0.0, tickArea.height / 2);
         lineEnd = lineStart.translate(length, 0.0);
         break;
-      case AxisPosition.bottom:
+      case ChartSide.bottom:
         lineStart = new Offset(tickArea.width / 2, 0.0);
         lineEnd = lineStart.translate(0.0, length);
         break;

@@ -2,7 +2,9 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+/// A collection of similar colors.
 class ColorPalette extends ColorSwatch<int> {
+  /// Primary colors from material specs.
   static final ColorPalette primary = new ColorPalette.fromList(<Color>[
     Colors.blue[400],
     Colors.red[400],
@@ -16,8 +18,6 @@ class ColorPalette extends ColorSwatch<int> {
   ColorPalette(Color primary, Map<int, Color> colors) :
       this.length = colors.length,
       super(primary.value, colors);
-
-  final int length;
 
   factory ColorPalette.fromList(List<Color> colors) {
     final map = new Map.fromIterables(
@@ -34,6 +34,10 @@ class ColorPalette extends ColorSwatch<int> {
     ));
   }
 
+  /// The number of colors in this palette.
+  final int length;
+
+  /// Pick a random color from the palette.
   Color random(Random random) => this[random.nextInt(length)];
 
   static Color _brighterColor(Color base, int i, int n) {

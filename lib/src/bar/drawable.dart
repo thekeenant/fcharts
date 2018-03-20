@@ -8,10 +8,7 @@ import 'package:fcharts/src/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-/// A bar graph is a set of bar groups. Not to be confused with a bar chart,
-/// which is strictly categorical data. A bar graph in fchart
-/// is any chart/graph represented using rectangles along axes (histogram, bar
-/// chart, population pyramid, etc.).
+/// A drawable bar graph.
 @immutable
 class BarGraphDrawable implements ChartDrawable<BarGraphDrawable> {
   const BarGraphDrawable({

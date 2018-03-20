@@ -1,25 +1,12 @@
+import 'package:fcharts/src/chart.dart';
 import 'package:fcharts/src/decor/tick.dart';
-import 'package:fcharts/src/util/merge_tween.dart';
 import 'package:fcharts/src/painting.dart';
+import 'package:fcharts/src/util/merge_tween.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-/// A side of the chart/a possible position of a [ChartAxis].
-enum AxisPosition {
-  /// The top of the chart.
-  top,
-
-  /// The left of the chart (y-axis).
-  left,
-
-  /// The right of the chart.
-  right,
-
-  /// The bottom of the chart (x-axis).
-  bottom
-}
-
-/// An axis of a [Chart].
+/// An axis of a chart.
+@immutable
 class ChartAxis implements MergeTweenable<ChartAxis> {
   ChartAxis({
     @required this.position,
@@ -27,8 +14,13 @@ class ChartAxis implements MergeTweenable<ChartAxis> {
     this.paint: const PaintOptions.stroke()
   });
 
+  /// All the ticks which will be drawn along this axis.
   final List<AxisTick> ticks;
-  final AxisPosition position;
+
+  /// The position of the axis - which side it will be placed.
+  final ChartSide position;
+
+  /// The paint options for this axis' line.
   final PaintOptions paint;
 
   void draw(CanvasArea fullArea, CanvasArea chartArea, int rank, int rankTotal) {
@@ -47,7 +39,7 @@ class ChartAxis implements MergeTweenable<ChartAxis> {
     var rankFactor = (rankTotal - rank - 1) / rankTotal;
 
     switch (position) {
-      case AxisPosition.top:
+      case ChartSide.top:
         axisRect = new Offset(paddingLeft, rankFactor * paddingTop) & new Size(
           chartArea.width,
           paddingTop / rankTotal
@@ -55,7 +47,7 @@ class ChartAxis implements MergeTweenable<ChartAxis> {
         lineStart = axisRect.bottomLeft;
         lineEnd = axisRect.bottomRight;
         break;
-      case AxisPosition.left:
+      case ChartSide.left:
         vertical = true;
         axisRect = new Offset(rankFactor * paddingLeft, paddingTop) & new Size(
           paddingLeft / rankTotal,
@@ -64,7 +56,7 @@ class ChartAxis implements MergeTweenable<ChartAxis> {
         lineStart = axisRect.bottomRight;
         lineEnd = axisRect.topRight;
         break;
-      case AxisPosition.right:
+      case ChartSide.right:
         vertical = true;
         axisRect = chartArea.rect.topRight.translate(rankFactor * paddingRight, 0.0) & new Size(
           paddingRight / rankTotal,
@@ -73,7 +65,7 @@ class ChartAxis implements MergeTweenable<ChartAxis> {
         lineStart = axisRect.bottomLeft;
         lineEnd = axisRect.topLeft;
         break;
-      case AxisPosition.bottom:
+      case ChartSide.bottom:
         axisRect = chartArea.rect.bottomLeft.translate(0.0, rankFactor * paddingBottom) & new Size(
           chartArea.width,
           paddingBottom / rankTotal
@@ -132,6 +124,7 @@ class ChartAxis implements MergeTweenable<ChartAxis> {
   Tween<ChartAxis> tweenTo(ChartAxis other) => new _ChartAxisTween(this, other);
 }
 
+/// Lerp between two [ChartAxis]'s.
 class _ChartAxisTween extends Tween<ChartAxis> {
   _ChartAxisTween(ChartAxis begin, ChartAxis end) :
     _ticksTween = new MergeTween(begin.ticks, end.ticks),

@@ -1,79 +1,65 @@
-import 'dart:math' as math;
-
-import 'package:fcharts/src/bar/bar_graph.dart';
 import 'package:fcharts/src/bar/drawable.dart';
 import 'package:fcharts/src/chart.dart';
-import 'package:fcharts/src/util/color_palette.dart';
 import 'package:fcharts/src/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
+/// A bar graph, in the context of fcharts at least, is a chart which is
+/// represented using rectangular bars, and often groups or even stacks of
+/// those bars. It can be in the form of a bar chart (for categorical/
+/// discrete data), or a histogram (continuous data).
 @immutable
-class BarChartData implements BarGraphData {
-  BarChartData({
+class BarGraphData implements ChartData {
+  BarGraphData({
     @required this.groups,
     @required this.groupWidthFraction
   });
 
-  final List<BarGroupData> groups;
-  final double groupWidthFraction;
-
-  /// Generate a random bar chart.
-  factory BarChartData.random() {
-    var random = new math.Random();
-
-    final groupCount = random.nextInt(3) + 2;
-    final stackCount = random.nextInt(2) + 2;
-
-    final groups = new List.generate(groupCount, (i) {
-      final stacks = new List.generate(stackCount, (j) {
-        final barCount = random.nextInt(3) + 1;
-
-        final baseColor = ColorPalette.primary[j];
-        final monochrome = new ColorPalette.monochrome(baseColor, barCount);
-
-        var nextBase = 0.0;
-
-        final bars = new List.generate(barCount, (k) {
-          final base = nextBase;
-          final value = base + random.nextInt(10) + 8;
-          final color = monochrome[k];
-          nextBase = value;
-
-          return new BarData(
-            value: value,
-            base: base,
-            paint: [new PaintOptions(color: color)]
-          );
-        });
-
-        return new BarStackData(
-          bars: bars,
-          range: new Range(
-            0.0,
-            50.0
-          ),
-          base: bars.map((b) => b.base).reduce(math.min)
-        );
-      });
+  /// Create a bar graph from histogram bins and a range for those bins.
+  factory BarGraphData.fromHistogram({
+    @required List<BinData> bins,
+    @required Range range
+  }) {
+    final groups = new List.generate(bins.length, (i) {
+      final bin = bins[i];
 
       return new BarGroupData(
-        stacks: stacks,
-        stackWidthFraction: 0.9,
+        stacks: [
+          new BarStackData(
+            range: range,
+            base: 0.0,
+            bars: [
+              new BarData(
+                base: 0.0,
+                value: bin.value,
+                paint: bin.paint,
+                paintGenerator: bin.paintGenerator,
+              )
+            ],
+          )
+        ],
+        stackWidthFraction: 1.0
       );
     });
 
-    return new BarChartData(
+    return new BarGraphData(
       groups: groups,
-      groupWidthFraction: 0.75,
+      groupWidthFraction: 1.0
     );
   }
 
-  BarChartData copyWith({
+  /// The bar groups.
+  final List<BarGroupData> groups;
+
+  /// The width allotted to each group. A value of 1.0 indicates there is
+  /// no spacing in between groups.
+  final double groupWidthFraction;
+
+  BarGraphData copyWith({
     List<BarGroupData> groups,
     double groupWidthFraction
   }) {
-    return new BarChartData(
+    return new BarGraphData(
       groups: groups ?? this.groups,
       groupWidthFraction: groupWidthFraction ?? this.groupWidthFraction
     );
@@ -134,8 +120,7 @@ class BarChartData implements BarGraphData {
     );
   }
 
-  @override
-  List<double> scaledXValues() {
+  List<double> xValues() {
     final groupDistance = 1 / groups.length;
 
     return new List.generate(groups.length, (i) {
@@ -144,15 +129,40 @@ class BarChartData implements BarGraphData {
   }
 }
 
+/// A bar in a histogram.
+@immutable
+class BinData {
+  BinData({
+    @required this.value,
+    this.paint: const [const PaintOptions(color: Colors.black)],
+    this.paintGenerator
+  });
+
+  /// The value for this bin.
+  final double value;
+
+  /// The paint to use on the bar of this bin.
+  final List<PaintOptions> paint;
+
+  /// An option paint generator to use for the bar of this bin. This overrides
+  /// [paint].
+  final PaintGenerator paintGenerator;
+}
+
+/// A group of bar stacks in a bar chart.
 @immutable
 class BarGroupData {
-  final List<BarStackData> stacks;
-  final double stackWidthFraction;
-
   const BarGroupData({
     @required this.stacks,
     @required this.stackWidthFraction
   });
+
+  /// The stacks of this group.
+  final List<BarStackData> stacks;
+
+  /// The width of each stack. A value of 1.0 means that stacks take up
+  /// 100% of their width, there is no spacing between them.
+  final double stackWidthFraction;
 
   BarGroupData copyWith({
     List<BarStackData> stacks,
@@ -165,17 +175,26 @@ class BarGroupData {
   }
 }
 
+/// A vertical group of bars in a bar chart.
 @immutable
 class BarStackData {
-  final List<BarData> bars;
-  final Range range;
-  final double base;
-
   const BarStackData({
     @required this.bars,
     @required this.range,
     @required this.base,
   });
+
+  /// The bars of this stack.
+  final List<BarData> bars;
+
+  /// The range of this bar stack. Values for each bar are calculated
+  /// relative to this range.
+  final Range range;
+
+  /// The "base" value of this stack. It is typically 0 since many bar charts
+  /// start at 0, however, some bar charts are based around a different
+  /// value.
+  final double base;
 
   BarStackData copyWith({
     List<BarData> bars,
@@ -190,19 +209,30 @@ class BarStackData {
   }
 }
 
+/// A single continuous bar in a bar chart.
 @immutable
 class BarData {
-  final double value;
-  final double base;
-  final List<PaintOptions> paint;
-  final PaintGenerator paintGenerator;
-
   const BarData({
     @required this.value,
     @required this.base,
     this.paint: const [const PaintOptions(color: Colors.black)],
     this.paintGenerator
   });
+
+  /// The value of this bar. It is usually something like the "height" or
+  /// how far it extends vertically. It is relative to the bar stack's range.
+  final double value;
+
+  /// The "base" of this bar. It is relative to the bar stack's range. For bar
+  /// charts which have a single bar per stack, this should probably be equal
+  /// to the range's min value.
+  final double base;
+
+  /// Paint to use on this bar.
+  final List<PaintOptions> paint;
+
+  /// An optional paint generator to use on this bar. This overrides [paint].
+  final PaintGenerator paintGenerator;
 
   BarData copyWith({
     double value,

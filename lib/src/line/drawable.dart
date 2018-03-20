@@ -16,7 +16,7 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable> {
     @required this.points,
     this.linePaint: const PaintOptions.stroke(color: Colors.black),
     this.fillPaint,
-    this.curve: LineCurves.linear,
+    this.curve: LineCurves.none,
     this.bridgeNulls: false
   }) : assert(bridgeNulls != null);
 
