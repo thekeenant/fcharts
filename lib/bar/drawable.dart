@@ -11,9 +11,6 @@ import 'package:meta/meta.dart';
 /// which is strictly categorical data. A bar graph in this library's context
 /// is any chart/graph represented using rectangles along axes (histogram, bar
 /// chart, population pyramid, etc.).
-///
-/// The x position of each bar is contained within its parent [BarStackDrawable].
-/// The base and value of bar is in the [BarDrawable] itself.
 @immutable
 class BarGraphDrawable implements ChartDrawable<BarGraphDrawable> {
   final List<BarGroupDrawable> groups;

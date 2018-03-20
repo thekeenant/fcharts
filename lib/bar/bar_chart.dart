@@ -18,6 +18,7 @@ class BarChart implements BarGraph {
     @required this.groupWidthFraction
   });
 
+  /// Generate a random bar chart.
   factory BarChart.random() {
     var random = new math.Random();
 
@@ -78,6 +79,7 @@ class BarChart implements BarGraph {
     );
   }
 
+  @override
   BarGraphDrawable createDrawable() {
     final groupDistance = 1 / groups.length;
     final groupWidth = groupDistance * groupWidthFraction;

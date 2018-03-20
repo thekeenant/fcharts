@@ -1,26 +1,11 @@
 import 'dart:ui' show lerpDouble;
 
+import 'package:fcharts/decor/tick.dart';
 import 'package:fcharts/util/charts.dart';
 import 'package:fcharts/util/painting.dart';
 import 'package:fcharts/util/merge_tween.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
-
-
-class ChartDecorTween extends Tween<ChartDecor> {
-  final MergeTween<ChartAxis> _axesTween;
-
-  ChartDecorTween(ChartDecor begin, ChartDecor end) :
-    _axesTween = new MergeTween(begin.axes, end.axes),
-    super(begin: begin, end: end);
-
-  @override
-  ChartDecor lerp(double t) {
-    return new ChartDecor(
-      axes: _axesTween.lerp(t),
-    );
-  }
-}
 
 class ChartDecor {
   final List<ChartAxis> axes;
@@ -47,149 +32,33 @@ class ChartDecor {
   }
 }
 
+/// Lerp between two [ChartDecor]'s.
+class ChartDecorTween extends Tween<ChartDecor> {
+  final MergeTween<ChartAxis> _axesTween;
 
-class Legend {
-
-}
-
-class SimpleTickLabeler implements TickLabeler {
-  final String text;
-  final TextStyle textStyle;
-  final double notchLength;
-  final PaintOptions notchPaint;
-  final Offset offset;
-  final double rotation;
-
-  SimpleTickLabeler({
-    @required this.text,
-    this.textStyle: const TextStyle(color: Colors.black),
-    this.notchLength: 8.0,
-    this.notchPaint: const PaintOptions.stroke(),
-    this.offset: Offset.zero,
-    this.rotation: 0.0,
-  });
+  ChartDecorTween(ChartDecor begin, ChartDecor end) :
+    _axesTween = new MergeTween(begin.axes, end.axes),
+    super(begin: begin, end: end);
 
   @override
-  void draw(CanvasArea tickArea, AxisPosition position, double opacity) {
-    var width = tickArea.width;
-    var minWidth = tickArea.width;
-    var offset = new Offset(0.0, notchLength);
-    var shift = Offset.zero;
-    var align = TextAlign.center;
-
-    var lineStart = new Offset(tickArea.width / 2, 0.0);
-    var lineEnd = lineStart.translate(0.0, notchLength);
-
-    switch (position) {
-      case AxisPosition.top:
-        offset = new Offset(0.0, tickArea.height - notchLength);
-        shift = new Offset(0.0, 1.0);
-        lineStart = new Offset(tickArea.width / 2, tickArea.height);
-        lineEnd = lineStart.translate(0.0, -notchLength);
-        break;
-      case AxisPosition.left:
-        minWidth = 0.0;
-        offset = new Offset(tickArea.width - notchLength, tickArea.height / 2);
-        shift = new Offset(1.0, 0.5);
-        align = TextAlign.right;
-        lineStart = new Offset(tickArea.width, tickArea.height / 2);
-        lineEnd = lineStart.translate(-notchLength, 0.0);
-        width -= notchLength;
-        break;
-      case AxisPosition.right:
-        minWidth = 0.0;
-        offset = new Offset(notchLength, tickArea.height / 2);
-        shift = new Offset(0.0, 0.5);
-        align = TextAlign.left;
-        lineStart = offset.translate(0.0, 0.0);
-        lineEnd = lineStart.translate(-notchLength, 0.0);
-        width -= notchLength;
-        break;
-      default:
-        break;
-    }
-
-    tickArea.drawLine(lineStart, lineEnd, notchPaint.copyWith(
-      color: (notchPaint.color ?? Colors.black).withOpacity(opacity)
-    ));
-
-    tickArea.drawText(this.offset + offset, text,
-      options: new TextOptions(
-        maxWidth: width,
-        minWidth: minWidth,
-        textAlign: align,
-        style: textStyle.copyWith(
-          color: (textStyle.color ?? Colors.black).withOpacity(opacity)
-        )
-      ),
-      shift: shift,
-      rotation: rotation,
-      rotationOrigin: new Offset(0.5, 0.5),
+  ChartDecor lerp(double t) {
+    return new ChartDecor(
+      axes: _axesTween.lerp(t),
     );
   }
 }
 
-abstract class TickLabeler {
-  void draw(CanvasArea tickArea, AxisPosition position, double opacity);
+/// A legend.
+class Legend {
+  // Todo
 }
+
 
 enum AxisPosition {
   top,
   left,
   right,
   bottom
-}
-
-class AxisTick implements MergeTweenable<AxisTick> {
-  final double value;
-  final double width;
-  final TickLabeler labeler;
-  final double opacity;
-
-  AxisTick({
-    @required this.value,
-    @required this.width,
-    this.labeler,
-    this.opacity: 1.0
-  });
-
-  void draw(CanvasArea tickArea, AxisPosition axisPosition) {
-    if (labeler != null)
-      labeler.draw(tickArea, axisPosition, opacity);
-  }
-
-  @override
-  AxisTick get empty => new AxisTick(
-    value: value,
-    width: width,
-    labeler: labeler,
-    opacity: 0.0
-  );
-
-  @override
-  Tween<AxisTick> tweenTo(AxisTick other) => new AxisTickTween(this, other);
-}
-
-class AxisTickTween extends Tween<AxisTick> {
-  AxisTickTween(AxisTick begin, AxisTick end) : super(begin: begin, end: end);
-
-  @override
-  AxisTick lerp(double t) {
-    // fade to 0.0 at t = 0.5
-    double opacity = 1.0;
-
-    if (t < 0.5)
-      opacity = lerpDouble(begin.opacity, 0.0, t * 2);
-    else
-      opacity = lerpDouble(0.0, end.opacity, (t - 0.5) * 2);
-
-    return new AxisTick(
-      value: lerpDouble(begin.value, end.value, t),
-      width: lerpDouble(begin.width, end.width, t),
-      labeler: t < 0.5 ? begin.labeler : end.labeler,
-      opacity: opacity
-    );
-  }
 }
 
 class ChartAxis implements MergeTweenable<ChartAxis> {

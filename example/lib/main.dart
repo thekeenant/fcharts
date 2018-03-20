@@ -19,7 +19,26 @@ class _MyAppState extends State<MyApp> {
         new LineChart.random(8),
         new LineChart.random(8),
         new LineChart.random(8)
-      ]
+      ],
+      decor: new ChartDecor(
+        axes: [
+          new ChartAxis(
+            position: AxisPosition.left,
+            range: new Range(0.0, 1.0),
+            ticks: [
+              new AxisTick(
+                value: 0.5,
+                width: 0.2,
+                labelers: [
+                  new TextTickLabeler(
+                    text: 'Test',
+                  )
+                ]
+              )
+            ]
+          )
+        ]
+      )
     );
   });
 

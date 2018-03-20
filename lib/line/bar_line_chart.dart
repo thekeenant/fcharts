@@ -7,9 +7,11 @@ import 'package:fcharts/util/curves.dart';
 import 'package:fcharts/util/painting.dart';
 import 'package:meta/meta.dart';
 
+/// A special type of line charh which aligns itself with the x values
+/// of a [Histogram]'s bins or a [BarChart]'s groups.
 class BarLineChart implements Chart {
   final BarGraph barGraph;
-  final List<BarLinePoint> points;
+  final List<_BarLinePoint> points;
   final Range range;
   final PaintOptions linePaint;
   final PaintOptions fillPaint;
@@ -26,10 +28,10 @@ class BarLineChart implements Chart {
     this.collapser
   });
 
-  factory BarLineChart.fromBarChart(BarChart barChart) {
-    // todo
-    return null;
-  }
+  // TODO
+  // factory BarLineChart.fromBarChart(BarChart barChart) 
+  //   return null;
+  // }
 
   factory BarLineChart.fromHistogram(Histogram histogram, {
     List<PaintOptions> pointPaint: const [],
@@ -41,7 +43,7 @@ class BarLineChart implements Chart {
     return new BarLineChart._(
       barGraph: histogram,
       points: new List.generate(histogram.bins.length, (i) {
-        return new BarLinePoint(
+        return new _BarLinePoint(
           value: histogram.bins[i].value,
           paint: pointPaint,
           pointRadius: pointRadius,
@@ -90,12 +92,13 @@ class BarLineChart implements Chart {
   }
 }
 
-class BarLinePoint {
+/// A point on a bar line chart. It's x position is determined by the bar graph.
+class _BarLinePoint {
   final double value;
   final List<PaintOptions> paint;
   final double pointRadius;
 
-  BarLinePoint({
+  _BarLinePoint({
     @required this.value,
     this.paint: const [],
     this.pointRadius: 1.0

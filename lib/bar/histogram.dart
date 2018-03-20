@@ -8,7 +8,6 @@ import 'package:fcharts/util/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-
 class Histogram implements BarGraph {
   final List<Bin> bins;
   final Range range;
@@ -90,7 +89,6 @@ class Histogram implements BarGraph {
     });
   }
 }
-
 
 @immutable
 class Bin {

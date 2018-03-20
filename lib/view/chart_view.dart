@@ -1,5 +1,5 @@
 import 'package:fcharts/util/charts.dart';
-import 'package:fcharts/util/decor.dart';
+import 'package:fcharts/decor/decor.dart';
 import 'package:fcharts/util/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
@@ -19,14 +19,14 @@ class _ChartPainter extends CustomPainter {
     this.rotation,
     this.chartPadding,
   ) :
-      super(repaint: controller);
+    super(repaint: controller);
 
   @override
   void paint(Canvas canvas, Size size) {
     Rect canvasRect;
 
     // rotate and translate canvas as necessary based on rotation
-    canvas.rotate(rotation.amount);
+    canvas.rotate(rotation.theta);
     switch (rotation) {
       case ChartRotation.none:
         canvasRect = Offset.zero & size;
@@ -64,10 +64,20 @@ class _ChartPainter extends CustomPainter {
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
 
+/// a
 class ChartView extends StatefulWidget {
+  /// The charts to draw within the view. The order of the list is the
+  /// order that they are drawn (later means they are on top).
   final List<Chart> charts;
+
+  /// The chart decoration to use.
   final ChartDecor decor;
+
+  /// The rotation of the chart.
   final ChartRotation rotation;
+
+  /// The padding for the chart which gives room for the [decor]
+  /// around the chart.
   final EdgeInsets chartPadding;
 
   ChartView({

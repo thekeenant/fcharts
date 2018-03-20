@@ -189,7 +189,10 @@ class CanvasArea {
   /// the painting area relative to the canvas (aka absolute)
   final Rect rect;
 
-  CanvasArea(this.canvas, this.rect);
+  CanvasArea(this.canvas, this.rect) {
+    // hehe
+    drawDebugCross();
+  }
 
   /// the width of the paint area
   double get width => size.width;
@@ -200,6 +203,7 @@ class CanvasArea {
   /// the size of the paint area (the width and height)
   Size get size => rect.size;
 
+  /// Contract this canvas area inwards by a given [delta].
   CanvasArea contract(EdgeInsets delta) {
     return new CanvasArea(canvas, new Rect.fromLTWH(
       rect.left + delta.left,
@@ -209,6 +213,8 @@ class CanvasArea {
     ));
   }
 
+  /// Expand this canvas area outwards by a given [delta]. 
+  /// This is the opposite of [contract].
   CanvasArea expand(EdgeInsets delta) {
     return contract(delta * -1.0);
   }
@@ -223,10 +229,12 @@ class CanvasArea {
     canvas.restore();
   }
 
+  /// Fill this area with a paint.
   void paint(PaintOptions paint) {
     drawRect(Offset.zero & size, paint);
   }
 
+  /// Draw an arc within a rectangle.
   void drawArc(Rect arcArea, double startAngle, double sweepAngle, PaintOptions paint) {
     _performDraw(() {
       canvas.drawArc(
@@ -239,23 +247,22 @@ class CanvasArea {
     });
   }
 
+  /// Draw a rectangle.
   void drawRect(Rect rect, PaintOptions paint) {
     _performDraw(() => canvas.drawRect(rect, paint.build(rect: rect)));
   }
 
+  /// Draw a path.
   void drawPath(Path path, PaintOptions paint, {Rect rect}) {
     _performDraw(() => canvas.drawPath(path, paint.build(rect: rect)));
   }
 
+  /// Draw a line.
   void drawLine(Offset p1, Offset p2, PaintOptions paint) {
     _performDraw(() => canvas.drawLine(p1, p2, paint.build()));
   }
 
-  void drawDebugCross({Color color: Colors.red}) {
-    drawLine(Offset.zero, new Offset(size.width, size.height), new PaintOptions(color: color));
-    drawLine(new Offset(0.0, size.height), new Offset(size.width, 0.0), new PaintOptions(color: color));
-  }
-
+  /// Draw text.
   void drawText(Offset point, String text, {
     TextOptions options: const TextOptions(),
     double rotation: 0.0,
@@ -300,6 +307,13 @@ class CanvasArea {
     });
   }
 
+  /// Draw an X pattern (for debugging).
+  void drawDebugCross({Color color: Colors.red}) {
+    drawLine(Offset.zero, new Offset(size.width, size.height), new PaintOptions(color: color));
+    drawLine(new Offset(0.0, size.height), new Offset(size.width, 0.0), new PaintOptions(color: color));
+  }
+
+  /// Construct a canvas area that resides somewhere within this canvas area.
   CanvasArea child(Rect child) {
     final offsetRect = child.shift(rect.topLeft);
     return new CanvasArea(canvas, offsetRect);

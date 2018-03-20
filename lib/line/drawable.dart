@@ -7,29 +7,22 @@ import 'package:fcharts/util/merge_tween.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-class LineChartDrawableTween extends ChartDrawableTween<LineChartDrawable> {
-  final MergeTween<LinePointDrawable> _pointsTween;
-
-  LineChartDrawableTween(LineChartDrawable begin, LineChartDrawable end) :
-    _pointsTween = new MergeTween(begin.points, end.points),
-    super(begin: begin, end: end);
-
-  @override
-  LineChartDrawable lerp(double t) => new LineChartDrawable(
-    points: _pointsTween.lerp(t),
-    linePaint: PaintOptions.lerp(begin.linePaint, end.linePaint, t),
-    fillPaint: PaintOptions.lerp(begin.fillPaint, end.fillPaint, t),
-    curve: t < 0.5 ? begin.curve : end.curve
-  );
-}
-
+/// A line chart is a set of points with (x, y) coordinates. A line
+/// can connect the points and an area can be filled beneath the line.
+/// Points can be illustrated by their own paint options.
 class LineChartDrawable implements ChartDrawable<LineChartDrawable> {
+  /// The list of points (ascending x value).
   final List<LinePointDrawable> points;
 
+  /// Paint to use to draw the line. Be sure to use [PaintingStyle.stroke].
+  /// You can do this easily with [PaintOptions.stroke].
   final PaintOptions linePaint;
 
+  /// Paint to use to fill the area beneath the line.
   final PaintOptions fillPaint;
 
+  /// The method in which to interpolate the line in between points.
+  /// See [Curves] for some default choices.
   final LineCurveFunction curve;
 
   /// When true, the line is a continuous, single segment even if nulls
@@ -42,7 +35,7 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable> {
     @required this.points,
     this.linePaint: const PaintOptions.stroke(color: Colors.black),
     this.fillPaint,
-    this.curve,
+    this.curve: LineCurves.linear,
     this.bridgeNulls: false
   }) : assert(bridgeNulls != null);
 
@@ -58,6 +51,7 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable> {
     return new Offset(math.max(a.dx, b.dx), math.min(a.dy, b.dy));
   }
 
+  /// Generate the sequence of points based on any given curve.
   List<Offset> _curvePoints(List<Offset> points) {
     if (curve == null)
       return points;
@@ -65,6 +59,12 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable> {
     return curve.generate(points);
   }
 
+  /// Create a list of paths which will each be drawn separately with their own
+  /// line and fill area.
+  /// 
+  /// This is necessary to support null values, which create a break in the line.
+  /// A null value will create two segments, one on the left of it, one on the right
+  /// (assuming it is not on the ends).
   List<List<LinePointDrawable>> _generateSegments() {
     final result = <List<LinePointDrawable>>[];
     if (points.isEmpty)
@@ -82,7 +82,8 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable> {
         current.add(point);
       }
     });
-    result.add(current);
+    if (current.isNotEmpty)
+      result.add(current);
     return result;
   }
 
@@ -90,32 +91,47 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable> {
   void draw(CanvasArea area) {
     if (points.isEmpty)
       return;
-
+  
     final lineSegments = _generateSegments();
 
+    // each segment gets its own paths
     for (final segment in lineSegments) {
+      // create a new line
       final linePath = new Path();
+
+      // create a new fill area
       final fillPath = new Path();
 
-      var leftMostX = double.INFINITY;
-      var topRight = new Offset(-double.INFINITY, double.INFINITY);
-
+      // save points to their corresponding absolute location in the canvaa
       final pointToLoc = <LinePointDrawable, Offset>{};
+
+      // scale points to the canvas
       final scaledPoints = segment.map((p) {
-        final loc = p.locationWithin(area);
+        final loc = p._locationWithin(area);
         pointToLoc[p] = loc;
         return loc;
       }).toList();
+
+      // apply the curve to the scaled points
       final curvedPoints = _curvePoints(scaledPoints);
 
+      // keep track if this is the first point
       var isFirst = true;
+
+      // bounding box of fill area
+      var leftMostX = double.INFINITY;
+      var topRight = new Offset(-double.INFINITY, double.INFINITY);
+
       for (final loc in curvedPoints) {
+        // if the first line, we move the fill path to the bottom left
         if (isFirst)
           fillPath.moveTo(loc.dx, area.height);
 
+        // update bounding box of fill area
         leftMostX = math.min(leftMostX, loc.dx);
         topRight = _topRight(topRight, loc);
 
+        // draw line to this point
         _moveToLineTo(linePath, loc, moveTo: isFirst);
         _moveToLineTo(fillPath, loc);
 
@@ -169,7 +185,25 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable> {
   );
 }
 
+/// Lerp between two line charts.
+class LineChartDrawableTween extends ChartDrawableTween<LineChartDrawable> {
+  final MergeTween<LinePointDrawable> _pointsTween;
 
+  LineChartDrawableTween(LineChartDrawable begin, LineChartDrawable end) :
+    _pointsTween = new MergeTween(begin.points, end.points),
+    super(begin: begin, end: end);
+
+  @override
+  LineChartDrawable lerp(double t) => new LineChartDrawable(
+    points: _pointsTween.lerp(t),
+    linePaint: PaintOptions.lerp(begin.linePaint, end.linePaint, t),
+    fillPaint: PaintOptions.lerp(begin.fillPaint, end.fillPaint, t),
+    curve: t < 0.5 ? begin.curve : end.curve,
+    bridgeNulls: t < 0.5 ? begin.bridgeNulls : end.bridgeNulls
+  );
+}
+
+/// A point on a line chart.
 class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
   static LinePointDrawable collapse(LinePointDrawable point) {
     return new LinePointDrawable(
@@ -178,16 +212,27 @@ class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
     );
   }
 
+  /// The relative x value of this point. Should be 0..1 inclusive.
   final double x;
+
+  /// The relative y value of this point. Should be 0..1 inclusive.
   final double value;
+
+  /// Points can be illustrated by a circe on the graph. This indicates
+  /// the radius of the point. Be sure to provide the point with [paint].
   final double pointRadius;
+
+  /// All paint to be applied to the point.
   final List<PaintOptions> paint;
+
+  /// Used for animation. This is the line point which this point should
+  /// collapse to when it disappears, or when it comes from nothing.
   final LinePointDrawable collapsed;
 
   LinePointDrawable({
     @required this.x,
     @required this.value,
-    this.pointRadius: 1.0,
+    this.pointRadius: 3.0,
     this.paint: const [],
     this.collapsed
   });
@@ -208,10 +253,11 @@ class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
     );
   }
 
-  void draw(CanvasArea area) {
+  /// Draw this point on the canvas within a given canvas area.
+  void draw(CanvasArea pointArea) {
     for (final paint in this.paint) {
-      area.drawArc(
-        Offset.zero & area.size,
+      pointArea.drawArc(
+        Offset.zero & pointArea.size,
         0.0,
         math.pi * 2,
         paint
@@ -219,7 +265,8 @@ class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
     }
   }
 
-  Offset locationWithin(CanvasArea area) {
+  /// Get the coordinates of this point witin a canvas area.
+  Offset _locationWithin(CanvasArea area) {
     final width = area.width;
     final height = area.height;
 
@@ -242,6 +289,7 @@ class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
   }
 }
 
+/// Lerp between two line points.
 class LinePointDrawableTween extends Tween<LinePointDrawable> {
   final MergeTween<PaintOptions> _paintsTween;
 
