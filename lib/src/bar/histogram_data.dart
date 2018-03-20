@@ -2,25 +2,25 @@ import 'dart:math' as math;
 
 import 'package:fcharts/src/bar/bar_graph.dart';
 import 'package:fcharts/src/bar/drawable.dart';
-import 'package:fcharts/src/util/chart.dart';
+import 'package:fcharts/src/chart.dart';
 import 'package:fcharts/src/util/color_palette.dart';
-import 'package:fcharts/src/util/painting.dart';
+import 'package:fcharts/src/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 /// A type of bar graph (arguable names) which is represents continuous data.
 /// There are no spaces in between the bars, and each bar group has just a
 /// single bar stack and one bar.
-class Histogram implements BarGraph {
-  final List<Bin> bins;
-  final Range range;
-
-  Histogram({
+class HistogramData implements BarGraphData {
+  HistogramData({
     this.bins,
     this.range,
   });
 
-  factory Histogram.random(int binCount) {
+  final List<BinData> bins;
+  final Range range;
+
+  factory HistogramData.random(int binCount) {
     final random = new math.Random();
     final range = new Range(0.0, random.nextDouble() * 100);
 
@@ -36,7 +36,7 @@ class Histogram implements BarGraph {
 
       theta += random.nextDouble() * 0.5;
 
-      return new Bin(
+      return new BinData(
         value: value,
         paint: [
           new PaintOptions(color: color),
@@ -45,7 +45,7 @@ class Histogram implements BarGraph {
       );
     });
 
-    return new Histogram(
+    return new HistogramData(
       bins: bins,
       range: range
     );
@@ -94,14 +94,14 @@ class Histogram implements BarGraph {
 }
 
 @immutable
-class Bin {
-  final double value;
-  final List<PaintOptions> paint;
-  final PaintGenerator paintGenerator;
-
-  Bin({
+class BinData {
+  BinData({
     @required this.value,
     this.paint: const [const PaintOptions(color: Colors.black)],
     this.paintGenerator
   });
+
+  final double value;
+  final List<PaintOptions> paint;
+  final PaintGenerator paintGenerator;
 }

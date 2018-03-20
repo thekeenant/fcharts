@@ -16,7 +16,7 @@ class _MyAppState extends State<MyApp> {
   final _charts = new List<ChartView>.generate(4, (a) {
     final rand = new Random();
     final yTicks = rand.nextInt(3) * 2 + 6;
-    final histo = new Histogram.random(rand.nextInt(5) + 5);
+    final histo = new HistogramData.random(rand.nextInt(5) + 5);
     int rando = rand.nextInt(20) * 2 + 20;
 
     final xAxis = new ChartAxis(

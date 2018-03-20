@@ -3,7 +3,8 @@ import 'dart:ui';
 
 import 'package:meta/meta.dart';
 
-abstract class LineCurveFunction {
+/// Generates a curve based on given points.
+abstract class LineCurveGenerator {
   List<Offset> generate(List<Offset> points);
 }
 
@@ -16,8 +17,9 @@ class LineCurves {
   static const monotone = const MonotoneCurve();
 }
 
-/// Use Curves.linear
-class Linear implements LineCurveFunction {
+/// Use Curves.linear.
+/// This returns the points given to it. There is no curve.
+class Linear implements LineCurveGenerator {
   const Linear._();
 
   @override
@@ -26,17 +28,18 @@ class Linear implements LineCurveFunction {
   }
 }
 
+/// Cardinal spline curve.
 @immutable
-class CardinalSpline implements LineCurveFunction {
-  final double tension;
-  final int segmentCount;
-
+class CardinalSpline implements LineCurveGenerator {
   const CardinalSpline({
     this.tension: 0.5,
     this.segmentCount: 10,
   }) :
       assert(tension != null && tension >= 0.0 && tension <= 1.0),
       assert(segmentCount != null && segmentCount > 0);
+
+  final double tension;
+  final int segmentCount;
 
   @override
   List<Offset> generate(List<Offset> points) {
@@ -82,11 +85,14 @@ class CardinalSpline implements LineCurveFunction {
   }
 }
 
+/// Monotone cubic spline.
 @immutable
-class MonotoneCurve implements LineCurveFunction {
-  final int stepsPer;
-
+class MonotoneCurve implements LineCurveGenerator {
   const MonotoneCurve({this.stepsPer: 15});
+
+  /// The number of steps for each point given. A set of 3 points would
+  /// generate 45 total interpolated points.
+  final int stepsPer;
 
   @override
   List<Offset> generate(List<Offset> points) {
@@ -114,13 +120,13 @@ class MonotoneCurve implements LineCurveFunction {
   }
 }
 
-/// https://gist.github.com/lecho/7627739
+/// Adapted from: https://gist.github.com/lecho/7627739
 @immutable
 class _MonotoneInterpolator {
+  const _MonotoneInterpolator._(this._points, this._m);
+
   final List<Offset> _points;
   final List<double> _m;
-
-  const _MonotoneInterpolator._(this._points, this._m);
 
   factory _MonotoneInterpolator.fromPoints(List<Offset> points, {bool sort: true}) {
     assert(points.isNotEmpty);
@@ -129,7 +135,7 @@ class _MonotoneInterpolator {
       points.sort((a, b) => a.dx.compareTo(b.dx));
 
     final n = points.length;
-    final d = new List<double>(n - 1); // could optimize this out
+    final d = new List<double>(n - 1);
     final m = new List<double>(n);
 
     // Compute slopes of secant lines between successive points.
@@ -153,7 +159,8 @@ class _MonotoneInterpolator {
       if (d[i] == 0) { // successive Y values are equal
         m[i] = 0.0;
         m[i + 1] = 0.0;
-      } else {
+      }
+      else {
         final a = m[i] / d[i];
         final b = m[i + 1] / d[i];
         final h = sqrt(pow(a, 2) + pow(b, 2));
@@ -168,7 +175,6 @@ class _MonotoneInterpolator {
   }
 
   double interpolate(double x) {
-
     // Handle the boundary cases.
     final int n = _points.length;
     if (x <= _points[0].dx) {

@@ -1,6 +1,6 @@
 import 'package:fcharts/src/decor/tick.dart';
 import 'package:fcharts/src/util/merge_tween.dart';
-import 'package:fcharts/src/util/painting.dart';
+import 'package:fcharts/src/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -21,15 +21,15 @@ enum AxisPosition {
 
 /// An axis of a [Chart].
 class ChartAxis implements MergeTweenable<ChartAxis> {
-  final List<AxisTick> ticks;
-  final AxisPosition position;
-  final PaintOptions paint;
-
   ChartAxis({
     @required this.position,
     this.ticks: const [],
     this.paint: const PaintOptions.stroke()
   });
+
+  final List<AxisTick> ticks;
+  final AxisPosition position;
+  final PaintOptions paint;
 
   void draw(CanvasArea fullArea, CanvasArea chartArea, int rank, int rankTotal) {
     Rect axisRect;
@@ -133,11 +133,11 @@ class ChartAxis implements MergeTweenable<ChartAxis> {
 }
 
 class _ChartAxisTween extends Tween<ChartAxis> {
-  final MergeTween<AxisTick> _ticksTween;
-
   _ChartAxisTween(ChartAxis begin, ChartAxis end) :
     _ticksTween = new MergeTween(begin.ticks, end.ticks),
     super(begin: begin, end: end);
+
+  final MergeTween<AxisTick> _ticksTween;
 
   @override
   ChartAxis lerp(double t) {

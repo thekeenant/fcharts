@@ -1,17 +1,22 @@
 import 'package:fcharts/src/decor/axis.dart';
+import 'package:fcharts/src/decor/legend.dart';
+import 'package:fcharts/src/painting.dart';
 import 'package:fcharts/src/util/merge_tween.dart';
-import 'package:fcharts/src/util/painting.dart';
 import 'package:flutter/material.dart';
+import 'package:meta/meta.dart';
 
-/// Deccorations to apply to a [Chart].
+/// Decorations to apply to a [Chart].
+@immutable
 class ChartDecor {
-  final List<ChartAxis> axes;
-  final Legend legend;
+  static const ChartDecor none = const ChartDecor();
 
-  ChartDecor({
+  const ChartDecor({
     this.axes: const [],
     this.legend
   }) : assert(axes != null);
+
+  final List<ChartAxis> axes;
+  final Legend legend;
 
   void draw(CanvasArea fullArea, CanvasArea chartArea) {
     // organize axes by their position
@@ -27,15 +32,17 @@ class ChartDecor {
       }
     }
   }
+
+  Tween<ChartDecor> tweenTo(ChartDecor end) => new ChartDecorTween(this, end);
 }
 
 /// Lerp between two [ChartDecor]'s.
 class ChartDecorTween extends Tween<ChartDecor> {
-  final MergeTween<ChartAxis> _axesTween;
-
   ChartDecorTween(ChartDecor begin, ChartDecor end) :
-    _axesTween = new MergeTween(begin.axes, end.axes),
-    super(begin: begin, end: end);
+      _axesTween = new MergeTween(begin.axes, end.axes),
+      super(begin: begin, end: end);
+
+  final MergeTween<ChartAxis> _axesTween;
 
   @override
   ChartDecor lerp(double t) {
@@ -43,16 +50,4 @@ class ChartDecorTween extends Tween<ChartDecor> {
       axes: _axesTween.lerp(t),
     );
   }
-}
-
-/// A legend.
-class Legend {
-  final List<LegendItem> items;
-
-  Legend({this.items});
-  // Todo
-}
-
-class LegendItem {
-
 }

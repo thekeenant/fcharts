@@ -1,10 +1,10 @@
 import 'dart:math' as math;
 import 'dart:ui' show lerpDouble;
 
-import 'package:fcharts/src/util/chart.dart';
-import 'package:fcharts/src/util/curves.dart';
+import 'package:fcharts/src/chart.dart';
+import 'package:fcharts/src/line/curves.dart';
 import 'package:fcharts/src/util/merge_tween.dart';
-import 'package:fcharts/src/util/painting.dart';
+import 'package:fcharts/src/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -12,6 +12,14 @@ import 'package:meta/meta.dart';
 /// can connect the points and an area can be filled beneath the line.
 /// Points can be illustrated by their own paint options.
 class LineChartDrawable implements ChartDrawable<LineChartDrawable> {
+  LineChartDrawable({
+    @required this.points,
+    this.linePaint: const PaintOptions.stroke(color: Colors.black),
+    this.fillPaint,
+    this.curve: LineCurves.linear,
+    this.bridgeNulls: false
+  }) : assert(bridgeNulls != null);
+
   /// The list of points (ascending x value).
   final List<LinePointDrawable> points;
 
@@ -24,21 +32,13 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable> {
 
   /// The method in which to interpolate the line in between points.
   /// See [Curves] for some default choices.
-  final LineCurveFunction curve;
+  final LineCurveGenerator curve;
 
   /// When true, the line is a continuous, single segment even if nulls
   /// are present. The gap is bridged between a null value.
   ///
   /// When false (default), null values create a break in the graph.
   final bool bridgeNulls;
-
-  LineChartDrawable({
-    @required this.points,
-    this.linePaint: const PaintOptions.stroke(color: Colors.black),
-    this.fillPaint,
-    this.curve: LineCurves.linear,
-    this.bridgeNulls: false
-  }) : assert(bridgeNulls != null);
 
   void _moveToLineTo(Path path, Offset point, {bool moveTo: false}) {
     if (moveTo)
@@ -188,11 +188,11 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable> {
 
 /// Lerp between two line charts.
 class _LineChartDrawableTween extends Tween<LineChartDrawable> {
-  final MergeTween<LinePointDrawable> _pointsTween;
-
   _LineChartDrawableTween(LineChartDrawable begin, LineChartDrawable end) :
-    _pointsTween = new MergeTween(begin.points, end.points),
-    super(begin: begin, end: end);
+      _pointsTween = new MergeTween(begin.points, end.points),
+      super(begin: begin, end: end);
+
+  final MergeTween<LinePointDrawable> _pointsTween;
 
   @override
   LineChartDrawable lerp(double t) => new LineChartDrawable(
@@ -206,12 +206,13 @@ class _LineChartDrawableTween extends Tween<LineChartDrawable> {
 
 /// A point on a line chart.
 class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
-  static LinePointDrawable collapse(LinePointDrawable point) {
-    return new LinePointDrawable(
-      x: 1.0,
-      value: point.value
-    );
-  }
+  LinePointDrawable({
+    @required this.x,
+    @required this.value,
+    this.pointRadius: 3.0,
+    this.paint: const [],
+    this.collapsed
+  });
 
   /// The relative x value of this point. Should be 0..1 inclusive.
   final double x;
@@ -229,14 +230,6 @@ class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
   /// Used for animation. This is the line point which this point should
   /// collapse to when it disappears, or when it comes from nothing.
   final LinePointDrawable collapsed;
-
-  LinePointDrawable({
-    @required this.x,
-    @required this.value,
-    this.pointRadius: 3.0,
-    this.paint: const [],
-    this.collapsed
-  });
 
   LinePointDrawable copyWith({
     double x,
@@ -288,15 +281,22 @@ class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
   Tween<LinePointDrawable> tweenTo(LinePointDrawable other) {
     return new _LinePointDrawableTween(this, other);
   }
+
+  static LinePointDrawable collapse(LinePointDrawable point) {
+    return new LinePointDrawable(
+      x: 1.0,
+      value: point.value
+    );
+  }
 }
 
 /// Lerp between two line points.
 class _LinePointDrawableTween extends Tween<LinePointDrawable> {
-  final MergeTween<PaintOptions> _paintsTween;
-
   _LinePointDrawableTween(LinePointDrawable begin, LinePointDrawable end) :
     _paintsTween = new MergeTween(begin.paint, end.paint),
     super(begin: begin, end: end);
+
+  final MergeTween<PaintOptions> _paintsTween;
 
   @override
   LinePointDrawable lerp(double t) => new LinePointDrawable(

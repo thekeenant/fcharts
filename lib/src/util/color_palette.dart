@@ -13,11 +13,11 @@ class ColorPalette extends ColorSwatch<int> {
     Colors.teal[400],
   ]);
 
-  final int length;
-
   ColorPalette(Color primary, Map<int, Color> colors) :
-    this.length = colors.length,
-    super(primary.value, colors);
+      this.length = colors.length,
+      super(primary.value, colors);
+
+  final int length;
 
   factory ColorPalette.fromList(List<Color> colors) {
     final map = new Map.fromIterables(

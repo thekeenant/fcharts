@@ -1,8 +1,8 @@
 import 'package:fcharts/src/bar/drawable.dart';
-import 'package:fcharts/src/util/chart.dart';
+import 'package:fcharts/src/chart.dart';
 
-/// See [BarChart] or [Histogram].
-abstract class BarGraph implements Chart {
+/// See [BarChartData] or [HistogramData].
+abstract class BarGraphData implements ChartData {
   @override
   BarGraphDrawable createDrawable();
 

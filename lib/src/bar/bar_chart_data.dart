@@ -2,24 +2,24 @@ import 'dart:math' as math;
 
 import 'package:fcharts/src/bar/bar_graph.dart';
 import 'package:fcharts/src/bar/drawable.dart';
-import 'package:fcharts/src/util/chart.dart';
+import 'package:fcharts/src/chart.dart';
 import 'package:fcharts/src/util/color_palette.dart';
-import 'package:fcharts/src/util/painting.dart';
+import 'package:fcharts/src/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 @immutable
-class BarChart implements BarGraph {
-  final List<BarGroup> groups;
-  final double groupWidthFraction;
-
-  BarChart({
+class BarChartData implements BarGraphData {
+  BarChartData({
     @required this.groups,
     @required this.groupWidthFraction
   });
 
+  final List<BarGroupData> groups;
+  final double groupWidthFraction;
+
   /// Generate a random bar chart.
-  factory BarChart.random() {
+  factory BarChartData.random() {
     var random = new math.Random();
 
     final groupCount = random.nextInt(3) + 2;
@@ -40,14 +40,14 @@ class BarChart implements BarGraph {
           final color = monochrome[k];
           nextBase = value;
 
-          return new Bar(
+          return new BarData(
             value: value,
             base: base,
             paint: [new PaintOptions(color: color)]
           );
         });
 
-        return new BarStack(
+        return new BarStackData(
           bars: bars,
           range: new Range(
             0.0,
@@ -57,23 +57,23 @@ class BarChart implements BarGraph {
         );
       });
 
-      return new BarGroup(
+      return new BarGroupData(
         stacks: stacks,
         stackWidthFraction: 0.9,
       );
     });
 
-    return new BarChart(
+    return new BarChartData(
       groups: groups,
       groupWidthFraction: 0.75,
     );
   }
 
-  BarChart copyWith({
-    List<BarGroup> groups,
+  BarChartData copyWith({
+    List<BarGroupData> groups,
     double groupWidthFraction
   }) {
-    return new BarChart(
+    return new BarChartData(
       groups: groups ?? this.groups,
       groupWidthFraction: groupWidthFraction ?? this.groupWidthFraction
     );
@@ -145,20 +145,20 @@ class BarChart implements BarGraph {
 }
 
 @immutable
-class BarGroup {
-  final List<BarStack> stacks;
+class BarGroupData {
+  final List<BarStackData> stacks;
   final double stackWidthFraction;
 
-  const BarGroup({
+  const BarGroupData({
     @required this.stacks,
     @required this.stackWidthFraction
   });
 
-  BarGroup copyWith({
-    List<BarStack> stacks,
+  BarGroupData copyWith({
+    List<BarStackData> stacks,
     double stackWidthFraction
   }) {
-    return new BarGroup(
+    return new BarGroupData(
       stacks: stacks ?? this.stacks,
       stackWidthFraction: stackWidthFraction ?? this.stackWidthFraction
     );
@@ -166,23 +166,23 @@ class BarGroup {
 }
 
 @immutable
-class BarStack {
-  final List<Bar> bars;
+class BarStackData {
+  final List<BarData> bars;
   final Range range;
   final double base;
 
-  const BarStack({
+  const BarStackData({
     @required this.bars,
     @required this.range,
     @required this.base,
   });
 
-  BarStack copyWith({
-    List<Bar> bars,
+  BarStackData copyWith({
+    List<BarData> bars,
     Range range,
     double base
   }) {
-    return new BarStack(
+    return new BarStackData(
       bars: bars ?? this.bars,
       range: range ?? this.range,
       base: base ?? this.base
@@ -191,26 +191,26 @@ class BarStack {
 }
 
 @immutable
-class Bar {
+class BarData {
   final double value;
   final double base;
   final List<PaintOptions> paint;
   final PaintGenerator paintGenerator;
 
-  const Bar({
+  const BarData({
     @required this.value,
     @required this.base,
     this.paint: const [const PaintOptions(color: Colors.black)],
     this.paintGenerator
   });
 
-  Bar copyWith({
+  BarData copyWith({
     double value,
     double base,
     List<PaintOptions> paint,
     PaintGenerator paintGenerator
   }) {
-    return new Bar(
+    return new BarData(
       value: value ?? this.value,
       base: base ?? this.base,
       paint: paint ?? this.paint,

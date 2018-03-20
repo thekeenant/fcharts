@@ -2,12 +2,19 @@ import 'dart:ui' show lerpDouble;
 
 import 'package:fcharts/src/decor/axis.dart';
 import 'package:fcharts/src/util/merge_tween.dart';
-import 'package:fcharts/src/util/painting.dart';
+import 'package:fcharts/src/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 /// A tick located on a [ChartAxis].
 class AxisTick implements MergeTweenable<AxisTick> {
+  AxisTick({
+    @required this.value,
+    @required this.width,
+    this.labelers: const [],
+    this.opacity: 1.0
+  });
+
   /// The relative value of this tick. Should be 0..1 inclusive.
   /// A value of 0.25 means this tick falls at 25% the way up the axis.
   final double value;
@@ -23,13 +30,6 @@ class AxisTick implements MergeTweenable<AxisTick> {
   /// The opacity of the label. This is used for animation. The labelers
   /// should take the value into account.
   final double opacity;
-
-  AxisTick({
-    @required this.value,
-    @required this.width,
-    this.labelers: const [],
-    this.opacity: 1.0
-  });
 
   /// Draw this axis tick within its [tickArea] given an [axisPosition].
   void draw(CanvasArea tickArea, AxisPosition axisPosition) {
@@ -80,6 +80,14 @@ abstract class TickLabeler {
 
 /// Text to place at the tick.
 class TextTickLabeler implements TickLabeler {
+  TextTickLabeler({
+    @required this.text,
+    this.style: const TextStyle(color: Colors.black),
+    this.offset: Offset.zero,
+    this.rotation: 0.0,
+    this.distance: 8.0,
+  });
+
   /// The text to draw.
   final String text;
 
@@ -94,14 +102,6 @@ class TextTickLabeler implements TickLabeler {
 
   /// The distance in canvas units from the axis.
   final double distance;
-
-  TextTickLabeler({
-    @required this.text,
-    this.style: const TextStyle(color: Colors.black),
-    this.offset: Offset.zero,
-    this.rotation: 0.0,
-    this.distance: 8.0,
-  });
 
   _styleWithOpacity(double opacity) {
     return style.copyWith(
@@ -167,16 +167,16 @@ class TextTickLabeler implements TickLabeler {
 /// A little line placed at the tick value, perpendiular to the axis.
 @immutable
 class NotchTickLabeler implements TickLabeler {
+  const NotchTickLabeler({
+    this.length: 5.0,
+    this.paint: const PaintOptions.stroke(),
+  });
+
   /// The length of the notch in the absolute units.
   final double length;
 
   /// The paint to use for this notch.
   final PaintOptions paint;
-
-  const NotchTickLabeler({
-    this.length: 5.0,
-    this.paint: const PaintOptions.stroke(),
-  });
 
   PaintOptions _paintWithOpacity(double opacity) {
     return paint.copyWith(

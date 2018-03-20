@@ -2,19 +2,13 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:fcharts/src/line/drawable.dart';
-import 'package:fcharts/src/util/chart.dart';
+import 'package:fcharts/src/chart.dart';
 import 'package:fcharts/src/util/color_palette.dart';
-import 'package:fcharts/src/util/curves.dart';
-import 'package:fcharts/src/util/painting.dart';
+import 'package:fcharts/src/line/curves.dart';
+import 'package:fcharts/src/painting.dart';
 import 'package:meta/meta.dart';
 
-class LineChart implements Chart {
-  final List<LinePoint> points;
-  final Range range;
-  final PaintOptions linePaint;
-  final PaintOptions fillPaint;
-  final LineCurveFunction curve;
-
+class LineChart implements ChartData {
   LineChart({
     @required this.points,
     @required this.range,
@@ -23,12 +17,18 @@ class LineChart implements Chart {
     this.curve: const MonotoneCurve(),
   });
 
+  final List<LinePoint> points;
+  final Range range;
+  final PaintOptions linePaint;
+  final PaintOptions fillPaint;
+  final LineCurveGenerator curve;
+
   LineChart copyWith({
     List<LinePoint> points,
     Range range,
     PaintOptions linePaint,
     PaintOptions fillPaint,
-    LineCurveFunction curve
+    LineCurveGenerator curve
   }) {
     return new LineChart(
       points: points ?? this.points,
@@ -104,17 +104,16 @@ class LineChart implements Chart {
   }
 }
 
-
 class LinePoint {
-  final double x;
-  final double value;
-  final List<PaintOptions> paint;
-  final double pointRadius;
-
   LinePoint({
     @required this.x,
     @required this.value,
     this.paint: const [],
     this.pointRadius: 1.0
   });
+
+  final double x;
+  final double value;
+  final List<PaintOptions> paint;
+  final double pointRadius;
 }

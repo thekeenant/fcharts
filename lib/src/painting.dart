@@ -8,18 +8,13 @@ import 'package:meta/meta.dart';
 
 /// An area on a canvas to paint.
 class CanvasArea {
+  CanvasArea(this.canvas, this.rect);
+
   /// the canvas this paint area resides
   final Canvas canvas;
 
   /// the painting area relative to the canvas (aka absolute)
   final Rect rect;
-
-  CanvasArea(this.canvas, this.rect) {
-    // hehe
-    // drawDebugCross(
-    //   color: Colors.red
-    // );
-  }
 
   /// the width of the paint area
   double get width => size.width;
@@ -161,12 +156,6 @@ class _PaintOptionsTween extends Tween<PaintOptions> {
 /// Options for conveniently building a [Paint].
 @immutable
 class PaintOptions implements MergeTweenable<PaintOptions> {
-  final Color color;
-  final double strokeWidth;
-  final StrokeCap strokeCap;
-  final Gradient gradient;
-  final PaintingStyle style;
-
   const PaintOptions({
     this.color: Colors.black,
     this.strokeWidth: 1.0,
@@ -174,6 +163,12 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
     this.gradient,
     this.style: PaintingStyle.fill
   });
+
+  final Color color;
+  final double strokeWidth;
+  final StrokeCap strokeCap;
+  final Gradient gradient;
+  final PaintingStyle style;
 
   const PaintOptions.stroke({
     this.color: Colors.black,
@@ -267,15 +262,6 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
 /// Options for conveniently building a [TextPainter].
 @immutable
 class TextOptions {
-  final double minWidth;
-  final double maxWidth;
-  final int maxLines;
-  final String ellipsis;
-  final TextAlign textAlign;
-  final TextDirection textDirection;
-  final TextStyle style;
-  final double scaleFactor;
-
   const TextOptions({
     this.minWidth,
     this.maxWidth,
@@ -286,6 +272,15 @@ class TextOptions {
     this.style: const TextStyle(color: Colors.black),
     this.scaleFactor: 1.0,
   });
+
+  final double minWidth;
+  final double maxWidth;
+  final int maxLines;
+  final String ellipsis;
+  final TextAlign textAlign;
+  final TextDirection textDirection;
+  final TextStyle style;
+  final double scaleFactor;
 
   TextPainter build(String text) {
     TextPainter span = new TextPainter(

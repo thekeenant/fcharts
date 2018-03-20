@@ -2,11 +2,11 @@ import 'dart:math' as math;
 import 'dart:ui' show lerpDouble;
 
 import 'package:fcharts/src/util/merge_tween.dart';
-import 'package:fcharts/src/util/painting.dart';
+import 'package:fcharts/src/painting.dart';
 import 'package:meta/meta.dart';
 
 /// The overarching
-abstract class Chart {
+abstract class ChartData {
   /// Create a [ChartDrawable] from this chart
   ChartDrawable createDrawable();
 }
@@ -39,18 +39,21 @@ class ChartRotation {
 /// A range from a low value to a high value.
 @immutable
 class Range {
-  final double min;
-  final double max;
-
   const Range(this.min, this.max) :
-    assert(min != null),
-    assert(max != null),
-    assert(min < max);
+      assert(min != null),
+      assert(max != null),
+      assert(min <= max);
+
+  /// The low/min value.
+  final double min;
+
+  /// The high/max value.
+  final double max;
 
   /// the distance between min and max
   double get span => (max - min).abs();
 
-  /// Linearly interpolate between two range values and a given time, [t].
+  /// Linearly interpolate between two range values and a given time.
   static Range lerp(Range begin, Range end, double t) {
     return new Range(
       lerpDouble(begin.min, end.min, t),

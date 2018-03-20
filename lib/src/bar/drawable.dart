@@ -1,10 +1,10 @@
 import 'dart:math' as math;
 import 'dart:ui' show lerpDouble;
 
-import 'package:fcharts/src/util/chart.dart';
+import 'package:fcharts/src/chart.dart';
 import 'package:fcharts/src/util/color_palette.dart';
 import 'package:fcharts/src/util/merge_tween.dart';
-import 'package:fcharts/src/util/painting.dart';
+import 'package:fcharts/src/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -14,11 +14,11 @@ import 'package:meta/meta.dart';
 /// chart, population pyramid, etc.).
 @immutable
 class BarGraphDrawable implements ChartDrawable<BarGraphDrawable> {
-  final List<BarGroupDrawable> groups;
-
   const BarGraphDrawable({
     @required this.groups
   });
+
+  final List<BarGroupDrawable> groups;
 
   /// Generate a randomized pretty bar graph!
   factory BarGraphDrawable.random() {
@@ -110,11 +110,11 @@ class BarGraphDrawable implements ChartDrawable<BarGraphDrawable> {
 
 /// Lerp between two bar graphs.
 class _BarGraphDrawableTween extends Tween<BarGraphDrawable> {
-  final MergeTween<BarGroupDrawable> _groupsTween;
-
   _BarGraphDrawableTween(BarGraphDrawable begin, BarGraphDrawable end) :
       _groupsTween = new MergeTween(begin.groups, end.groups),
       super(begin: begin, end: end);
+
+  final MergeTween<BarGroupDrawable> _groupsTween;
 
   @override
   BarGraphDrawable lerp(double t) {
@@ -127,12 +127,12 @@ class _BarGraphDrawableTween extends Tween<BarGraphDrawable> {
 /// A group of bar stacks.
 @immutable
 class BarGroupDrawable implements MergeTweenable<BarGroupDrawable> {
-  /// The group of bar stacks.
-  final List<BarStackDrawable> stacks;
-
   const BarGroupDrawable({
     @required this.stacks
   }) : assert(stacks != null);
+
+  /// The group of bar stacks.
+  final List<BarStackDrawable> stacks;
 
   @override
   BarGroupDrawable get empty => new BarGroupDrawable(stacks: []);
@@ -151,13 +151,11 @@ class BarGroupDrawable implements MergeTweenable<BarGroupDrawable> {
 
 /// Lerp between two bar groups.
 class _BarGroupDrawableTween extends Tween<BarGroupDrawable> {
-  final MergeTween<BarStackDrawable> _stacksTween;
-
-  _BarGroupDrawableTween(
-    BarGroupDrawable begin,
-    BarGroupDrawable end) :
+  _BarGroupDrawableTween(BarGroupDrawable begin, BarGroupDrawable end) :
       this._stacksTween = new MergeTween(begin.stacks, end.stacks),
       super(begin: begin, end: end);
+
+  final MergeTween<BarStackDrawable> _stacksTween;
 
   @override
   BarGroupDrawable lerp(double t) {
@@ -171,15 +169,16 @@ class _BarGroupDrawableTween extends Tween<BarGroupDrawable> {
 /// It may contain any number of bars including 0.
 @immutable
 class BarStackDrawable implements MergeTweenable<BarStackDrawable> {
-  /// The default implementation for collapsing a bar stack to nothing.
-  /// It retains it's x value but removes all bars and shrinks to 0 width.
-  ///
-  /// This can be overridden on a per-barstack basis with [collapsed].
-  static BarStackDrawable collapse(BarStackDrawable stack) => new BarStackDrawable(
-    x: stack.x,
-    width: 0.0,
-    bars: []
-  );
+  const BarStackDrawable({
+    @required this.x,
+    @required this.width,
+    @required this.bars,
+    this.collapsed,
+  }) :
+      assert(x != null),
+      assert(bars != null),
+      assert(width != null),
+      assert(bars != null);
 
   /// The x position of the bar.
   /// It should usually be between 0 and 1.
@@ -195,17 +194,6 @@ class BarStackDrawable implements MergeTweenable<BarStackDrawable> {
 
   /// The bar stack this stack collapses to when it disappears in an animation.
   final BarStackDrawable collapsed;
-
-  const BarStackDrawable({
-    @required this.x,
-    @required this.width,
-    @required this.bars,
-    this.collapsed,
-  }) :
-    assert(x != null),
-    assert(bars != null),
-    assert(width != null),
-    assert(bars != null);
 
   @override
   BarStackDrawable get empty => collapsed ?? collapse(this);
@@ -227,15 +215,25 @@ class BarStackDrawable implements MergeTweenable<BarStackDrawable> {
       bar.draw(stackArea);
     }
   }
+
+  /// The default implementation for collapsing a bar stack to nothing.
+  /// It retains it's x value but removes all bars and shrinks to 0 width.
+  ///
+  /// This can be overridden on a per-barstack basis with [collapsed].
+  static BarStackDrawable collapse(BarStackDrawable stack) => new BarStackDrawable(
+    x: stack.x,
+    width: 0.0,
+    bars: []
+  );
 }
 
 /// Lerp between two bar stacks.
 class _BarStackDrawableTween extends Tween<BarStackDrawable> {
-  final MergeTween<BarDrawable> _barsTween;
-
   _BarStackDrawableTween(BarStackDrawable begin, BarStackDrawable end) :
       _barsTween = new MergeTween(begin.bars, end.bars),
       super(begin: begin, end: end);
+
+  final MergeTween<BarDrawable> _barsTween;
 
   @override
   BarStackDrawable lerp(double t) {
@@ -250,19 +248,16 @@ class _BarStackDrawableTween extends Tween<BarStackDrawable> {
 /// A segment of a stacked bar.
 @immutable
 class BarDrawable implements MergeTweenable<BarDrawable> {
-  /// The default implementation for collapsing a bar to nothing. It collapses
-  /// to the original bar's stack base.
-  ///
-  /// This result be overridden on a per-bar basis with [collapsed].
-  static BarDrawable collapse(BarDrawable bar) => new BarDrawable(
-    base: bar.stackBase ?? bar.base,
-    stackBase: bar.stackBase,
-    value: 0.0,
-    paint: bar.paint,
-    paintGenerator: bar.paintGenerator,
-    widthFactor: bar.widthFactor,
-    xOffset: bar.xOffset,
-  );
+  const BarDrawable({
+    @required this.value,
+    @required this.base,
+    @required this.stackBase,
+    this.paint: const [const PaintOptions()],
+    this.paintGenerator,
+    this.widthFactor: 1.0,
+    this.xOffset: 0.0,
+    this.collapsed
+  });
 
   /// The base of the bar, usually between 0 and 1.
   /// A value of 0 means the bar starts at the base of the graph.
@@ -296,17 +291,6 @@ class BarDrawable implements MergeTweenable<BarDrawable> {
   /// The bar that this one collapses to when it disappears during an
   /// animation.
   final BarDrawable collapsed;
-
-  const BarDrawable({
-    @required this.value,
-    @required this.base,
-    @required this.stackBase,
-    this.paint: const [const PaintOptions()],
-    this.paintGenerator,
-    this.widthFactor: 1.0,
-    this.xOffset: 0.0,
-    this.collapsed
-  });
 
   BarDrawable copyWith({
     double value,
@@ -378,15 +362,29 @@ class BarDrawable implements MergeTweenable<BarDrawable> {
       barArea.paint(paint);
     }
   }
+
+  /// The default implementation for collapsing a bar to nothing. It collapses
+  /// to the original bar's stack base.
+  ///
+  /// This result be overridden on a per-bar basis with [collapsed].
+  static BarDrawable collapse(BarDrawable bar) => new BarDrawable(
+    base: bar.stackBase ?? bar.base,
+    stackBase: bar.stackBase,
+    value: 0.0,
+    paint: bar.paint,
+    paintGenerator: bar.paintGenerator,
+    widthFactor: bar.widthFactor,
+    xOffset: bar.xOffset,
+  );
 }
 
 /// Lerp between two bars.
 class _BarDrawableTween extends Tween<BarDrawable> {
-  final MergeTween<PaintOptions> _paintTween;
-
   _BarDrawableTween(BarDrawable begin, BarDrawable end) :
       this._paintTween = new MergeTween(begin.paint, end.paint),
       super(begin: begin, end: end);
+
+  final MergeTween<PaintOptions> _paintTween;
 
   @override
   BarDrawable lerp(double t) {
