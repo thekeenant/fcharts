@@ -93,7 +93,7 @@ class LineChart implements Chart {
         paint: point.paint,
         pointRadius: point.pointRadius
       );
-    }); 
+    });
 
     return new LineChartDrawable(
       points: pointDrawables.toList(),

@@ -10,3 +10,4 @@ export 'package:fcharts/decor/tick.dart';
 export 'package:fcharts/view/chart_view.dart';
 export 'package:fcharts/util/curves.dart';
 export 'package:fcharts/util/charts.dart';
+export 'package:fcharts/util/painting.dart';

@@ -174,7 +174,7 @@ class NotchTickLabeler implements TickLabeler {
   final PaintOptions paint;
 
   const NotchTickLabeler({
-    this.length: 8.0,
+    this.length: 5.0,
     this.paint: const PaintOptions.stroke(),
   });
 

@@ -5,6 +5,8 @@ import 'package:fcharts/util/merge_tween.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
+final _random = new math.Random();
+
 /// Generate paint options based on an area in which the paint will be applied.
 typedef List<PaintOptions> PaintGenerator(CanvasArea area);
 
@@ -28,7 +30,7 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
   const PaintOptions({
     this.color: Colors.black,
     this.strokeWidth: 1.0,
-    this.strokeCap: StrokeCap.butt,
+    this.strokeCap: StrokeCap.square,
     this.gradient,
     this.style: PaintingStyle.fill
   });
@@ -36,7 +38,7 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
   const PaintOptions.stroke({
     this.color: Colors.black,
     this.strokeWidth: 1.0,
-    this.strokeCap: StrokeCap.butt,
+    this.strokeCap: StrokeCap.square,
     this.gradient
   }) : this.style = PaintingStyle.stroke;
 
@@ -191,7 +193,9 @@ class CanvasArea {
 
   CanvasArea(this.canvas, this.rect) {
     // hehe
-    drawDebugCross();
+    // drawDebugCross(
+    //   color: Colors.red
+    // );
   }
 
   /// the width of the paint area
@@ -309,8 +313,8 @@ class CanvasArea {
 
   /// Draw an X pattern (for debugging).
   void drawDebugCross({Color color: Colors.red}) {
-    drawLine(Offset.zero, new Offset(size.width, size.height), new PaintOptions(color: color));
-    drawLine(new Offset(0.0, size.height), new Offset(size.width, 0.0), new PaintOptions(color: color));
+    drawLine(Offset.zero, new Offset(size.width, size.height), new PaintOptions.stroke(color: color));
+    drawLine(new Offset(0.0, size.height), new Offset(size.width, 0.0), new PaintOptions.stroke(color: color));
   }
 
   /// Construct a canvas area that resides somewhere within this canvas area.
