@@ -1,11 +1,11 @@
 import 'dart:math' as math;
 import 'dart:ui';
 
-import 'package:fcharts/line/drawable.dart';
-import 'package:fcharts/util/charts.dart';
-import 'package:fcharts/util/color_palette.dart';
-import 'package:fcharts/util/curves.dart';
-import 'package:fcharts/util/painting.dart';
+import 'package:fcharts/src/line/drawable.dart';
+import 'package:fcharts/src/util/chart.dart';
+import 'package:fcharts/src/util/color_palette.dart';
+import 'package:fcharts/src/util/curves.dart';
+import 'package:fcharts/src/util/painting.dart';
 import 'package:meta/meta.dart';
 
 class LineChart implements Chart {

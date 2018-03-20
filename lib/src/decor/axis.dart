@@ -1,6 +1,6 @@
-import 'package:fcharts/decor/tick.dart';
-import 'package:fcharts/util/merge_tween.dart';
-import 'package:fcharts/util/painting.dart';
+import 'package:fcharts/src/decor/tick.dart';
+import 'package:fcharts/src/util/merge_tween.dart';
+import 'package:fcharts/src/util/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -85,7 +85,8 @@ class ChartAxis implements MergeTweenable<ChartAxis> {
         break;
     }
 
-    fullArea.drawLine(lineStart, lineEnd, paint);
+    if (paint != null)
+      fullArea.drawLine(lineStart, lineEnd, paint);
 
     CanvasArea axisArea = fullArea.child(axisRect);
 
@@ -120,7 +121,6 @@ class ChartAxis implements MergeTweenable<ChartAxis> {
     }
   }
 
-  // TODO: implement empty
   @override
   ChartAxis get empty => new ChartAxis(
     position: position,

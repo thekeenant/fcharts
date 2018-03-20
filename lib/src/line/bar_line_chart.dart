@@ -1,10 +1,11 @@
-import 'package:fcharts/bar/bar_chart.dart';
-import 'package:fcharts/bar/bar_graph.dart';
-import 'package:fcharts/bar/histogram.dart';
-import 'package:fcharts/line/drawable.dart';
-import 'package:fcharts/util/charts.dart';
-import 'package:fcharts/util/curves.dart';
-import 'package:fcharts/util/painting.dart';
+import 'package:fcharts/src/bar/bar_chart.dart';
+import 'package:fcharts/src/bar/bar_graph.dart';
+import 'package:fcharts/src/bar/histogram.dart';
+import 'package:fcharts/src/line/drawable.dart';
+import 'package:fcharts/src/util/chart.dart';
+import 'package:fcharts/src/util/curves.dart';
+import 'package:fcharts/src/util/merge_tween.dart';
+import 'package:fcharts/src/util/painting.dart';
 import 'package:meta/meta.dart';
 
 /// A special type of line charh which aligns itself with the x values

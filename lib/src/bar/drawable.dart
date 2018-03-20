@@ -1,14 +1,15 @@
 import 'dart:math' as math;
 import 'dart:ui' show lerpDouble;
 
-import 'package:fcharts/util/color_palette.dart';
-import 'package:fcharts/util/painting.dart';
-import 'package:fcharts/util/merge_tween.dart';
+import 'package:fcharts/src/util/chart.dart';
+import 'package:fcharts/src/util/color_palette.dart';
+import 'package:fcharts/src/util/merge_tween.dart';
+import 'package:fcharts/src/util/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 /// A bar graph is a set of bar groups. Not to be confused with a bar chart,
-/// which is strictly categorical data. A bar graph in this library's context
+/// which is strictly categorical data. A bar graph in fchart
 /// is any chart/graph represented using rectangles along axes (histogram, bar
 /// chart, population pyramid, etc.).
 @immutable
@@ -108,7 +109,7 @@ class BarGraphDrawable implements ChartDrawable<BarGraphDrawable> {
 }
 
 /// Lerp between two bar graphs.
-class _BarGraphDrawableTween extends ChartDrawableTween<BarGraphDrawable> {
+class _BarGraphDrawableTween extends Tween<BarGraphDrawable> {
   final MergeTween<BarGroupDrawable> _groupsTween;
 
   _BarGraphDrawableTween(BarGraphDrawable begin, BarGraphDrawable end) :

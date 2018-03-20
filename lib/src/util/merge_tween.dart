@@ -1,12 +1,18 @@
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 
+
+/// Collapse [object] into nothing.
+typedef T Collapser<T>(T object);
+
+/// An object which can be tweened as part of a list.
 abstract class MergeTweenable<T> {
   T get empty;
 
   Tween<T> tweenTo(T other);
 }
 
+/// Intelligently merges two lists of tweenable objects.
 class MergeTween<T extends MergeTweenable<T>> extends Tween<List<T>> {
   final _tweens = <Tween<T>>[];
 

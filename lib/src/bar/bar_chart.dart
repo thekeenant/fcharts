@@ -1,10 +1,10 @@
 import 'dart:math' as math;
 
-import 'package:fcharts/bar/bar_graph.dart';
-import 'package:fcharts/bar/drawable.dart';
-import 'package:fcharts/util/charts.dart';
-import 'package:fcharts/util/color_palette.dart';
-import 'package:fcharts/util/painting.dart';
+import 'package:fcharts/src/bar/bar_graph.dart';
+import 'package:fcharts/src/bar/drawable.dart';
+import 'package:fcharts/src/util/chart.dart';
+import 'package:fcharts/src/util/color_palette.dart';
+import 'package:fcharts/src/util/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 

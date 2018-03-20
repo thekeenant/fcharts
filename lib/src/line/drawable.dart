@@ -1,9 +1,10 @@
 import 'dart:math' as math;
 import 'dart:ui' show lerpDouble;
 
-import 'package:fcharts/util/curves.dart';
-import 'package:fcharts/util/painting.dart';
-import 'package:fcharts/util/merge_tween.dart';
+import 'package:fcharts/src/util/chart.dart';
+import 'package:fcharts/src/util/curves.dart';
+import 'package:fcharts/src/util/merge_tween.dart';
+import 'package:fcharts/src/util/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -186,7 +187,7 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable> {
 }
 
 /// Lerp between two line charts.
-class _LineChartDrawableTween extends ChartDrawableTween<LineChartDrawable> {
+class _LineChartDrawableTween extends Tween<LineChartDrawable> {
   final MergeTween<LinePointDrawable> _pointsTween;
 
   _LineChartDrawableTween(LineChartDrawable begin, LineChartDrawable end) :

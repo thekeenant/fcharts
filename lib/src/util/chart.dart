@@ -1,16 +1,21 @@
 import 'dart:math' as math;
 import 'dart:ui' show lerpDouble;
 
-import 'package:fcharts/util/painting.dart';
+import 'package:fcharts/src/util/merge_tween.dart';
+import 'package:fcharts/src/util/painting.dart';
 import 'package:meta/meta.dart';
 
-/// Collapse [object] into nothing.
-typedef T Collapser<T>(T object);
-
+/// The overarching
 abstract class Chart {
-  /// Create a drawable chart from this chart, something that can be drawn
-  /// within a [CanvasArea].
+  /// Create a [ChartDrawable] from this chart
   ChartDrawable createDrawable();
+}
+
+/// A chart which can be drawn within a [CanvasArea].
+abstract class ChartDrawable<T extends ChartDrawable<T>> extends MergeTweenable<T> {
+  /// Draw the chart within a [CanvasArea]. It should scale according
+  /// to the width and height of the area.
+  void draw(CanvasArea area);
 }
 
 /// The rotation of a chart.

@@ -1,6 +1,6 @@
-import 'package:fcharts/util/charts.dart';
-import 'package:fcharts/decor/decor.dart';
-import 'package:fcharts/util/painting.dart';
+import 'package:fcharts/src/decor/decor.dart';
+import 'package:fcharts/src/util/chart.dart';
+import 'package:fcharts/src/util/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:quiver/time.dart';

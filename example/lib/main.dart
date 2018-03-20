@@ -21,7 +21,7 @@ class _MyAppState extends State<MyApp> {
 
     final xAxis = new ChartAxis(
       position: AxisPosition.bottom,
-      paint: new PaintOptions.stroke(strokeWidth: 1.0),
+      paint: null,
       ticks: new List.generate(histo.bins.length + 1, (i) {
         final value = i / histo.bins.length;
         return new AxisTick(
@@ -29,7 +29,7 @@ class _MyAppState extends State<MyApp> {
           width: 1 / histo.bins.length,
           labelers: [
             new TextTickLabeler(text: ((value * rando).round() * 2).toStringAsFixed(0)),
-            new NotchTickLabeler(paint: new PaintOptions.stroke(strokeWidth: 1.0))
+            new NotchTickLabeler()
           ],
         );
       })
@@ -37,7 +37,7 @@ class _MyAppState extends State<MyApp> {
 
     final yAxis = new ChartAxis(
       position: AxisPosition.left,
-      paint: new PaintOptions.stroke(strokeWidth: 1.0),
+      paint: null,
       ticks: new List.generate(yTicks + 1, (i) {
         final value = i / yTicks;
         return new AxisTick(
@@ -45,7 +45,7 @@ class _MyAppState extends State<MyApp> {
           width: (1 / yTicks),
           labelers: [
             new TextTickLabeler(text: value.toStringAsFixed(1)),
-            new NotchTickLabeler(paint: new PaintOptions.stroke(strokeWidth: 1.0))
+            new NotchTickLabeler()
           ]
         );
       })

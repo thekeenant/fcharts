@@ -1,8 +1,8 @@
 import 'dart:ui' show lerpDouble;
 
-import 'package:fcharts/decor/axis.dart';
-import 'package:fcharts/util/merge_tween.dart';
-import 'package:fcharts/util/painting.dart';
+import 'package:fcharts/src/decor/axis.dart';
+import 'package:fcharts/src/util/merge_tween.dart';
+import 'package:fcharts/src/util/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
