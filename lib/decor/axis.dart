@@ -4,14 +4,22 @@ import 'package:fcharts/util/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-
+/// A side of the chart/a possible position of a [ChartAxis].
 enum AxisPosition {
+  /// The top of the chart.
   top,
+
+  /// The left of the chart (y-axis).
   left,
+
+  /// The right of the chart.
   right,
+
+  /// The bottom of the chart (x-axis).
   bottom
 }
 
+/// An axis of a [Chart].
 class ChartAxis implements MergeTweenable<ChartAxis> {
   final List<AxisTick> ticks;
   final AxisPosition position;

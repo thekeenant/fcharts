@@ -1,13 +1,9 @@
-import 'dart:ui' show lerpDouble;
-
 import 'package:fcharts/decor/axis.dart';
-import 'package:fcharts/decor/tick.dart';
-import 'package:fcharts/util/charts.dart';
 import 'package:fcharts/util/painting.dart';
 import 'package:fcharts/util/merge_tween.dart';
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 
+/// Deccorations to apply to a [Chart].
 class ChartDecor {
   final List<ChartAxis> axes;
   final Legend legend;
@@ -51,5 +47,12 @@ class ChartDecorTween extends Tween<ChartDecor> {
 
 /// A legend.
 class Legend {
+  final List<LegendItem> items;
+
+  Legend({this.items});
   // Todo
+}
+
+class LegendItem {
+
 }
