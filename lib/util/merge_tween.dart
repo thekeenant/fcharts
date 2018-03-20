@@ -1,0 +1,40 @@
+import 'package:flutter/animation.dart';
+import 'package:flutter/material.dart';
+
+abstract class MergeTweenable<T> {
+  T get empty;
+
+  Tween<T> tweenTo(T other);
+}
+
+class MergeTween<T extends MergeTweenable<T>> extends Tween<List<T>> {
+  final _tweens = <Tween<T>>[];
+
+  MergeTween(List<T> begin, List<T> end) : super(begin: begin, end: end) {
+    final bMax = begin.length;
+    final eMax = end.length;
+    var b = 0;
+    var e = 0;
+    while (b + e < bMax + eMax) {
+      if (b < bMax && (e == eMax || b < e)) {
+        _tweens.add(begin[b].tweenTo(begin[b].empty));
+        b++;
+      } else if (e < eMax && (b == bMax || e < b)) {
+        _tweens.add(end[e].empty.tweenTo(end[e]));
+        e++;
+      } else {
+        _tweens.add(begin[b].tweenTo(end[e]));
+        b++;
+        e++;
+      }
+    }
+  }
+
+  @override
+  List<T> lerp(double t) {
+    return new List.generate(
+      _tweens.length,
+      (i) => _tweens[i].lerp(t),
+    );
+  }
+}
