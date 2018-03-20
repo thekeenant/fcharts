@@ -61,6 +61,7 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable> {
   List<Offset> _curvePoints(List<Offset> points) {
     if (curve == null)
       return points;
+
     return curve.generate(points);
   }
 

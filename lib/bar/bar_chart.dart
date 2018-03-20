@@ -22,7 +22,7 @@ class BarChart implements BarGraph {
     var random = new math.Random();
 
     final groupCount = random.nextInt(3) + 2;
-    final stackCount = random.nextInt(2) + 1;
+    final stackCount = random.nextInt(2) + 2;
 
     final groups = new List.generate(groupCount, (i) {
       final stacks = new List.generate(stackCount, (j) {

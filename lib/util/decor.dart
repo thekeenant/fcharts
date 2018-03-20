@@ -29,7 +29,7 @@ class ChartDecor {
   ChartDecor({
     this.axes: const [],
     this.legend
-  });
+  }) : assert(axes != null);
 
   void draw(CanvasArea fullArea, CanvasArea chartArea) {
     // organize axes by their position
@@ -109,8 +109,8 @@ class SimpleTickLabeler implements TickLabeler {
         break;
     }
 
-    tickArea.drawLine(lineStart, lineEnd, new PaintOptions.stroke(
-      color: Colors.black.withOpacity(opacity)
+    tickArea.drawLine(lineStart, lineEnd, notchPaint.copyWith(
+      color: (notchPaint.color ?? Colors.black).withOpacity(opacity)
     ));
 
     tickArea.drawText(this.offset + offset, text,
@@ -119,7 +119,7 @@ class SimpleTickLabeler implements TickLabeler {
         minWidth: minWidth,
         textAlign: align,
         style: textStyle.copyWith(
-          color: textStyle.color.withOpacity(opacity)
+          color: (textStyle.color ?? Colors.black).withOpacity(opacity)
         )
       ),
       shift: shift,

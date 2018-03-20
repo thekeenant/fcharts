@@ -1,10 +1,7 @@
 # fcharts
 
-A Flutter chart library.
+A work-in-progress chart library for [Flutter](https://flutter.io). Inspired by [Mikkel Ravn's tutorial](https://medium.com/flutter-io/zero-to-one-with-flutter-43b13fd7b354) on Flutter widgets and animations.
 
-## Getting Started
+## Demos
 
-For help getting started with Flutter, view our online
-[documentation](https://flutter.io/).
-
-For help on editing plugin code, view the [documentation](https://flutter.io/platform-plugins/#edit-code).
+<img src="https://i.imgur.com/ZSVXaJY.gif" width="250"> <img src="https://i.imgur.com/Xggb9p4.gif" width="250"> <img src="https://i.imgur.com/rBq2r8Q.gif" width="250">

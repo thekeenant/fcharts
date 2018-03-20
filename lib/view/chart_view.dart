@@ -10,9 +10,16 @@ class _ChartPainter extends CustomPainter {
   final List<Animation<ChartDrawable>> charts;
   final Animation<ChartDecor> decor;
   final ChartRotation rotation;
+  final EdgeInsets chartPadding;
 
-  _ChartPainter(this.controller, this.charts, this.decor, this.rotation) :
-    super(repaint: controller);
+  _ChartPainter(
+    this.controller,
+    this.charts,
+    this.decor,
+    this.rotation,
+    this.chartPadding,
+  ) :
+      super(repaint: controller);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -42,7 +49,7 @@ class _ChartPainter extends CustomPainter {
     var chartArea = canvasArea;
 
     if (decor != null)
-      chartArea = chartArea.contract(new EdgeInsets.only(left: 40.0, bottom: 25.0, right: 15.0, top: 10.0));
+      chartArea = chartArea.contract(chartPadding);
 
     for (final animation in charts) {
       final chart = animation.value;
@@ -61,11 +68,13 @@ class ChartView extends StatefulWidget {
   final List<Chart> charts;
   final ChartDecor decor;
   final ChartRotation rotation;
+  final EdgeInsets chartPadding;
 
   ChartView({
     @required this.charts,
     this.decor,
-    this.rotation: ChartRotation.none
+    this.rotation: ChartRotation.none,
+    this.chartPadding: const EdgeInsets.all(0.0)
   });
 
   @override
@@ -84,8 +93,13 @@ class _ChartViewState extends State<ChartView> with TickerProviderStateMixin {
     super.didUpdateWidget(oldWidget);
 
     var decor;
-    if (_painter.decor != null)
-      decor = new ChartDecorTween(_painter.decor.value, widget.decor).animate(curve);
+    if (widget.decor != null) {
+      var fromDecor = widget.decor;
+      if (_painter.decor != null)
+        fromDecor = _painter.decor.value;
+
+      decor = new ChartDecorTween(fromDecor, widget.decor).animate(curve);
+    }
 
     final charts = <Animation<ChartDrawable>>[];
     final previousAnimations = _painter.charts;
@@ -115,7 +129,7 @@ class _ChartViewState extends State<ChartView> with TickerProviderStateMixin {
     controller.forward(from: 0.0);
 
     setState(() {
-      _painter = new _ChartPainter(controller, charts, decor, widget.rotation);
+      _painter = new _ChartPainter(controller, charts, decor, widget.rotation, widget.chartPadding);
     });
   }
 
@@ -146,7 +160,7 @@ class _ChartViewState extends State<ChartView> with TickerProviderStateMixin {
       charts.add(animation as Animation<ChartDrawable>);
     }
 
-    _painter = new _ChartPainter(controller, charts, decor, widget.rotation);
+    _painter = new _ChartPainter(controller, charts, decor, widget.rotation, widget.chartPadding);
     controller.forward(from: 0.0);
   }
 

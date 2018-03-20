@@ -20,15 +20,31 @@ class LineChart implements Chart {
     @required this.range,
     this.linePaint: const PaintOptions.stroke(),
     this.fillPaint,
-    this.curve: const CardinalSpline(),
+    this.curve: const MonotoneCurve(),
   });
+
+  LineChart copyWith({
+    List<LinePoint> points,
+    Range range,
+    PaintOptions linePaint,
+    PaintOptions fillPaint,
+    LineCurveFunction curve
+  }) {
+    return new LineChart(
+      points: points ?? this.points,
+      range: range ?? this.range,
+      linePaint: linePaint ?? this.linePaint,
+      fillPaint: fillPaint ?? this.fillPaint,
+      curve: curve ?? this.curve
+    );
+  }
   
   factory LineChart.random(final int pointCount) {
     final random = new math.Random();
 
     final pointDistance = 1 / (pointCount - 1);
 
-    var nextValue = 0.5;
+    var nextValue = random.nextDouble() * 0.2 - 0.1 + 0.5;
 
     final baseColor = ColorPalette.primary.random(random);
     final monochrome = new ColorPalette.monochrome(baseColor, 4);
@@ -78,6 +94,8 @@ class LineChart implements Chart {
         pointRadius: point.pointRadius
       );
     });
+
+    print(curve);
 
     return new LineChartDrawable(
       points: pointDrawables.toList(),

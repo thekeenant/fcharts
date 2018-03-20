@@ -18,9 +18,8 @@ class Histogram implements BarGraph {
     this.range,
   });
 
-  factory Histogram.random() {
+  factory Histogram.random(int binCount) {
     final random = new math.Random();
-    final binCount = random.nextInt(10) + 5;
     final range = new Range(0.0, random.nextDouble() * 100);
 
     final baseColor = ColorPalette.primary.random(random);

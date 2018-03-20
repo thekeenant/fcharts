@@ -7,6 +7,25 @@ abstract class LineCurveFunction {
   List<Offset> generate(List<Offset> points);
 }
 
+/// Some default curves without explicit configuration.
+class LineCurves {
+  static const linear = const Linear._();
+
+  static const cardinalSpline = const CardinalSpline();
+
+  static const monotone = const MonotoneCurve();
+}
+
+/// Use Curves.linear
+class Linear implements LineCurveFunction {
+  const Linear._();
+
+  @override
+  List<Offset> generate(List<Offset> points) {
+    return points;
+  }
+}
+
 @immutable
 class CardinalSpline implements LineCurveFunction {
   final double tension;

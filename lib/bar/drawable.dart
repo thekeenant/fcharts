@@ -100,7 +100,13 @@ class BarGraphDrawable implements ChartDrawable<BarGraphDrawable> {
 
   @override
   BarGraphDrawable get empty => new BarGraphDrawable(
-    groups: groups
+    groups: groups.map((group) {
+      return new BarGroupDrawable(
+        stacks: group.stacks.map((stack) {
+          return stack.empty;
+        }).toList()
+      );
+    }).toList()
   );
 }
 
