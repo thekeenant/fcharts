@@ -92,8 +92,8 @@ class BarGraphDrawable implements ChartDrawable<BarGraphDrawable> {
   }
 
   @override
-  BarGraphDrawableTween tweenTo(BarGraphDrawable end) =>
-    new BarGraphDrawableTween(this, end);
+  _BarGraphDrawableTween tweenTo(BarGraphDrawable end) =>
+    new _BarGraphDrawableTween(this, end);
 
   @override
   BarGraphDrawable get empty => new BarGraphDrawable(
@@ -108,10 +108,10 @@ class BarGraphDrawable implements ChartDrawable<BarGraphDrawable> {
 }
 
 /// Lerp between two bar graphs.
-class BarGraphDrawableTween extends ChartDrawableTween<BarGraphDrawable> {
+class _BarGraphDrawableTween extends ChartDrawableTween<BarGraphDrawable> {
   final MergeTween<BarGroupDrawable> _groupsTween;
 
-  BarGraphDrawableTween(BarGraphDrawable begin, BarGraphDrawable end) :
+  _BarGraphDrawableTween(BarGraphDrawable begin, BarGraphDrawable end) :
       _groupsTween = new MergeTween(begin.groups, end.groups),
       super(begin: begin, end: end);
 
@@ -138,7 +138,7 @@ class BarGroupDrawable implements MergeTweenable<BarGroupDrawable> {
 
   @override
   Tween<BarGroupDrawable> tweenTo(BarGroupDrawable other) {
-    return new BarGroupDrawableTween(this, other);
+    return new _BarGroupDrawableTween(this, other);
   }
 
   void draw(CanvasArea graphArea) {
@@ -149,10 +149,10 @@ class BarGroupDrawable implements MergeTweenable<BarGroupDrawable> {
 }
 
 /// Lerp between two bar groups.
-class BarGroupDrawableTween extends Tween<BarGroupDrawable> {
+class _BarGroupDrawableTween extends Tween<BarGroupDrawable> {
   final MergeTween<BarStackDrawable> _stacksTween;
 
-  BarGroupDrawableTween(
+  _BarGroupDrawableTween(
     BarGroupDrawable begin,
     BarGroupDrawable end) :
       this._stacksTween = new MergeTween(begin.stacks, end.stacks),
@@ -210,7 +210,7 @@ class BarStackDrawable implements MergeTweenable<BarStackDrawable> {
   BarStackDrawable get empty => collapsed ?? collapse(this);
 
   @override
-  Tween<BarStackDrawable> tweenTo(BarStackDrawable other) => new BarStackDrawableTween(this, other);
+  Tween<BarStackDrawable> tweenTo(BarStackDrawable other) => new _BarStackDrawableTween(this, other);
 
   void draw(CanvasArea chartArea) {
     for (final bar in bars) {
@@ -229,10 +229,10 @@ class BarStackDrawable implements MergeTweenable<BarStackDrawable> {
 }
 
 /// Lerp between two bar stacks.
-class BarStackDrawableTween extends Tween<BarStackDrawable> {
+class _BarStackDrawableTween extends Tween<BarStackDrawable> {
   final MergeTween<BarDrawable> _barsTween;
 
-  BarStackDrawableTween(BarStackDrawable begin, BarStackDrawable end) :
+  _BarStackDrawableTween(BarStackDrawable begin, BarStackDrawable end) :
       _barsTween = new MergeTween(begin.bars, end.bars),
       super(begin: begin, end: end);
 
@@ -343,7 +343,7 @@ class BarDrawable implements MergeTweenable<BarDrawable> {
 
   @override
   Tween<BarDrawable> tweenTo(BarDrawable other) {
-    return new BarDrawableTween(this, other);
+    return new _BarDrawableTween(this, other);
   }
 
   void draw(CanvasArea stackArea) {
@@ -380,10 +380,10 @@ class BarDrawable implements MergeTweenable<BarDrawable> {
 }
 
 /// Lerp between two bars.
-class BarDrawableTween extends Tween<BarDrawable> {
+class _BarDrawableTween extends Tween<BarDrawable> {
   final MergeTween<PaintOptions> _paintTween;
 
-  BarDrawableTween(BarDrawable begin, BarDrawable end) :
+  _BarDrawableTween(BarDrawable begin, BarDrawable end) :
       this._paintTween = new MergeTween(begin.paint, end.paint),
       super(begin: begin, end: end);
 

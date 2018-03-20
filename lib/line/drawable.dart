@@ -172,8 +172,8 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable> {
   }
 
   @override
-  LineChartDrawableTween tweenTo(LineChartDrawable end) =>
-    new LineChartDrawableTween(this, end);
+  _LineChartDrawableTween tweenTo(LineChartDrawable end) =>
+    new _LineChartDrawableTween(this, end);
 
   @override
   LineChartDrawable get empty => new LineChartDrawable(
@@ -186,10 +186,10 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable> {
 }
 
 /// Lerp between two line charts.
-class LineChartDrawableTween extends ChartDrawableTween<LineChartDrawable> {
+class _LineChartDrawableTween extends ChartDrawableTween<LineChartDrawable> {
   final MergeTween<LinePointDrawable> _pointsTween;
 
-  LineChartDrawableTween(LineChartDrawable begin, LineChartDrawable end) :
+  _LineChartDrawableTween(LineChartDrawable begin, LineChartDrawable end) :
     _pointsTween = new MergeTween(begin.points, end.points),
     super(begin: begin, end: end);
 
@@ -285,15 +285,15 @@ class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
 
   @override
   Tween<LinePointDrawable> tweenTo(LinePointDrawable other) {
-    return new LinePointDrawableTween(this, other);
+    return new _LinePointDrawableTween(this, other);
   }
 }
 
 /// Lerp between two line points.
-class LinePointDrawableTween extends Tween<LinePointDrawable> {
+class _LinePointDrawableTween extends Tween<LinePointDrawable> {
   final MergeTween<PaintOptions> _paintsTween;
 
-  LinePointDrawableTween(LinePointDrawable begin, LinePointDrawable end) :
+  _LinePointDrawableTween(LinePointDrawable begin, LinePointDrawable end) :
     _paintsTween = new MergeTween(begin.paint, end.paint),
     super(begin: begin, end: end);
 

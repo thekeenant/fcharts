@@ -9,8 +9,8 @@ import 'package:meta/meta.dart';
 typedef List<PaintOptions> PaintGenerator(CanvasArea area);
 
 /// Lerp between tow paint options.
-class PaintOptionsTween extends Tween<PaintOptions> {
-  PaintOptionsTween(PaintOptions begin, PaintOptions end) : super(begin: begin, end: end);
+class _PaintOptionsTween extends Tween<PaintOptions> {
+  _PaintOptionsTween(PaintOptions begin, PaintOptions end) : super(begin: begin, end: end);
 
   @override
   PaintOptions lerp(double t) => PaintOptions.lerp(begin, end, t);
@@ -119,7 +119,7 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
 
   @override
   Tween<PaintOptions> tweenTo(PaintOptions other) =>
-    new PaintOptionsTween(this, other);
+    new _PaintOptionsTween(this, other);
 }
 
 /// Options for conveniently building a [TextPainter].

@@ -24,7 +24,6 @@ class _MyAppState extends State<MyApp> {
         axes: [
           new ChartAxis(
             position: AxisPosition.left,
-            range: new Range(0.0, 1.0),
             ticks: [
               new AxisTick(
                 value: 0.5,
@@ -32,7 +31,8 @@ class _MyAppState extends State<MyApp> {
                 labelers: [
                   new TextTickLabeler(
                     text: 'Test',
-                  )
+                  ),
+                  new NotchTickLabeler()
                 ]
               )
             ]
