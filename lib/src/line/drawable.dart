@@ -1,12 +1,15 @@
 import 'dart:math' as math;
 import 'dart:ui' show lerpDouble;
 
-import 'package:fcharts/src/chart.dart';
+import 'package:fcharts/src/chart_data.dart';
+import 'package:fcharts/src/chart_drawable.dart';
 import 'package:fcharts/src/line/curves.dart';
 import 'package:fcharts/src/utils/merge_tween.dart';
 import 'package:fcharts/src/utils/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
+
+const clipPointPadding = 5.0;
 
 /// A line chart is a set of points with (x, y) coordinates. A line
 /// can connect the points and an area can be filled beneath the line.
@@ -14,9 +17,9 @@ import 'package:meta/meta.dart';
 class LineChartDrawable implements ChartDrawable<LineChartDrawable> {
   LineChartDrawable({
     @required this.points,
-    this.linePaint: const PaintOptions.stroke(color: Colors.black),
-    this.fillPaint,
-    this.curve: LineCurves.none,
+    this.stroke: const PaintOptions.stroke(color: Colors.black),
+    this.fill,
+    this.curve: LineCurves.linear,
     this.bridgeNulls: false
   }) : assert(bridgeNulls != null);
 
@@ -25,14 +28,14 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable> {
 
   /// Paint to use to draw the line. Be sure to use [PaintingStyle.stroke].
   /// You can do this easily with [PaintOptions.stroke].
-  final PaintOptions linePaint;
+  final PaintOptions stroke;
 
   /// Paint to use to fill the area beneath the line.
-  final PaintOptions fillPaint;
+  final PaintOptions fill;
 
   /// The method in which to interpolate the line in between points.
   /// See [Curves] for some default choices.
-  final LineCurveGenerator curve;
+  final LineCurve curve;
 
   /// When true, the line is a continuous, single segment even if nulls
   /// are present. The gap is bridged between a null value.
@@ -40,10 +43,15 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable> {
   /// When false (default), null values create a break in the graph.
   final bool bridgeNulls;
 
-  void _moveToLineTo(Path path, Offset point, {bool moveTo: false}) {
+  void _moveToLineTo(CanvasArea bounds, Path path, Offset point, {bool moveTo: false}) {
+    var bounded = bounds.boundPoint(point);
+
+    // todo? remove this
+    bounded = point;
+
     if (moveTo)
-      path.moveTo(point.dx, point.dy);
-    path.lineTo(point.dx, point.dy);
+      path.moveTo(bounded.dx, bounded.dy);
+    path.lineTo(bounded.dx, bounded.dy);
   }
 
   /// get the top-, right-most point
@@ -133,8 +141,8 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable> {
         topRight = _topRight(topRight, loc);
 
         // draw line to this point
-        _moveToLineTo(linePath, loc, moveTo: isFirst);
-        _moveToLineTo(fillPath, loc);
+        _moveToLineTo(area, linePath, loc, moveTo: isFirst);
+        _moveToLineTo(area, fillPath, loc);
 
         isFirst = false;
       }
@@ -148,27 +156,30 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable> {
       // finish off the fill area
       fillPath.lineTo(lineRect.bottomRight.dx, lineRect.bottomRight.dy);
 
-      // draw the fill (beneath the line)
-      if (fillPaint != null)
-        area.drawPath(fillPath, fillPaint, rect: lineRect);
+      area.clipDrawing(() {
+        // draw the fill (beneath the line)
+        if (fill != null)
+          area.drawPath(fillPath, fill, rect: lineRect);
+        // draw the line
+        if (stroke != null)
+          area.drawPath(linePath, stroke, rect: lineRect);
+      });
 
-      // draw the line
-      if (linePaint != null)
-        area.drawPath(linePath, linePaint, rect: lineRect);
+      area.clipDrawing(() {
+        // draw points
+        for (final entry in pointToLoc.entries) {
+          final point = entry.key;
+          final loc = entry.value;
+          final r = point.pointRadius;
 
-      // draw points
-      for (final entry in pointToLoc.entries) {
-        final point = entry.key;
-        final loc = entry.value;
-        final r = point.pointRadius;
+          // create rectangle for arc
+          final pointSquare = loc.translate(-r, -r) & new Size.fromRadius(r);
+          final pointArea = area.child(pointSquare);
 
-        // create rectangle for arc
-        final pointSquare = loc.translate(-r, -r) & new Size.fromRadius(r);
-        final pointArea = area.child(pointSquare);
-
-        // draw point given its arc rectangle
-        point.draw(pointArea);
-      }
+          // draw point given its arc rectangle
+          point.draw(pointArea);
+        }
+      }, new EdgeInsets.all(clipPointPadding));
     }
   }
 
@@ -180,8 +191,8 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable> {
   LineChartDrawable get empty => new LineChartDrawable(
     points: points.map((point) => point.copyWith(value: 0.0)).toList(),
     curve: curve,
-    linePaint: linePaint,
-    fillPaint: fillPaint,
+    stroke: stroke,
+    fill: fill,
     bridgeNulls: bridgeNulls
   );
 }
@@ -197,8 +208,8 @@ class _LineChartDrawableTween extends Tween<LineChartDrawable> {
   @override
   LineChartDrawable lerp(double t) => new LineChartDrawable(
     points: _pointsTween.lerp(t),
-    linePaint: PaintOptions.lerp(begin.linePaint, end.linePaint, t),
-    fillPaint: PaintOptions.lerp(begin.fillPaint, end.fillPaint, t),
+    stroke: PaintOptions.lerp(begin.stroke, end.stroke, t),
+    fill: PaintOptions.lerp(begin.fill, end.fill, t),
     curve: t < 0.5 ? begin.curve : end.curve,
     bridgeNulls: t < 0.5 ? begin.bridgeNulls : end.bridgeNulls
   );

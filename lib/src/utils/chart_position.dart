@@ -1,5 +1,5 @@
 /// A side.
-enum Side {
+enum ChartPosition {
   /// The top.
   top,
 

@@ -1,7 +1,8 @@
 import 'dart:math' as math;
 import 'dart:ui' show lerpDouble;
 
-import 'package:fcharts/src/chart.dart';
+import 'package:fcharts/src/chart_data.dart';
+import 'package:fcharts/src/chart_drawable.dart';
 import 'package:fcharts/src/utils/color_palette.dart';
 import 'package:fcharts/src/utils/merge_tween.dart';
 import 'package:fcharts/src/utils/painting.dart';

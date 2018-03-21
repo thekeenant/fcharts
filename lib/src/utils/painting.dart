@@ -6,14 +6,22 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 /// An area on a canvas to paint.
+@immutable
 class CanvasArea {
-  CanvasArea(this.canvas, this.rect);
+  const CanvasArea._(this.canvas, this.rect, [this.isCanvas = false]);
+
+  CanvasArea.fromCanvas(this.canvas, Size size) :
+    rect = Offset.zero & size,
+    isCanvas = true;
 
   /// the canvas this paint area resides
   final Canvas canvas;
 
   /// the painting area relative to the canvas (aka absolute)
   final Rect rect;
+
+  /// true if this canvas area is the actual whole canvas
+  final bool isCanvas;
 
   /// the width of the paint area
   double get width => size.width;
@@ -26,7 +34,7 @@ class CanvasArea {
 
   /// Contract this canvas area inwards by a given [delta].
   CanvasArea contract(EdgeInsets delta) {
-    return new CanvasArea(canvas, new Rect.fromLTWH(
+    return new CanvasArea._(canvas, new Rect.fromLTWH(
       rect.left + delta.left,
       rect.top + delta.top,
       rect.width - delta.left - delta.right,
@@ -55,6 +63,34 @@ class CanvasArea {
     drawRect(Offset.zero & size, paint);
   }
 
+  /// Construct a canvas area that resides somewhere within this canvas area.
+  CanvasArea child(Rect child) {
+    final bounded = isCanvas ? boundRect(child) : child;
+    final offsetRect = bounded.shift(rect.topLeft);
+    return new CanvasArea._(canvas, offsetRect);
+  }
+
+  /// Clips the canvas to this canvas area for the operations that exist
+  /// within the [drawing] callback.
+  void clipDrawing(VoidCallback drawing, [EdgeInsets padding]) {
+    canvas.save();
+    canvas.clipRect(padding == null ? rect : expand(padding).rect);
+    drawing();
+    canvas.restore();
+  }
+
+  /// Force a point into this area's bounds.
+  Offset boundPoint(Offset p) => new Offset(
+    p.dx.clamp(0.0, width),
+    p.dy.clamp(0.0, height)
+  );
+
+  /// Force a rectangle into this area's bounds.
+  Rect boundRect(Rect rect) => new Rect.fromPoints(
+    boundPoint(rect.topLeft),
+    boundPoint(rect.bottomRight)
+  );
+
   /// Draw an arc within a rectangle.
   void drawArc(Rect arcArea, double startAngle, double sweepAngle, PaintOptions paint) {
     _performDraw(() {
@@ -70,17 +106,26 @@ class CanvasArea {
 
   /// Draw a rectangle.
   void drawRect(Rect rect, PaintOptions paint) {
-    _performDraw(() => canvas.drawRect(rect, paint.build(rect: rect)));
+    _performDraw(() => 
+      canvas.drawRect(rect, paint.build(rect: rect))
+    );
   }
 
   /// Draw a path.
+  /// 
+  /// Warning: Make sure the path is within the bounds of this chart area
+  /// by using [boundPoint]!
   void drawPath(Path path, PaintOptions paint, {Rect rect}) {
-    _performDraw(() => canvas.drawPath(path, paint.build(rect: rect)));
+    _performDraw(() => 
+      canvas.drawPath(path, paint.build(rect: rect))
+    );
   }
 
   /// Draw a line.
   void drawLine(Offset p1, Offset p2, PaintOptions paint) {
-    _performDraw(() => canvas.drawLine(p1, p2, paint.build()));
+    _performDraw(() => 
+      canvas.drawLine(p1, p2, paint.build())
+    );
   }
 
   /// Draw text.
@@ -132,12 +177,6 @@ class CanvasArea {
   void drawDebugCross({Color color: Colors.red}) {
     drawLine(Offset.zero, new Offset(size.width, size.height), new PaintOptions.stroke(color: color));
     drawLine(new Offset(0.0, size.height), new Offset(size.width, 0.0), new PaintOptions.stroke(color: color));
-  }
-
-  /// Construct a canvas area that resides somewhere within this canvas area.
-  CanvasArea child(Rect child) {
-    final offsetRect = child.shift(rect.topLeft);
-    return new CanvasArea(canvas, offsetRect);
   }
 }
 

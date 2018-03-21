@@ -1,16 +1,17 @@
-import 'package:fcharts/src/chart.dart';
+import 'package:fcharts/src/chart_data.dart';
 import 'package:fcharts/src/line/curves.dart';
 import 'package:fcharts/src/line/drawable.dart';
 import 'package:fcharts/src/utils/painting.dart';
 import 'package:fcharts/src/utils/range.dart';
 import 'package:meta/meta.dart';
 
+/// A type of chart where a group of points are connected by a line.
 class LineChartData implements ChartData {
   LineChartData({
     @required this.points,
     @required this.range,
-    this.linePaint: const PaintOptions.stroke(),
-    this.fillPaint,
+    this.stroke: const PaintOptions.stroke(),
+    this.fill,
     this.curve: const MonotoneCurve(),
   }) :
       assert(points != null),
@@ -18,33 +19,33 @@ class LineChartData implements ChartData {
       assert(curve != null);
 
   /// The points for the line chart, in ascending x value.
-  final List<LinePoint> points;
+  final List<LinePointData> points;
 
   /// The range for this chart.
   final Range range;
 
   /// The paint to use for the line.
-  final PaintOptions linePaint;
+  final PaintOptions stroke;
 
   /// The paint to use to fill the area beneath the line.
-  final PaintOptions fillPaint;
+  final PaintOptions fill;
 
   /// The curve generator to smoothly interpolate between lines.
   /// See [LineCurves].
-  final LineCurveGenerator curve;
+  final LineCurve curve;
 
   LineChartData copyWith({
-    List<LinePoint> points,
+    List<LinePointData> points,
     Range range,
-    PaintOptions linePaint,
-    PaintOptions fillPaint,
-    LineCurveGenerator curve
+    PaintOptions stroke,
+    PaintOptions fill,
+    LineCurve curve
   }) {
     return new LineChartData(
       points: points ?? this.points,
       range: range ?? this.range,
-      linePaint: linePaint ?? this.linePaint,
-      fillPaint: fillPaint ?? this.fillPaint,
+      stroke: stroke ?? this.stroke,
+      fill: fill ?? this.fill,
       curve: curve ?? this.curve
     );
   }
@@ -61,29 +62,30 @@ class LineChartData implements ChartData {
         x: x,
         value: scaledValue,
         paint: point.paint,
-        pointRadius: point.pointRadius
+        pointRadius: point.radius
       );
     });
 
     return new LineChartDrawable(
       points: pointDrawables.toList(),
       curve: curve,
-      linePaint: linePaint,
-      fillPaint: fillPaint,
+      stroke: stroke,
+      fill: fill,
     );
   }
 }
 
-class LinePoint {
-  LinePoint({
+/// A point on a line chart.
+class LinePointData {
+  LinePointData({
     @required this.x,
     @required this.value,
     this.paint: const [],
-    this.pointRadius: 1.0
+    this.radius: 1.0
   }) :
-      assert(x != null & x >= 0 && x <= 1.0),
+      assert(x != null && x >= 0 && x <= 1.0),
       assert(paint != null),
-      assert(pointRadius != null);
+      assert(radius != null);
 
 
   /// The x position of this point. Should be 0..1 inclusive.
@@ -93,5 +95,5 @@ class LinePoint {
   /// null to indicate no value present.
   final double value;
   final List<PaintOptions> paint;
-  final double pointRadius;
+  final double radius;
 }

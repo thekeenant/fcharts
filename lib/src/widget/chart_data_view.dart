@@ -1,4 +1,5 @@
-import 'package:fcharts/src/chart.dart';
+import 'package:fcharts/src/chart_data.dart';
+import 'package:fcharts/src/chart_drawable.dart';
 import 'package:fcharts/src/decor/decor.dart';
 import 'package:fcharts/src/utils/painting.dart';
 import 'package:flutter/material.dart';
@@ -17,10 +18,10 @@ class ChartRotation {
   /// rotated 90 degrees counter clockwise (270 clockwise)
   static const counterClockwise = const ChartRotation._(-pi / 2);
 
+  const ChartRotation._(this.theta);
+
   /// The rotation in radians.
   final double theta;
-
-  const ChartRotation._(this.theta);
 }
 
 /// A widget for displaying chart data.
@@ -29,8 +30,14 @@ class ChartDataView extends StatefulWidget {
     @required this.charts,
     this.decor,
     this.rotation: ChartRotation.none,
-    this.chartPadding: const EdgeInsets.all(0.0)
-  });
+    this.chartPadding: const EdgeInsets.all(0.0),
+    this.animationDuration: const Duration(milliseconds: 500),
+    this.animationCurve: Curves.fastOutSlowIn,
+  }) :
+      assert(charts != null),
+      assert(rotation != null),
+      assert(chartPadding != null),
+      assert(animationCurve != null);
 
   /// The charts to draw within the view. The order of the list is the
   /// order that they are drawn (later means they are on top).
@@ -45,6 +52,13 @@ class ChartDataView extends StatefulWidget {
   /// The padding for the chart which gives room for the [decor]
   /// around the chart.
   final EdgeInsets chartPadding;
+
+  /// The time it takes to animate from one chart to another. Set to null
+  /// or [Duration.zero] to disable animation.
+  final Duration animationDuration;
+
+  /// The animation curve.
+  final Curve animationCurve;
 
   @override
   _ChartDataViewState createState() => new _ChartDataViewState();
@@ -114,6 +128,15 @@ class _ChartDataViewState extends State<ChartDataView> with TickerProviderStateM
   }
 
   void _updatePainter() {
+    _controller = new AnimationController(
+      vsync: this,
+      duration: widget.animationDuration ?? Duration.zero,
+    );
+    _curve = new CurvedAnimation(
+      parent: _controller,
+      curve: widget.animationCurve,
+    );
+
     _ChartPainter painter = _createPainter();
     setState(() {
       _painter = painter;
@@ -130,14 +153,6 @@ class _ChartDataViewState extends State<ChartDataView> with TickerProviderStateM
   @override
   void initState() {
     super.initState();
-    _controller = new AnimationController(
-      vsync: this,
-      duration: new Duration(milliseconds: 500)
-    );
-    _curve = new CurvedAnimation(
-      parent: _controller,
-      curve: Curves.fastOutSlowIn
-    );
     _updatePainter();
   }
 
@@ -169,29 +184,33 @@ class _ChartPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    Rect canvasRect;
+    // clip to canvas area
+    canvas.clipRect(Offset.zero & size);
+    canvas.save();
+
+    Size canvasSize;
 
     // rotate and translate canvas as necessary based on rotation
     canvas.rotate(rotation.theta);
     switch (rotation) {
       case ChartRotation.none:
-        canvasRect = Offset.zero & size;
+        canvasSize = size;
         break;
       case ChartRotation.upsideDown:
-        canvasRect = Offset.zero & size;
-        canvas.translate(-canvasRect.width, -canvasRect.height);
+        canvasSize = size;
+        canvas.translate(-canvasSize.width, -canvasSize.height);
         break;
       case ChartRotation.clockwise:
-        canvasRect = Offset.zero & size.flipped;
-        canvas.translate(0.0, -canvasRect.height);
+        canvasSize = size.flipped;
+        canvas.translate(0.0, -canvasSize.height);
         break;
       case ChartRotation.counterClockwise:
-        canvasRect = Offset.zero & size.flipped;
-        canvas.translate(-canvasRect.width, 0.0);
+        canvasSize = size.flipped;
+        canvas.translate(-canvasSize.width, 0.0);
         break;
     }
 
-    var canvasArea = new CanvasArea(canvas, canvasRect);
+    var canvasArea = new CanvasArea.fromCanvas(canvas, canvasSize);
     var chartArea = canvasArea;
 
     if (decor != null)
@@ -204,6 +223,8 @@ class _ChartPainter extends CustomPainter {
 
     if (decor != null)
       decor.value.draw(canvasArea, chartArea);
+
+    canvas.restore();
   }
 
   @override

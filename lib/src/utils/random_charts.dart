@@ -2,8 +2,10 @@ library fcharts.random_charts;
 
 import 'dart:math' as math;
 
-import 'package:fcharts/fcharts.dart';
+import 'package:fcharts/src/bar/data.dart';
+import 'package:fcharts/src/line/data.dart';
 import 'package:fcharts/src/utils/color_palette.dart';
+import 'package:fcharts/src/utils/painting.dart';
 import 'package:fcharts/src/utils/range.dart';
 import 'package:flutter/material.dart';
 
@@ -26,7 +28,7 @@ LineChartData randomLineChart(final int pointCount) {
 
     nextValue += (random.nextDouble() - 0.5) * 0.2;
 
-    return new LinePoint(
+    return new LinePointData(
       x: x,
       value: (value).clamp(0.0, 1.0).toDouble(),
       paint: [
@@ -37,12 +39,12 @@ LineChartData randomLineChart(final int pointCount) {
 
   return new LineChartData(
     points: points,
-    linePaint: new PaintOptions.stroke(
+    stroke: new PaintOptions.stroke(
       color: color,
       strokeWidth: 3.0,
       strokeCap: StrokeCap.round
     ),
-    fillPaint: new PaintOptions(
+    fill: new PaintOptions(
       color: monochrome[3].withOpacity(0.4)
     ),
     range: new Range(0.0, 1.0)

@@ -1,7 +1,7 @@
 import 'package:fcharts/src/decor/tick.dart';
 import 'package:fcharts/src/utils/painting.dart';
 import 'package:fcharts/src/utils/merge_tween.dart';
-import 'package:fcharts/src/utils/side.dart';
+import 'package:fcharts/src/utils/chart_position.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -18,7 +18,7 @@ class ChartAxis implements MergeTweenable<ChartAxis> {
   final List<AxisTick> ticks;
 
   /// The position of the axis - which side it will be placed.
-  final Side position;
+  final ChartPosition position;
 
   /// The paint options for this axis' line.
   final PaintOptions paint;
@@ -39,7 +39,7 @@ class ChartAxis implements MergeTweenable<ChartAxis> {
     var rankFactor = (rankTotal - rank - 1) / rankTotal;
 
     switch (position) {
-      case Side.top:
+      case ChartPosition.top:
         axisRect = new Offset(paddingLeft, rankFactor * paddingTop) & new Size(
           chartArea.width,
           paddingTop / rankTotal
@@ -47,7 +47,7 @@ class ChartAxis implements MergeTweenable<ChartAxis> {
         lineStart = axisRect.bottomLeft;
         lineEnd = axisRect.bottomRight;
         break;
-      case Side.left:
+      case ChartPosition.left:
         vertical = true;
         axisRect = new Offset(rankFactor * paddingLeft, paddingTop) & new Size(
           paddingLeft / rankTotal,
@@ -56,7 +56,7 @@ class ChartAxis implements MergeTweenable<ChartAxis> {
         lineStart = axisRect.bottomRight;
         lineEnd = axisRect.topRight;
         break;
-      case Side.right:
+      case ChartPosition.right:
         vertical = true;
         axisRect = chartArea.rect.topRight.translate(rankFactor * paddingRight, 0.0) & new Size(
           paddingRight / rankTotal,
@@ -65,7 +65,7 @@ class ChartAxis implements MergeTweenable<ChartAxis> {
         lineStart = axisRect.bottomLeft;
         lineEnd = axisRect.topLeft;
         break;
-      case Side.bottom:
+      case ChartPosition.bottom:
         axisRect = chartArea.rect.bottomLeft.translate(0.0, rankFactor * paddingBottom) & new Size(
           chartArea.width,
           paddingBottom / rankTotal

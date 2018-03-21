@@ -1,5 +1,5 @@
 import 'package:fcharts/src/bar/drawable.dart';
-import 'package:fcharts/src/chart.dart';
+import 'package:fcharts/src/chart_data.dart';
 import 'package:fcharts/src/utils/painting.dart';
 import 'package:fcharts/src/utils/range.dart';
 import 'package:flutter/material.dart';

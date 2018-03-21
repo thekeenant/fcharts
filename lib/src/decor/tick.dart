@@ -1,9 +1,9 @@
 import 'dart:ui' show lerpDouble;
 
-import 'package:fcharts/src/decor/axis.dart';
+import 'package:fcharts/src/decor/axis_data.dart';
 import 'package:fcharts/src/utils/painting.dart';
 import 'package:fcharts/src/utils/merge_tween.dart';
-import 'package:fcharts/src/utils/side.dart';
+import 'package:fcharts/src/utils/chart_position.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -35,7 +35,7 @@ class AxisTick implements MergeTweenable<AxisTick> {
   final double opacity;
 
   /// Draw this axis tick within its [tickArea] given an [side].
-  void draw(CanvasArea tickArea, Side side) {
+  void draw(CanvasArea tickArea, ChartPosition side) {
     for (final labeler in labelers)
       labeler.draw(tickArea, side, opacity);
   }
@@ -79,7 +79,7 @@ class _AxisTickTween extends Tween<AxisTick> {
 abstract class TickLabeler {
   /// Draw this label in its [tickArea], given the [side] of the axis
   /// which this tick resides, and its [opacity] (used for animation).
-  void draw(CanvasArea tickArea, Side side, double opacity);
+  void draw(CanvasArea tickArea, ChartPosition side, double opacity);
 }
 
 /// Text to place at the tick.
@@ -114,7 +114,7 @@ class TextTickLabeler implements TickLabeler {
   }
 
   @override
-  void draw(CanvasArea tickArea, Side position, double opacity) {
+  void draw(CanvasArea tickArea, ChartPosition position, double opacity) {
     double minWidth;
     var maxWidth = tickArea.width;
     Offset axisOffset;
@@ -122,27 +122,27 @@ class TextTickLabeler implements TickLabeler {
     TextAlign align;
 
     switch (position) {
-      case Side.top:
+      case ChartPosition.top:
         minWidth = tickArea.width;
         axisOffset = new Offset(0.0, tickArea.height - distance);
         shift = new Offset(0.0, 1.0);
         align = TextAlign.center;
         break;
-      case Side.left:
+      case ChartPosition.left:
         minWidth = 0.0;
         maxWidth -= distance;
         axisOffset = new Offset(tickArea.width - distance, tickArea.height / 2);
         shift = new Offset(1.0, 0.5);
         align = TextAlign.right;
         break;
-      case Side.right:
+      case ChartPosition.right:
         minWidth = 0.0;
         maxWidth -= distance;
         axisOffset = new Offset(distance, tickArea.height / 2);
         shift = new Offset(0.0, 0.5);
         align = TextAlign.left;
         break;
-      case Side.bottom:
+      case ChartPosition.bottom:
         minWidth = tickArea.width;
         axisOffset = new Offset(0.0, distance);
         shift = Offset.zero;
@@ -189,24 +189,24 @@ class NotchTickLabeler implements TickLabeler {
   }
 
   @override
-  void draw(CanvasArea tickArea, Side position, double opacity) {
+  void draw(CanvasArea tickArea, ChartPosition position, double opacity) {
     Offset lineStart;
     Offset lineEnd;
 
     switch (position) {
-      case Side.top:
+      case ChartPosition.top:
         lineStart = new Offset(tickArea.width / 2, tickArea.height);
         lineEnd = lineStart.translate(0.0, -length);
         break;
-      case Side.left:
+      case ChartPosition.left:
         lineStart = new Offset(tickArea.width, tickArea.height / 2);
         lineEnd = lineStart.translate(-length, 0.0);
         break;
-      case Side.right:
+      case ChartPosition.right:
         lineStart = new Offset(0.0, tickArea.height / 2);
         lineEnd = lineStart.translate(length, 0.0);
         break;
-      case Side.bottom:
+      case ChartPosition.bottom:
         lineStart = new Offset(tickArea.width / 2, 0.0);
         lineEnd = lineStart.translate(0.0, length);
         break;

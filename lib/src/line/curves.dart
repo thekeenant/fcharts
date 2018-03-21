@@ -4,14 +4,14 @@ import 'dart:ui';
 import 'package:meta/meta.dart';
 
 /// Generates a curve based on given points.
-abstract class LineCurveGenerator {
+abstract class LineCurve {
   List<Offset> generate(List<Offset> points);
 }
 
 /// Some default curves without explicit configuration.
 class LineCurves {
   /// Go straight from one point to the next. No interpolation.
-  static const none = const Linear._();
+  static const linear = const Linear._();
 
   /// Default cardinal spline curve generator.
   static const cardinalSpline = const CardinalSpline();
@@ -22,7 +22,7 @@ class LineCurves {
 
 /// Use [Curves].none.
 /// Go straight from one point to the next. No interpolation.
-class Linear implements LineCurveGenerator {
+class Linear implements LineCurve {
   const Linear._();
 
   @override
@@ -33,7 +33,7 @@ class Linear implements LineCurveGenerator {
 
 /// Cardinal spline curve.
 @immutable
-class CardinalSpline implements LineCurveGenerator {
+class CardinalSpline implements LineCurve {
   const CardinalSpline({
     this.tension: 0.5,
     this.segmentCount: 10,
@@ -90,7 +90,7 @@ class CardinalSpline implements LineCurveGenerator {
 
 /// Monotone cubic spline.
 @immutable
-class MonotoneCurve implements LineCurveGenerator {
+class MonotoneCurve implements LineCurve {
   const MonotoneCurve({this.stepsPer: 15});
 
   /// The number of steps for each point given. A set of 3 points would
