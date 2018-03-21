@@ -30,17 +30,22 @@ class AxisTick implements MergeTweenable<AxisTick> {
   /// as the list.
   final List<TickLabeler> labelers;
 
+  /// The opacity of the label. This is used for animation. The labelers
+  /// should take the value into account.
+  final double opacity;
+
   /// Draw this axis tick within its [tickArea] given an [side].
   void draw(CanvasArea tickArea, ChartPosition side) {
     for (final labeler in labelers)
-      labeler.draw(tickArea, side);
+      labeler.draw(tickArea, side, opacity);
   }
 
   @override
   AxisTick get empty => new AxisTick(
     value: value,
     width: width,
-    labelers: labelers
+    labelers: labelers,
+    opacity: 0.0
   );
 
   @override
@@ -71,34 +76,20 @@ class _AxisTickTween extends Tween<AxisTick> {
 }
 
 /// Places a label on a tick.
-abstract class TickLabeler<T extends TickLabeler<T>> extends MergeTweenable<T> {
+abstract class TickLabeler {
   /// Draw this label in its [tickArea], given the [side] of the axis
   /// which this tick resides, and its [opacity] (used for animation).
-  void draw(CanvasArea tickArea, ChartPosition side);
-
-  @override
-  Tween<T> tweenTo(T other) => new _TickLabelerTween<T>(this, other);
-}
-
-/// A basic implementation of a tick labeler tween.
-class _TickLabelerTween<T extends TickLabeler<T>> extends Tween<T> {
-  _TickLabelerTween(T begin, T end) : super(begin: begin, end: end);
-
-  @override
-  T lerp(double t) {
-    return t < 0.5 ? begin : end;
-  }
+  void draw(CanvasArea tickArea, ChartPosition side, double opacity);
 }
 
 /// Text to place at the tick.
-class TextTickLabeler extends TickLabeler<TextTickLabeler> {
+class TextTickLabeler implements TickLabeler {
   TextTickLabeler({
     @required this.text,
     this.style: const TextStyle(color: Colors.black),
     this.offset: Offset.zero,
     this.rotation: 0.0,
-    this.distance: 10.0,
-    this.opacity,
+    this.distance: 8.0,
   });
 
   /// The text to draw.
@@ -116,9 +107,6 @@ class TextTickLabeler extends TickLabeler<TextTickLabeler> {
   /// The distance in canvas units from the axis.
   final double distance;
 
-  /// Opacity of the text.
-  final double opacity;
-
   _styleWithOpacity(double opacity) {
     return style.copyWith(
       color: (style.color ?? Colors.black).withOpacity(opacity)
@@ -126,7 +114,7 @@ class TextTickLabeler extends TickLabeler<TextTickLabeler> {
   }
 
   @override
-  void draw(CanvasArea tickArea, ChartPosition position) {
+  void draw(CanvasArea tickArea, ChartPosition position, double opacity) {
     double minWidth;
 
     switch (position) {
@@ -161,24 +149,17 @@ class TextTickLabeler extends TickLabeler<TextTickLabeler> {
       rotationOrigin: new Offset(0.5, 0.5),
     );
   }
-
-  @override
-  TextTickLabeler get empty => new TextTickLabeler(
-    text: text,
-    style: style,
-    offset: offset,
-    rotation: rotation,
-    distance: distance,
-    opacity: 0.0
-  );
 }
 
 /// A little line placed at the tick value, perpendiular to the axis.
 @immutable
-class NotchTickLabeler extends TickLabeler<NotchTickLabeler> {
-  NotchTickLabeler({
+class NotchTickLabeler implements TickLabeler {
+  const NotchTickLabeler({
     this.length: 5.0,
     this.paint: const PaintOptions.stroke(),
+    this.begin: 0.0,
+    this.rotation: 0.0,
+    this.rotationOrigin: 0.0,
   });
 
   /// The length of the notch in the absolute units.
@@ -187,6 +168,18 @@ class NotchTickLabeler extends TickLabeler<NotchTickLabeler> {
   /// The paint to use for this notch.
   final PaintOptions paint;
 
+  /// Offset where the line begins. For example you could set [begin]
+  /// to `-5.0` and [length] to `10.0` to have a notch which extends
+  /// equally on both sides of the axis because it is a line which goes
+  /// from -5 to 5 (length 10).
+  final double begin;
+
+  /// The rotation of the tick.
+  final double rotation;
+
+  /// The rotation origin of the tick.
+  final double rotationOrigin;
+
   PaintOptions _paintWithOpacity(double opacity) {
     return paint.copyWith(
       color: (paint.color ?? Colors.black).withOpacity(opacity)
@@ -194,36 +187,58 @@ class NotchTickLabeler extends TickLabeler<NotchTickLabeler> {
   }
 
   @override
-  void draw(CanvasArea tickArea, ChartPosition position) {
+  void draw(CanvasArea tickArea, ChartPosition position, double opacity) {
     Offset lineStart;
-    Offset lineEnd;
+    double lineX = 0.0;
+    double lineY = 0.0;
 
     switch (position) {
       case ChartPosition.top:
-        lineStart = new Offset(tickArea.width / 2, tickArea.height);
-        lineEnd = lineStart.translate(0.0, -length);
+        // starts at center and goes up
+        lineStart = new Offset(tickArea.width / 2, tickArea.height + begin);
+        lineY = -length;
         break;
       case ChartPosition.left:
-        lineStart = new Offset(tickArea.width, tickArea.height / 2);
-        lineEnd = lineStart.translate(-length, 0.0);
+        // start at center vertically and go left
+        lineStart = new Offset(tickArea.width + begin, tickArea.height / 2);
+        lineX = -length;
         break;
       case ChartPosition.right:
-        lineStart = new Offset(0.0, tickArea.height / 2);
-        lineEnd = lineStart.translate(length, 0.0);
+        // start at middle vertically and go right
+        lineStart = new Offset(-begin, tickArea.height / 2);
+        lineX = length;
         break;
       case ChartPosition.bottom:
-        lineStart = new Offset(tickArea.width / 2, 0.0);
-        lineEnd = lineStart.translate(0.0, length);
+        // start at center and down
+        lineStart = new Offset(tickArea.width / 2, -begin);
+        lineY = length;
         break;
       default:
         break;
     }
 
-    // TODO: Opacity
-    tickArea.drawLine(lineStart, lineEnd, _paintWithOpacity(1.0));
-  }
+    final canvas = tickArea.canvas;
 
-  // TODO: implement empty
-  @override
-  NotchTickLabeler get empty => this;
+    // save in case we rotate
+    canvas.save();
+
+    // rotate tick
+    if (rotation != 0.0) {
+      // compute origin. by default rotationOrigin is 0, so it rotate around the start point
+      final origin = lineStart + new Offset(lineX * rotationOrigin, lineY * rotationOrigin);
+      canvas.translate(origin.dx, origin.dy);
+      canvas.rotate(rotation);
+      canvas.translate(-origin.dx, -origin.dy);
+    }
+
+    // draw the line from start to end
+    tickArea.drawLine(
+      lineStart, 
+      lineStart.translate(lineX, lineY),
+      _paintWithOpacity(opacity)
+    );
+
+    // restore earlier save
+    canvas.restore();
+  }
 }

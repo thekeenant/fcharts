@@ -16,9 +16,7 @@ abstract class MergeTweenable<T> {
 }
 
 /// Intelligently lerps two lists of tweenable objects.
-class MergeTween<T extends MergeTweenable<T>> extends Tween<List<T>> {
-  final _tweens = <Tween<T>>[];
-
+class MergeTween<T extends MergeTweenable> extends Tween<List<T>> {
   MergeTween(List<T> begin, List<T> end) : super(begin: begin, end: end) {
     final bMax = begin.length;
     final eMax = end.length;
@@ -38,6 +36,8 @@ class MergeTween<T extends MergeTweenable<T>> extends Tween<List<T>> {
       }
     }
   }
+
+  final _tweens = <Tween<T>>[];
 
   @override
   List<T> lerp(double t) {
