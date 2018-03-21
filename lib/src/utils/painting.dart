@@ -29,6 +29,8 @@ class CanvasArea {
   /// the height of the paint area
   double get height => size.height;
 
+  Offset get center => new Offset(width / 2, height / 2);
+
   /// the size of the paint area (the width and height)
   Size get size => rect.size;
 
@@ -128,6 +130,18 @@ class CanvasArea {
     );
   }
 
+  void drawTextWithin(String text, {
+    TextOptions options: const TextOptions(),
+    bool centerHorizontal: true,
+    bool centerVertical: true,
+  }) {
+    TextPainter painter = options.build(text);
+
+    drawText(center, 'Long Text', shift: new Offset(-0.5, -0.5), rotation: math.pi * 4, rotationOrigin: new Offset(0.5, 0.5));
+
+    drawDebugCross();
+  }
+
   /// Draw text.
   void drawText(Offset point, String text, {
     TextOptions options: const TextOptions(),
@@ -145,9 +159,6 @@ class CanvasArea {
   }) {
     TextPainter painter = options.build(text);
 
-    final rwidth = painter.width * math.cos(rotation) + painter.height * math.sin(rotation);
-    final rheight = painter.width * math.sin(rotation) + painter.height * math.cos(rotation);
-
     _performDraw(() {
       canvas.save();
       canvas.translate(point.dx, point.dy);
@@ -156,8 +167,8 @@ class CanvasArea {
 
       // pre shift before rotation transform
       canvas.translate(
-        -shift.dx * rwidth,
-        -shift.dy * rheight
+        -shift.dx * painter.width,
+        -shift.dy * painter.height
       );
 
       if (rotation != 0.0) {
@@ -360,7 +371,7 @@ class TextOptions {
 
     // prevent layout from crashing
     var maxWidth = this.maxWidth;
-    if (maxWidth - minWidth < 0)
+    if (maxWidth != null && minWidth != null && maxWidth - minWidth < 0)
       maxWidth = minWidth + 1;
 
     span.layout(

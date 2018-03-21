@@ -89,6 +89,7 @@ class CardinalSpline implements LineCurve {
 }
 
 /// Monotone cubic spline.
+/// TODO: Improve this, seems to go beyond points often when it should not.
 @immutable
 class MonotoneCurve implements LineCurve {
   const MonotoneCurve({this.stepsPer: 15});
@@ -123,7 +124,24 @@ class MonotoneCurve implements LineCurve {
   }
 }
 
-/// Adapted from: https://gist.github.com/lecho/7627739
+/*
+ * Copyright (C) 2012 The Android Open Source Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ *
+ * https://android.googlesource.com/platform/frameworks/base/+/master/core/java/android/util/Spline.java
+ */
 @immutable
 class _MonotoneInterpolator {
   const _MonotoneInterpolator._(this._points, this._m);
@@ -142,7 +160,7 @@ class _MonotoneInterpolator {
     final m = new List<double>(n);
 
     // Compute slopes of secant lines between successive points.
-    for (int i = 0; i < n - 1; i++) {
+    for (var i = 0; i < n - 1; i++) {
       final h = points[i + 1].dx - points[i].dx;
       if (h <= 0) {
         throw new StateError("The control points must all have strictly increasing X values.");
@@ -152,13 +170,13 @@ class _MonotoneInterpolator {
 
     // Initialize the tangents as the average of the secants.
     m[0] = d[0];
-    for (int i = 1; i < n - 1; i++) {
+    for (var i = 1; i < n - 1; i++) {
       m[i] = (d[i - 1] + d[i]) * 0.5;
     }
     m[n - 1] = d[n - 2];
 
     // Update the tangents to preserve monotonicity.
-    for (int i = 0; i < n - 1; i++) {
+    for (var i = 0; i < n - 1; i++) {
       if (d[i] == 0) { // successive Y values are equal
         m[i] = 0.0;
         m[i + 1] = 0.0;
@@ -167,10 +185,10 @@ class _MonotoneInterpolator {
         final a = m[i] / d[i];
         final b = m[i + 1] / d[i];
         final h = sqrt(pow(a, 2) + pow(b, 2));
-        if (h > 9) {
+        if (h > 3) {
           final t = 3 / h;
-          m[i] = t * a * d[i];
-          m[i + 1] = t * b * d[i];
+          m[i] *= t;
+          m[i + 1] *= t;
         }
       }
     }
@@ -179,7 +197,7 @@ class _MonotoneInterpolator {
 
   double interpolate(double x) {
     // Handle the boundary cases.
-    final int n = _points.length;
+    final n = _points.length;
     if (x <= _points[0].dx) {
       return _points[0].dy;
     }
@@ -189,7 +207,7 @@ class _MonotoneInterpolator {
 
     // Find the index 'i' of the last point with smaller X.
     // We know this will be within the spline due to the boundary tests.
-    int i = 0;
+    var i = 0;
     while (x >= _points[i + 1].dx) {
       i += 1;
       if (x == _points[i].dx) {

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:fcharts/src/decor/axis_data.dart';
 import 'package:fcharts/src/decor/decor.dart';
 import 'package:fcharts/src/decor/tick.dart';
@@ -12,24 +14,34 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 
-class LineChart<Datum> extends StatelessWidget {
-  LineChart({
-    this.data,
-    this.axes,
-    this.lines,
-    this.padding: const EdgeInsets.all(50.0)
-  });
-
+abstract class Chart<Datum> extends StatelessWidget {
   final List<Axis<Datum>> axes;
-  final List<Line<Datum>> lines;
-  final List<Datum> data;
   final EdgeInsets padding;
+
+  Chart({
+    @required this.axes,
+    @required this.padding
+  }) :
+      assert(axes != null),
+      assert(padding != null);
 
   Iterable<XAxis<Datum>> _xAxes() =>
     axes.where((a) => a is XAxis<Datum>).map((a) => a as XAxis<Datum>);
 
   Iterable<YAxis<Datum>> _yAxes() =>
     axes.where((a) => a is YAxis<Datum>).map((a) => a as YAxis<Datum>);
+}
+
+class LineChart<Datum> extends Chart<Datum> {
+  LineChart({
+    this.data,
+    this.lines,
+    List<Axis<Datum>> axes: const [],
+    EdgeInsets padding: const EdgeInsets.all(50.0)
+  }) : super(axes: axes, padding: padding);
+
+  final List<Line<Datum>> lines;
+  final List<Datum> data;
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +53,9 @@ class LineChart<Datum> extends StatelessWidget {
       final matches = _yAxes().where((a) => a.id == line.yAxisId);
 
       if (matches.isEmpty)
-        throw new StateError('no y-axis found for id: ${line.yAxisId}');
+        throw new StateError('No y-axis found for id: ${line.yAxisId}');
       else if (matches.length > 1)
-        throw new StateError('multiple y-axis with same id: ${line.yAxisId}');
+        throw new StateError('Multiple y-axis with same id: ${line.yAxisId}');
 
       final yAxis = matches.first;
       var autoRange = new Range(0.0, 0.0);
@@ -97,7 +109,7 @@ class LineChart<Datum> extends StatelessWidget {
               labelers: [
                 new TextTickLabeler(
                   text: text,
-                  style: axis.labelStyle
+                  style: axis.labelStyle,
                 ),
                 new NotchTickLabeler(
                   paint: axis.stroke
@@ -108,13 +120,14 @@ class LineChart<Datum> extends StatelessWidget {
         );
       }
       else if (axis is YAxis<Datum>) {
+        final range = axis.range ?? autoRanges[axis];
+
         return new ChartAxis(
           position: axis.position,
           paint: axis.stroke,
-          ticks: new List.generate(axis.tickCount, (j) {
+          ticks: new List.generate(range == null ? 0 : axis.tickCount, (j) {
             final value = j / (axis.tickCount - 1);
             final width = 1 / axis.tickCount;
-            final range = axis.range ?? autoRanges[axis];
             final rangedValue = value * range.span + range.min;
 
             return new AxisTick(
@@ -123,7 +136,7 @@ class LineChart<Datum> extends StatelessWidget {
               labelers: [
                 new TextTickLabeler(
                   text: axis.label(rangedValue),
-                  style: axis.labelStyle
+                  style: axis.labelStyle,
                 ),
                 new NotchTickLabeler(
                   paint: axis.stroke
@@ -141,6 +154,7 @@ class LineChart<Datum> extends StatelessWidget {
         axes: chartAxes
       ),
       chartPadding: padding,
+//      rotation: ChartRotation.clockwise,
     );
   }
 }
@@ -166,7 +180,9 @@ class XAxis<Datum> extends Axis<Datum> {
     PaintOptions stroke: const PaintOptions.stroke(),
     TextStyle labelStyle: const TextStyle(color: Colors.black),
     ChartPosition position: ChartPosition.bottom
-  }) : super(id: id, stroke: stroke, labelStyle: labelStyle, position: position);
+  }) :
+    assert(position == ChartPosition.top || position == ChartPosition.bottom),
+    super(id: id, stroke: stroke, labelStyle: labelStyle, position: position);
 
   final UnaryFunction<Datum, String> label;
 }
@@ -180,7 +196,9 @@ class YAxis<Datum> extends Axis<Datum> {
     PaintOptions stroke: const PaintOptions.stroke(),
     TextStyle labelStyle: const TextStyle(color: Colors.black),
     ChartPosition position: ChartPosition.left
-  }) : super(id: id, stroke: stroke, labelStyle: labelStyle, position: position);
+  }) :
+    assert(position == ChartPosition.left || position == ChartPosition.right),
+    super(id: id,stroke: stroke, labelStyle: labelStyle, position: position);
 
   final UnaryFunction<double, String> label;
   final Range range;

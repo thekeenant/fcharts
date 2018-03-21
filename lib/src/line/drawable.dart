@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 const clipPointPadding = 5.0;
+const clipStrokePadding = 3.0;
 
 /// A line chart is a set of points with (x, y) coordinates. A line
 /// can connect the points and an area can be filled beneath the line.
@@ -163,7 +164,7 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable> {
         // draw the line
         if (stroke != null)
           area.drawPath(linePath, stroke, rect: lineRect);
-      });
+      }, const EdgeInsets.all(clipStrokePadding));
 
       area.clipDrawing(() {
         // draw points

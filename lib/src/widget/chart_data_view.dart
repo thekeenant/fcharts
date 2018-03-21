@@ -184,7 +184,10 @@ class _ChartPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // clip to canvas area
+    // it is important to definitively not draw outside the canvas so we clip
+    //  to the size of the canvas. subsequent drawings can be clipped further
+    // (i.e. the chart should stay within its bounds, not reach outside the
+    // canvas
     canvas.clipRect(Offset.zero & size);
     canvas.save();
 
@@ -224,6 +227,7 @@ class _ChartPainter extends CustomPainter {
     if (decor != null)
       decor.value.draw(canvasArea, chartArea);
 
+    // restore to before clip (see start of method)
     canvas.restore();
   }
 

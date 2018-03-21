@@ -30,22 +30,17 @@ class AxisTick implements MergeTweenable<AxisTick> {
   /// as the list.
   final List<TickLabeler> labelers;
 
-  /// The opacity of the label. This is used for animation. The labelers
-  /// should take the value into account.
-  final double opacity;
-
   /// Draw this axis tick within its [tickArea] given an [side].
   void draw(CanvasArea tickArea, ChartPosition side) {
     for (final labeler in labelers)
-      labeler.draw(tickArea, side, opacity);
+      labeler.draw(tickArea, side);
   }
 
   @override
   AxisTick get empty => new AxisTick(
     value: value,
     width: width,
-    labelers: labelers,
-    opacity: 0.0
+    labelers: labelers
   );
 
   @override
@@ -76,20 +71,34 @@ class _AxisTickTween extends Tween<AxisTick> {
 }
 
 /// Places a label on a tick.
-abstract class TickLabeler {
+abstract class TickLabeler<T extends TickLabeler<T>> extends MergeTweenable<T> {
   /// Draw this label in its [tickArea], given the [side] of the axis
   /// which this tick resides, and its [opacity] (used for animation).
-  void draw(CanvasArea tickArea, ChartPosition side, double opacity);
+  void draw(CanvasArea tickArea, ChartPosition side);
+
+  @override
+  Tween<T> tweenTo(T other) => new _TickLabelerTween<T>(this, other);
+}
+
+/// A basic implementation of a tick labeler tween.
+class _TickLabelerTween<T extends TickLabeler<T>> extends Tween<T> {
+  _TickLabelerTween(T begin, T end) : super(begin: begin, end: end);
+
+  @override
+  T lerp(double t) {
+    return t < 0.5 ? begin : end;
+  }
 }
 
 /// Text to place at the tick.
-class TextTickLabeler implements TickLabeler {
+class TextTickLabeler extends TickLabeler<TextTickLabeler> {
   TextTickLabeler({
     @required this.text,
     this.style: const TextStyle(color: Colors.black),
     this.offset: Offset.zero,
     this.rotation: 0.0,
-    this.distance: 8.0,
+    this.distance: 10.0,
+    this.opacity,
   });
 
   /// The text to draw.
@@ -107,6 +116,9 @@ class TextTickLabeler implements TickLabeler {
   /// The distance in canvas units from the axis.
   final double distance;
 
+  /// Opacity of the text.
+  final double opacity;
+
   _styleWithOpacity(double opacity) {
     return style.copyWith(
       color: (style.color ?? Colors.black).withOpacity(opacity)
@@ -114,64 +126,57 @@ class TextTickLabeler implements TickLabeler {
   }
 
   @override
-  void draw(CanvasArea tickArea, ChartPosition position, double opacity) {
+  void draw(CanvasArea tickArea, ChartPosition position) {
     double minWidth;
-    var maxWidth = tickArea.width;
-    Offset axisOffset;
-    Offset shift;
-    TextAlign align;
 
     switch (position) {
       case ChartPosition.top:
         minWidth = tickArea.width;
-        axisOffset = new Offset(0.0, tickArea.height - distance);
-        shift = new Offset(0.0, 1.0);
-        align = TextAlign.center;
         break;
       case ChartPosition.left:
         minWidth = 0.0;
-        maxWidth -= distance;
-        axisOffset = new Offset(tickArea.width - distance, tickArea.height / 2);
-        shift = new Offset(1.0, 0.5);
-        align = TextAlign.right;
         break;
       case ChartPosition.right:
         minWidth = 0.0;
-        maxWidth -= distance;
-        axisOffset = new Offset(distance, tickArea.height / 2);
-        shift = new Offset(0.0, 0.5);
-        align = TextAlign.left;
         break;
       case ChartPosition.bottom:
         minWidth = tickArea.width;
-        axisOffset = new Offset(0.0, distance);
-        shift = Offset.zero;
-        align = TextAlign.center;
         break;
       default:
         break;
     }
 
+    // Todo: Pass in rotation all the way down here?
+
     final textOptions = new TextOptions(
-      maxWidth: maxWidth,
       minWidth: minWidth,
-      textAlign: align,
+      textAlign: TextAlign.center,
       style: _styleWithOpacity(opacity)
     );
 
-    tickArea.drawText(offset + axisOffset, text,
+    tickArea.drawText(tickArea.center, text,
+      shift: new Offset(0.5, 0.5),
       options: textOptions,
-      shift: shift,
       rotation: rotation,
       rotationOrigin: new Offset(0.5, 0.5),
     );
   }
+
+  @override
+  TextTickLabeler get empty => new TextTickLabeler(
+    text: text,
+    style: style,
+    offset: offset,
+    rotation: rotation,
+    distance: distance,
+    opacity: 0.0
+  );
 }
 
 /// A little line placed at the tick value, perpendiular to the axis.
 @immutable
-class NotchTickLabeler implements TickLabeler {
-  const NotchTickLabeler({
+class NotchTickLabeler extends TickLabeler<NotchTickLabeler> {
+  NotchTickLabeler({
     this.length: 5.0,
     this.paint: const PaintOptions.stroke(),
   });
@@ -189,7 +194,7 @@ class NotchTickLabeler implements TickLabeler {
   }
 
   @override
-  void draw(CanvasArea tickArea, ChartPosition position, double opacity) {
+  void draw(CanvasArea tickArea, ChartPosition position) {
     Offset lineStart;
     Offset lineEnd;
 
@@ -214,6 +219,11 @@ class NotchTickLabeler implements TickLabeler {
         break;
     }
 
-    tickArea.drawLine(lineStart, lineEnd, _paintWithOpacity(opacity));
+    // TODO: Opacity
+    tickArea.drawLine(lineStart, lineEnd, _paintWithOpacity(1.0));
   }
+
+  // TODO: implement empty
+  @override
+  NotchTickLabeler get empty => this;
 }
