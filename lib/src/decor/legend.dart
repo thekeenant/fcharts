@@ -20,7 +20,8 @@ class LegendData {
   LegendData({
     this.items,
     this.layout: LegendLayout.vertical,
-    this.position: ChartPosition.right
+    this.position: ChartPosition.right,
+    this.offset: const Offset(0.0, 0.0)
   }) : assert(items != null),
        assert(layout != null),
        assert(position != null);
@@ -30,6 +31,8 @@ class LegendData {
   final LegendLayout layout;
 
   final ChartPosition position;
+
+  final Offset offset;
 
   void draw(CanvasArea fullArea, CanvasArea chartArea) {
     if (layout == LegendLayout.vertical) {
@@ -58,7 +61,7 @@ class LegendData {
           break;
       }
 
-      final legendRect = topLeft & size;
+      final legendRect = (topLeft + offset) & size;
       final legendArea = fullArea.child(legendRect);
 
       for (var i = 0; i < items.length; i++) {

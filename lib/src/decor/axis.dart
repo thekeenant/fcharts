@@ -11,7 +11,9 @@ class ChartAxisData implements MergeTweenable<ChartAxisData> {
   ChartAxisData({
     @required this.position,
     this.ticks: const [],
-    this.paint: const PaintOptions.stroke()
+    this.paint: const PaintOptions.stroke(),
+    this.size: 1.0,
+    this.offset,
   });
 
   /// All the ticks which will be drawn along this axis.
@@ -23,7 +25,12 @@ class ChartAxisData implements MergeTweenable<ChartAxisData> {
   /// The paint options for this axis' line.
   final PaintOptions paint;
 
-  void draw(CanvasArea fullArea, CanvasArea chartArea, int rank, int rankTotal) {
+  final double size;
+
+  /// TODO: when null, default to 1-size?
+  final double offset;
+
+  void draw(CanvasArea fullArea, CanvasArea chartArea) {
     Rect axisRect;
 
     final paddingTop = chartArea.rect.top - fullArea.rect.top;
@@ -36,21 +43,21 @@ class ChartAxisData implements MergeTweenable<ChartAxisData> {
     Offset lineStart;
     Offset lineEnd;
 
-    var rankFactor = (rankTotal - rank - 1) / rankTotal;
+    final actualOffset = this.offset == null ? 1 - size : this.offset;
 
     switch (position) {
       case ChartPosition.top:
-        axisRect = new Offset(paddingLeft, rankFactor * paddingTop) & new Size(
+        axisRect = new Offset(paddingLeft, 0.0) & new Size(
           chartArea.width,
-          paddingTop / rankTotal
+          paddingTop * size
         );
         lineStart = axisRect.bottomLeft;
         lineEnd = axisRect.bottomRight;
         break;
       case ChartPosition.left:
         vertical = true;
-        axisRect = new Offset(rankFactor * paddingLeft, paddingTop) & new Size(
-          paddingLeft / rankTotal,
+        axisRect = new Offset(actualOffset * paddingLeft, paddingTop) & new Size(
+          paddingLeft * size,
           chartArea.height
         );
         lineStart = axisRect.bottomRight;
@@ -58,17 +65,17 @@ class ChartAxisData implements MergeTweenable<ChartAxisData> {
         break;
       case ChartPosition.right:
         vertical = true;
-        axisRect = chartArea.rect.topRight.translate(rankFactor * paddingRight, 0.0) & new Size(
-          paddingRight / rankTotal,
+        axisRect = chartArea.rect.topRight.translate(0.0, 0.0) & new Size(
+          paddingRight * size,
           chartArea.height
         );
         lineStart = axisRect.bottomLeft;
         lineEnd = axisRect.topLeft;
         break;
       case ChartPosition.bottom:
-        axisRect = chartArea.rect.bottomLeft.translate(0.0, rankFactor * paddingBottom) & new Size(
+        axisRect = chartArea.rect.bottomLeft.translate(0.0, 0.0) & new Size(
           chartArea.width,
-          paddingBottom / rankTotal
+          paddingBottom * size
         );
         lineStart = axisRect.topLeft;
         lineEnd = axisRect.topRight;
@@ -118,6 +125,8 @@ class ChartAxisData implements MergeTweenable<ChartAxisData> {
     position: position,
     ticks: ticks.map((tick) => tick.empty).toList(),
     paint: paint,
+    size: size,
+    offset: offset
   );
 
   @override
@@ -138,6 +147,8 @@ class _ChartAxisDataTween extends Tween<ChartAxisData> {
       position: t < 0.5 ? begin.position : end.position,
       ticks: _ticksTween.lerp(t),
       paint: PaintOptions.lerp(begin.paint, end.paint, t),
+      size: t < 0.5 ? begin.size : end.size,
+      offset: t < 0.5 ? begin.offset : end.offset
     );
   }
 }

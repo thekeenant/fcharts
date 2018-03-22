@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:fcharts/src/decor/axis.dart';
 import 'package:fcharts/src/decor/decor.dart';
 import 'package:fcharts/src/decor/legend.dart';
@@ -70,6 +72,13 @@ class LineChart<Datum> extends Chart<Datum> {
       );
     });
 
+    final axesPerPosition = <ChartPosition, List<AxisBase<Datum>>>{};
+    for (var i = 0 ; i < axes.length; i++) {
+      final axis = axes[i];
+      axesPerPosition.putIfAbsent(axis.position, () => []);
+      axesPerPosition[axis.position].add(axis);
+    }
+
     final chartAxes = new List.generate(axes.length, (i) {
       final axis = axes[i];
 
@@ -103,9 +112,21 @@ class LineChart<Datum> extends Chart<Datum> {
       else if (axis is YAxis<Datum>) {
         final range = axis.range ?? autoRanges[axis];
 
+        final axesOnSameSide = axesPerPosition[axis.position];
+        final n = axesOnSameSide.length;
+
+        // 1 / 2 = 0.5 means half width per axis
+        final size = 1 / n;
+
+        // offset of 0.0 means it is on the left
+        // we want the first axis in the list to be on the right though
+        final offset = (n - axesOnSameSide.indexOf(axis) - 1) / n;
+
         return new ChartAxisData(
           position: axis.position,
           paint: axis.stroke,
+          size: size,
+          offset: offset,
           ticks: new List.generate(range == null ? 0 : axis.tickCount, (j) {
             final value = j / (axis.tickCount - 1);
             final width = 1 / axis.tickCount;
@@ -134,7 +155,7 @@ class LineChart<Datum> extends Chart<Datum> {
       decor: new ChartDecor(
         axes: chartAxes,
         legend: new LegendData(
-          position: ChartPosition.left,
+          position: ChartPosition.right,
           items: [
             new LegendItemData(
               symbol: new LegendSquareSymbol(

@@ -158,8 +158,6 @@ class NotchTickLabeler implements TickLabeler {
     this.length: 5.0,
     this.paint: const PaintOptions.stroke(),
     this.begin: 0.0,
-    this.rotation: 0.0,
-    this.rotationOrigin: 0.0,
   });
 
   /// The length of the notch in the absolute units.
@@ -173,12 +171,6 @@ class NotchTickLabeler implements TickLabeler {
   /// equally on both sides of the axis because it is a line which goes
   /// from -5 to 5 (length 10).
   final double begin;
-
-  /// The rotation of the tick.
-  final double rotation;
-
-  /// The rotation origin of the tick.
-  final double rotationOrigin;
 
   PaintOptions _paintWithOpacity(double opacity) {
     return paint.copyWith(
@@ -217,28 +209,11 @@ class NotchTickLabeler implements TickLabeler {
         break;
     }
 
-    final canvas = tickArea.canvas;
-
-    // save in case we rotate
-    canvas.save();
-
-    // rotate tick
-    if (rotation != 0.0) {
-      // compute origin. by default rotationOrigin is 0, so it rotate around the start point
-      final origin = lineStart + new Offset(lineX * rotationOrigin, lineY * rotationOrigin);
-      canvas.translate(origin.dx, origin.dy);
-      canvas.rotate(rotation);
-      canvas.translate(-origin.dx, -origin.dy);
-    }
-
     // draw the line from start to end
     tickArea.drawLine(
-      lineStart, 
+      lineStart,
       lineStart.translate(lineX, lineY),
       _paintWithOpacity(opacity)
     );
-
-    // restore earlier save
-    canvas.restore();
   }
 }

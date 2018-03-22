@@ -53,7 +53,7 @@ class CanvasArea {
   /// Perform a draw operation within this area. This is done by
   /// translate to the top left of this area, then performing the draw,
   /// then restoring back.
-  void _performDraw(VoidCallback draw) {
+  void performDraw(VoidCallback draw) {
     canvas.save();
     canvas.translate(rect.topLeft.dx, rect.topLeft.dy);
     draw();
@@ -95,7 +95,7 @@ class CanvasArea {
 
   /// Draw an arc within a rectangle.
   void drawArc(Rect arcArea, double startAngle, double sweepAngle, PaintOptions paint) {
-    _performDraw(() {
+    performDraw(() {
       canvas.drawArc(
         arcArea,
         startAngle,
@@ -108,7 +108,7 @@ class CanvasArea {
 
   /// Draw a rectangle.
   void drawRect(Rect rect, PaintOptions paint) {
-    _performDraw(() => 
+    performDraw(() =>
       canvas.drawRect(rect, paint.build(rect: rect))
     );
   }
@@ -118,28 +118,16 @@ class CanvasArea {
   /// Warning: Make sure the path is within the bounds of this chart area
   /// by using [boundPoint]!
   void drawPath(Path path, PaintOptions paint, {Rect rect}) {
-    _performDraw(() => 
+    performDraw(() =>
       canvas.drawPath(path, paint.build(rect: rect))
     );
   }
 
   /// Draw a line.
   void drawLine(Offset p1, Offset p2, PaintOptions paint) {
-    _performDraw(() => 
+    performDraw(() =>
       canvas.drawLine(p1, p2, paint.build())
     );
-  }
-
-  void drawTextWithin(String text, {
-    TextOptions options: const TextOptions(),
-    bool centerHorizontal: true,
-    bool centerVertical: true,
-  }) {
-    TextPainter painter = options.build(text);
-
-    drawText(center, 'Long Text', shift: new Offset(-0.5, -0.5), rotation: math.pi * 4, rotationOrigin: new Offset(0.5, 0.5));
-
-    drawDebugCross();
   }
 
   /// Draw text.
@@ -159,7 +147,7 @@ class CanvasArea {
   }) {
     TextPainter painter = options.build(text);
 
-    _performDraw(() {
+    performDraw(() {
       canvas.save();
       canvas.translate(point.dx, point.dy);
 

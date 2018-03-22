@@ -39,7 +39,7 @@ class ChartDecor {
 
     for (final axisGroup in axesByPos.values) {
       for (var i = 0; i < axisGroup.length; i++) {
-        axisGroup[i].draw(fullArea, chartArea, i, axisGroup.length);
+        axisGroup[i].draw(fullArea, chartArea);
       }
     }
 
