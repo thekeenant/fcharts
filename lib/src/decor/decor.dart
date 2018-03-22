@@ -1,5 +1,5 @@
 import 'package:fcharts/src/chart_data.dart';
-import 'package:fcharts/src/decor/axis_data.dart';
+import 'package:fcharts/src/decor/axis.dart';
 import 'package:fcharts/src/decor/legend.dart';
 import 'package:fcharts/src/utils/painting.dart';
 import 'package:fcharts/src/utils/merge_tween.dart';
@@ -24,14 +24,14 @@ class ChartDecor {
   /// For example, if axes is A,B,C and all are on the left side, A will be
   /// drawn to the right of B, B will be to the right of C. C will be the
   /// furthest left, and away from the graph. A gets priority!
-  final List<ChartAxis> axes;
+  final List<ChartAxisData> axes;
 
   /// A legend for the chart.
-  final Legend legend;
+  final LegendData legend;
 
   void draw(CanvasArea fullArea, CanvasArea chartArea) {
     // organize axes by their position
-    final axesByPos = <ChartPosition, List<ChartAxis>>{};
+    final axesByPos = <ChartPosition, List<ChartAxisData>>{};
     for (final axis in axes) {
       axesByPos.putIfAbsent(axis.position, () => []);
       axesByPos[axis.position].add(axis);
@@ -42,6 +42,8 @@ class ChartDecor {
         axisGroup[i].draw(fullArea, chartArea, i, axisGroup.length);
       }
     }
+
+    legend?.draw(fullArea, chartArea);
   }
 
   Tween<ChartDecor> tweenTo(ChartDecor end) => new ChartDecorTween(this, end);
@@ -53,12 +55,13 @@ class ChartDecorTween extends Tween<ChartDecor> {
       _axesTween = new MergeTween(begin.axes, end.axes),
       super(begin: begin, end: end);
 
-  final MergeTween<ChartAxis> _axesTween;
+  final MergeTween<ChartAxisData> _axesTween;
 
   @override
   ChartDecor lerp(double t) {
     return new ChartDecor(
       axes: _axesTween.lerp(t),
+      legend: t < 0.5 ? begin.legend : end.legend
     );
   }
 }

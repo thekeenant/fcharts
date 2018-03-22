@@ -7,15 +7,15 @@ import 'package:meta/meta.dart';
 
 /// An axis of a chart.
 @immutable
-class ChartAxis implements MergeTweenable<ChartAxis> {
-  ChartAxis({
+class ChartAxisData implements MergeTweenable<ChartAxisData> {
+  ChartAxisData({
     @required this.position,
     this.ticks: const [],
     this.paint: const PaintOptions.stroke()
   });
 
   /// All the ticks which will be drawn along this axis.
-  final List<AxisTick> ticks;
+  final List<AxisTickData> ticks;
 
   /// The position of the axis - which side it will be placed.
   final ChartPosition position;
@@ -114,27 +114,27 @@ class ChartAxis implements MergeTweenable<ChartAxis> {
   }
 
   @override
-  ChartAxis get empty => new ChartAxis(
+  ChartAxisData get empty => new ChartAxisData(
     position: position,
     ticks: ticks.map((tick) => tick.empty).toList(),
     paint: paint,
   );
 
   @override
-  Tween<ChartAxis> tweenTo(ChartAxis other) => new _ChartAxisTween(this, other);
+  Tween<ChartAxisData> tweenTo(ChartAxisData other) => new _ChartAxisDataTween(this, other);
 }
 
-/// Lerp between two [ChartAxis]'s.
-class _ChartAxisTween extends Tween<ChartAxis> {
-  _ChartAxisTween(ChartAxis begin, ChartAxis end) :
+/// Lerp between two [ChartAxisData]'s.
+class _ChartAxisDataTween extends Tween<ChartAxisData> {
+  _ChartAxisDataTween(ChartAxisData begin, ChartAxisData end) :
     _ticksTween = new MergeTween(begin.ticks, end.ticks),
     super(begin: begin, end: end);
 
-  final MergeTween<AxisTick> _ticksTween;
+  final MergeTween<AxisTickData> _ticksTween;
 
   @override
-  ChartAxis lerp(double t) {
-    return new ChartAxis(
+  ChartAxisData lerp(double t) {
+    return new ChartAxisData(
       position: t < 0.5 ? begin.position : end.position,
       ticks: _ticksTween.lerp(t),
       paint: PaintOptions.lerp(begin.paint, end.paint, t),

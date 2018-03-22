@@ -44,13 +44,14 @@ class _MyAppState extends State<MyApp> {
             aspectRatio: 4/3,
             child: new LineChart<Person>(
               data: stats,
-              padding: new EdgeInsets.only(left: 30.0, bottom: 50.0, right: 30.0, top: 15.0),
+              padding: new EdgeInsets.only(left: 100.0, bottom: 50.0, right: 60.0, top: 15.0),
               axes: [
                 new XAxis(label: (stat) => stat.name),
                 new YAxis(
                   label: (val) => val.toInt().toString(),
                   tickCount: 5,
                   range: new Range(0.0, 20.0),
+                  position: ChartPosition.right,
                   stroke: new PaintOptions.stroke(color: Colors.green, strokeWidth: 2.0),
                 ),
                 new YAxis(
@@ -78,7 +79,6 @@ class _MyAppState extends State<MyApp> {
                   pointPaint: (stat) => [
                     new PaintOptions(color: Colors.blue)
                   ],
-                  curve: new CardinalSpline(tension: 0.2),
                 ),
               ],
             ),

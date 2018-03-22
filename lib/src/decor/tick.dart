@@ -1,15 +1,15 @@
 import 'dart:ui' show lerpDouble;
 
-import 'package:fcharts/src/decor/axis_data.dart';
+import 'package:fcharts/src/decor/axis.dart';
 import 'package:fcharts/src/utils/painting.dart';
 import 'package:fcharts/src/utils/merge_tween.dart';
 import 'package:fcharts/src/utils/chart_position.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-/// A tick located on a [ChartAxis].
-class AxisTick implements MergeTweenable<AxisTick> {
-  AxisTick({
+/// A tick located on a [ChartAxisData].
+class AxisTickData implements MergeTweenable<AxisTickData> {
+  AxisTickData({
     @required this.value,
     @required this.width,
     this.labelers: const [
@@ -41,7 +41,7 @@ class AxisTick implements MergeTweenable<AxisTick> {
   }
 
   @override
-  AxisTick get empty => new AxisTick(
+  AxisTickData get empty => new AxisTickData(
     value: value,
     width: width,
     labelers: labelers,
@@ -49,15 +49,15 @@ class AxisTick implements MergeTweenable<AxisTick> {
   );
 
   @override
-  Tween<AxisTick> tweenTo(AxisTick other) => new _AxisTickTween(this, other);
+  Tween<AxisTickData> tweenTo(AxisTickData other) => new _AxisTickDataTween(this, other);
 }
 
 /// Lerp between two axis ticks.
-class _AxisTickTween extends Tween<AxisTick> {
-  _AxisTickTween(AxisTick begin, AxisTick end) : super(begin: begin, end: end);
+class _AxisTickDataTween extends Tween<AxisTickData> {
+  _AxisTickDataTween(AxisTickData begin, AxisTickData end) : super(begin: begin, end: end);
 
   @override
-  AxisTick lerp(double t) {
+  AxisTickData lerp(double t) {
     double opacity;
 
     // fade to 0 at t=0.5, then to 1
@@ -66,7 +66,7 @@ class _AxisTickTween extends Tween<AxisTick> {
     else
       opacity = lerpDouble(0.0, end.opacity, (t - 0.5) * 2);
 
-    return new AxisTick(
+    return new AxisTickData(
       value: lerpDouble(begin.value, end.value, t),
       width: lerpDouble(begin.width, end.width, t),
       labelers: t < 0.5 ? begin.labelers : end.labelers,
