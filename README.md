@@ -2,15 +2,19 @@
 
 A work-in-progress chart library for [Flutter](https://flutter.io).
 
-Inspired by [Mikkel Ravn's tutorial](https://medium.com/flutter-io/zero-to-one-with-flutter-43b13fd7b354) on Flutter widgets and animations. If you have used [Recharts](https://recharts.org) (ReactJS library) you will find the high level API to be familiar.
+The goal of this project is to allow for creating beautiful, responsive charts using a simple 
+and intuitive API.
+
+Inspired by 
+[Mikkel Ravn's tutorial](https://medium.com/flutter-io/zero-to-one-with-flutter-43b13fd7b354) 
+on Flutter widgets and animations. If you have used [Recharts](https://recharts.org) (ReactJS 
+library) you will find the high level API to be familiar.
 
 ## Demos
 
 **Chart examples:** (Line chart, bar chart, histogram)
 
-
 ![Bar chart demo](https://i.imgur.com/D1Rd7jk.gif) ![Histogram demo](https://i.imgur.com/gvRQytG.gif)
-
 
 **Touch event callbacks:**
 
