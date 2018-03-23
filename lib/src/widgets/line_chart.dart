@@ -24,10 +24,8 @@ class LineChart<Datum> extends Chart<Datum> {
     this.onRelease,
     List<AxisBase<Datum>> axes: const [],
     EdgeInsets padding: const EdgeInsets.all(50.0),
-  }) : super(
-          axes: axes,
-          padding: padding,
-        );
+    Legend legend,
+  }) : super(axes: axes, padding: padding, legend: legend,);
 
   final List<Line<Datum>> lines;
   final List<Datum> data;
@@ -43,6 +41,7 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
 
   @override
   Widget build(BuildContext context) {
+    final legend = widget.legend;
     final axes = widget.axes;
     final yAxes = widget.yAxes;
     final lines = widget.lines;
@@ -120,41 +119,68 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
               final value = j / (data.length - 1);
               final width = 1 / data.length;
 
-              return new AxisTickData(value: value, width: width, labelers: [
-                new TextTickLabeler(
-                  text: text,
-                  style: axis.labelStyle,
-                ),
-                new NotchTickLabeler(paint: axis.stroke)
-              ]);
-            }));
-      } else if (axis is YAxis<Datum>) {
-        final range = axis.range ?? autoRanges[axis];
-
-        return new ChartAxisData(
-            position: axis.position,
-            paint: axis.stroke,
-            size: axis.size,
-            offset: axis.offset,
-            ticks: new List.generate(range == null ? 0 : axis.tickCount, (j) {
-              final value = j / (axis.tickCount - 1);
-              final width = 1 / axis.tickCount;
-              final rangedValue = value * range.span + range.min;
-
               return new AxisTickData(
                 value: value,
                 width: width,
                 labelers: [
                   new TextTickLabeler(
-                    text: axis.label(rangedValue),
+                    text: text,
                     style: axis.labelStyle,
                   ),
-                  new NotchTickLabeler(paint: axis.stroke)
+                  new NotchTickLabeler(paint: axis.stroke),
                 ],
               );
             }));
+      } else if (axis is YAxis<Datum>) {
+        final range = axis.range ?? autoRanges[axis];
+
+        return new ChartAxisData(
+          position: axis.position,
+          paint: axis.stroke,
+          size: axis.size,
+          offset: axis.offset,
+          ticks: new List.generate(range == null ? 0 : axis.tickCount, (j) {
+            final value = j / (axis.tickCount - 1);
+            final width = 1 / axis.tickCount;
+            final rangedValue = value * range.span + range.min;
+
+            return new AxisTickData(
+              value: value,
+              width: width,
+              labelers: [
+                new TextTickLabeler(
+                  text: axis.label(rangedValue),
+                  style: axis.labelStyle,
+                ),
+                new NotchTickLabeler(paint: axis.stroke),
+              ],
+            );
+          }),
+        );
       }
     });
+
+    var legendData;
+    if (legend != null) {
+      final padding = legend.layout == LegendLayout.horizontal ? new EdgeInsets.only(right: 5.0) : new EdgeInsets.only(bottom: 5.0);
+
+      legendData = new LegendData(
+        layout: legend.layout,
+        position: legend.position,
+        offset: legend.offset,
+        items: new List.generate(lines.length, (i) {
+          final line = lines[i];
+
+          return new LegendItemData(
+            symbol: new LegendSquareSymbol(
+              paint: [line.stroke.copyWith(style: PaintingStyle.fill)]
+            ),
+            text: line.name ?? "",
+            padding: padding,
+          );
+        }),
+      );
+    }
 
     return new ChartDataView(
       charts: lineCharts,
@@ -190,22 +216,9 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
         });
       },
       decor: new ChartDecor(
-          axes: chartAxes,
-          legend: new LegendData(
-              layout: LegendLayout.horizontal,
-              position: ChartPosition.bottom,
-              offset: new Offset(0.0, 35.0),
-              items: [
-                new LegendItemData(
-                    padding: new EdgeInsets.only(bottom: 10.0, right: 10.0),
-                    symbol:
-                        new LegendSquareSymbol(paint: [const PaintOptions(color: Colors.green)]),
-                    text: 'Cookies'),
-                new LegendItemData(
-                    padding: new EdgeInsets.only(bottom: 10.0, right: 10.0),
-                    symbol: new LegendSquareSymbol(paint: [const PaintOptions(color: Colors.blue)]),
-                    text: 'Brownies'),
-              ])),
+        axes: chartAxes,
+        legend: legendData,
+      ),
       chartPadding: padding,
     );
   }
@@ -221,6 +234,7 @@ class Line<T> {
     this.curve: LineCurves.monotone,
     this.pointPaint,
     this.pointRadius,
+    this.name,
   });
 
   final UnaryFunction<T, double> value;
@@ -231,4 +245,5 @@ class Line<T> {
   final LineCurve curve;
   final UnaryFunction<T, List<PaintOptions>> pointPaint;
   final UnaryFunction<T, double> pointRadius;
+  final String name;
 }

@@ -45,70 +45,75 @@ class _MyAppState extends State<MyApp> {
         appBar: new AppBar(
           title: new Text('Cookies & Brownies Consumption'),
         ),
-        body: new Column(children: [
-          new Padding(
-            child: new Column(
-              children: [
-                new Text("Selected: ${_active?.name}"),
-                new Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  new Text("Cookies: ", style: new TextStyle(fontWeight: FontWeight.bold)),
-                  new Text(_active?.cookies.toString()),
-                ]),
-                new Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  new Text("Brownies: ", style: new TextStyle(fontWeight: FontWeight.bold)),
-                  new Text(_active?.brownies.toString()),
-                ]),
-              ],
+        body: new Column(
+          children: [
+            new Padding(
+              child: new Column(
+                children: [
+                  new Text("Selected: ${_active?.name}"),
+                  new Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    new Text("Cookies: ", style: new TextStyle(fontWeight: FontWeight.bold)),
+                    new Text(_active?.cookies.toString()),
+                  ]),
+                  new Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    new Text("Brownies: ", style: new TextStyle(fontWeight: FontWeight.bold)),
+                    new Text(_active?.brownies.toString()),
+                  ]),
+                ],
+              ),
+              padding: new EdgeInsets.all(50.0),
             ),
-            padding: new EdgeInsets.all(50.0),
-          ),
-          new AspectRatio(
-            aspectRatio: 4 / 3,
-            child: new LineChart<Day>(
-              onTouch: (day) {
-                setState(() {
-                  _active = day;
-                });
-              },
-              onRelease: () {
-                setState(() => _active = null);
-              },
-              data: days,
-              padding: new EdgeInsets.only(left: 40.0, bottom: 50.0, right: 40.0, top: 15.0),
-              axes: [
-                new XAxis(label: (stat) => stat.name, size: 30.0),
-                new YAxis(
-                  label: (val) => val.toInt().toString(),
-                  tickCount: 5,
-                  range: new Range(0.0, 15.0),
-                  position: ChartPosition.left,
-                  stroke: new PaintOptions.stroke(color: Colors.green, strokeWidth: 2.0),
-                ),
-                new YAxis(
-                  id: 'brownies',
-                  label: (val) => val.toDouble().toStringAsFixed(1),
-                  tickCount: 11,
-                  range: new Range(0.0, 8.0),
-                  stroke: new PaintOptions.stroke(color: Colors.blue, strokeWidth: 2.0),
-                  position: ChartPosition.right,
-                ),
-              ],
-              lines: [
-                new Line(
-                  value: (stat) => stat.cookies.toDouble(),
-                  stroke: new PaintOptions.stroke(color: Colors.green, strokeWidth: 2.0),
-                  pointPaint: (stat) => [new PaintOptions(color: Colors.green)],
-                ),
-                new Line(
-                  value: (stat) => stat.brownies.toDouble(),
-                  yAxisId: 'brownies',
-                  stroke: new PaintOptions.stroke(color: Colors.blue, strokeWidth: 2.0),
-                  pointPaint: (stat) => [new PaintOptions(color: Colors.blue)],
-                ),
-              ],
+            new AspectRatio(
+              aspectRatio: 4 / 3,
+              child: new LineChart<Day>(
+                onTouch: (day) {
+                  setState(() {
+                    _active = day;
+                  });
+                },
+                onRelease: () {
+                  setState(() => _active = null);
+                },
+                data: days,
+                padding: new EdgeInsets.only(left: 40.0, bottom: 50.0, right: 40.0, top: 15.0),
+                axes: [
+                  new XAxis(label: (stat) => stat.name, size: 30.0),
+                  new YAxis(
+                    label: (val) => val.toInt().toString(),
+                    tickCount: 5,
+                    range: new Range(0.0, 15.0),
+                    position: ChartPosition.left,
+                    stroke: new PaintOptions.stroke(color: Colors.green, strokeWidth: 2.0),
+                  ),
+                  new YAxis(
+                    id: 'brownies',
+                    label: (val) => val.toDouble().toStringAsFixed(1),
+                    tickCount: 11,
+                    range: new Range(0.0, 8.0),
+                    stroke: new PaintOptions.stroke(color: Colors.blue, strokeWidth: 2.0),
+                    position: ChartPosition.right,
+                  ),
+                ],
+                lines: [
+                  new Line(
+                    name: 'Cookies',
+                    value: (stat) => stat.cookies.toDouble(),
+                    stroke: new PaintOptions.stroke(color: Colors.green, strokeWidth: 2.0),
+                    pointPaint: (stat) => [new PaintOptions(color: Colors.green)],
+                  ),
+                  new Line(
+                    name: 'Brownies',
+                    value: (stat) => stat.brownies.toDouble(),
+                    yAxisId: 'brownies',
+                    stroke: new PaintOptions.stroke(color: Colors.blue, strokeWidth: 2.0),
+                    pointPaint: (stat) => [new PaintOptions(color: Colors.blue)],
+                  ),
+                ],
+                legend: new Legend(),
+              ),
             ),
-          ),
-        ]),
+          ],
+        ),
         floatingActionButton: new FloatingActionButton(
           onPressed: () {
             setState(() {

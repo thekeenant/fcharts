@@ -1,3 +1,4 @@
+import 'package:fcharts/src/decor/legend.dart';
 import 'package:fcharts/src/utils/chart_position.dart';
 import 'package:fcharts/src/utils/painting.dart';
 import 'package:fcharts/src/utils/range.dart';
@@ -6,14 +7,16 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 abstract class Chart<Datum> extends StatefulWidget {
-  final List<AxisBase<Datum>> axes;
-  final EdgeInsets padding;
-
   Chart({
     @required this.axes,
     @required this.padding,
+    @required this.legend,
   })  : assert(axes != null),
         assert(padding != null);
+
+  final List<AxisBase<Datum>> axes;
+  final EdgeInsets padding;
+  final Legend legend;
 
   get xAxes => axes.where((a) => a is XAxis<Datum>).map((a) => a as XAxis<Datum>);
 
@@ -78,9 +81,21 @@ class YAxis<Datum> extends AxisBase<Datum> {
             labelStyle: labelStyle,
             position: position,
             size: size,
-            offset: offset);
+            offset: offset,);
 
   final UnaryFunction<double, String> label;
   final Range range;
   final int tickCount;
+}
+
+class Legend {
+  Legend({
+    this.position: ChartPosition.top,
+    this.layout: LegendLayout.horizontal,
+    this.offset: Offset.zero,
+  });
+
+  final ChartPosition position;
+  final LegendLayout layout;
+  final Offset offset;
 }
