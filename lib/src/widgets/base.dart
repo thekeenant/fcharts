@@ -22,9 +22,9 @@ abstract class Chart<Datum> extends StatefulWidget {
   final Curve animationCurve;
   final Duration animationDuration;
 
-  get xAxes => axes.where((a) => a is XAxis<Datum>).map((a) => a as XAxis<Datum>);
+  Iterable<XAxis<Datum>> get xAxes => axes.where((a) => a is XAxis<Datum>).map((a) => a as XAxis<Datum>);
 
-  get yAxes => axes.where((a) => a is YAxis<Datum>).map((a) => a as YAxis<Datum>);
+  Iterable<YAxis<Datum>> get yAxes => axes.where((a) => a is YAxis<Datum>).map((a) => a as YAxis<Datum>);
 }
 
 abstract class AxisBase<T> {

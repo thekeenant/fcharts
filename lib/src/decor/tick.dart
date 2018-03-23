@@ -160,7 +160,7 @@ class TextTickLabeler implements TickLabeler {
   }
 }
 
-/// A little line placed at the tick value, perpendiular to the axis.
+/// A little line placed at the tick value, perpendicular to the axis.
 @immutable
 class NotchTickLabeler implements TickLabeler {
   const NotchTickLabeler({

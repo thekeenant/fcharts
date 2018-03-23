@@ -147,7 +147,7 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable, LineChartTou
       // create a new fill area
       final fillPath = new Path();
 
-      // save points to their corresponding absolute location in the canvaa
+      // save points to their corresponding absolute location in the canvas
       final pointToLoc = <LinePointDrawable, Offset>{};
 
       // scale points to the canvas
@@ -293,7 +293,7 @@ class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
     }
   }
 
-  /// Get the coordinates of this point witin a canvas area.
+  /// Get the coordinates of this point within a canvas area.
   Offset _locationWithin(Size size) {
     final width = size.width;
     final height = size.height;
