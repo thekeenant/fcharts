@@ -6,6 +6,7 @@ import 'package:fcharts/src/decor/legend.dart';
 import 'package:fcharts/src/decor/tick.dart';
 import 'package:fcharts/src/line/curves.dart';
 import 'package:fcharts/src/line/data.dart';
+import 'package:fcharts/src/line/drawable.dart';
 import 'package:fcharts/src/utils/chart_position.dart';
 import 'package:fcharts/src/utils/painting.dart';
 import 'package:fcharts/src/utils/range.dart';
@@ -15,19 +16,38 @@ import 'package:fcharts/src/widgets/chart_data_view.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
+typedef void LineChartCallback<Datum>(Datum touched);
+
 class LineChart<Datum> extends Chart<Datum> {
   LineChart({
     this.data,
     this.lines,
+    this.onTouch,
+    this.onRelease,
     List<AxisBase<Datum>> axes: const [],
-    EdgeInsets padding: const EdgeInsets.all(50.0)
+    EdgeInsets padding: const EdgeInsets.all(50.0),
   }) : super(axes: axes, padding: padding);
 
   final List<Line<Datum>> lines;
   final List<Datum> data;
+  final LineChartCallback<Datum> onTouch;
+  final VoidCallback onRelease;
+
+  @override
+  _LineChartState<Datum> createState() => new _LineChartState();
+}
+
+class _LineChartState<Datum> extends State<LineChart<Datum>> {
+  Map<int, int> _active = {};
 
   @override
   Widget build(BuildContext context) {
+    final axes = widget.axes;
+    final yAxes = widget.yAxes;
+    final lines = widget.lines;
+    final data = widget.data;
+    final padding = widget.padding;
+
     final autoRanges = <AxisBase<Datum>, Range>{};
 
     final lineCharts = new List.generate(lines.length, (i) {
@@ -53,11 +73,17 @@ class LineChart<Datum> extends Chart<Datum> {
         if (value > autoRange.max)
           autoRange = new Range(autoRange.min, value);
 
+        var radiusFactor = 1.0;
+
+        if (_active.containsValue(j)) {
+          radiusFactor *= 2;
+        }
+
         return new LinePointData(
           x: x,
           value: value,
           paint: line.pointPaint == null ? [] : line.pointPaint(datum),
-          radius: line.pointRadius == null ? 3.0 : line.pointRadius(datum)
+          radius: radiusFactor * (line.pointRadius == null ? 3.0 : line.pointRadius(datum))
         );
       });
 
@@ -86,6 +112,8 @@ class LineChart<Datum> extends Chart<Datum> {
         return new ChartAxisData(
           position: axis.position,
           paint: axis.stroke,
+          size: axis.size,
+          offset: axis.offset,
           ticks: new List.generate(data.length, (j) {
             final datum = data[j];
             final text = axis.label(datum);
@@ -112,21 +140,11 @@ class LineChart<Datum> extends Chart<Datum> {
       else if (axis is YAxis<Datum>) {
         final range = axis.range ?? autoRanges[axis];
 
-        final axesOnSameSide = axesPerPosition[axis.position];
-        final n = axesOnSameSide.length;
-
-        // 1 / 2 = 0.5 means half width per axis
-        final size = 1 / n;
-
-        // offset of 0.0 means it is on the left
-        // we want the first axis in the list to be on the right though
-        final offset = (n - axesOnSameSide.indexOf(axis) - 1) / n;
-
         return new ChartAxisData(
           position: axis.position,
           paint: axis.stroke,
-          size: size,
-          offset: offset,
+          size: axis.size,
+          offset: axis.offset,
           ticks: new List.generate(range == null ? 0 : axis.tickCount, (j) {
             final value = j / (axis.tickCount - 1);
             final width = 1 / axis.tickCount;
@@ -152,32 +170,79 @@ class LineChart<Datum> extends Chart<Datum> {
 
     return new ChartDataView(
       charts: lineCharts,
+      animationDuration: _active.isEmpty ? new Duration(milliseconds: 500) : new Duration(milliseconds: 200),
+      onMove: (pointer, events) {
+        for (final event in events.values) {
+          int active = (event as LineChartTouchEvent).nearestHorizontally;
+          if (_active[pointer] == active)
+            return;
+          setState(() {
+            _active[pointer] = active;
+          });
+
+          if (widget.onTouch != null)
+            widget.onTouch(widget.data[active]);
+
+          break;
+        }
+      },
+      onTouch: (pointer, events) {
+        for (final event in events.values) {
+          int active = (event as LineChartTouchEvent).nearestHorizontally;
+          setState(() {
+            _active[pointer] = active;
+          });
+
+          if (widget.onTouch != null)
+            widget.onTouch(widget.data[active]);
+          break;
+        }
+      },
+      onRelease: (pointer) {
+        setState(() {
+          _active.remove(pointer);
+          if (widget.onRelease != null)
+            widget.onRelease();
+        });
+      },
       decor: new ChartDecor(
         axes: chartAxes,
         legend: new LegendData(
-          position: ChartPosition.right,
+          layout: LegendLayout.horizontal,
+          position: ChartPosition.bottom,
+          offset: new Offset(0.0, 35.0),
           items: [
             new LegendItemData(
-              symbol: new LegendSquareSymbol(
-                paint: [
-                  const PaintOptions(color: Colors.blue)
-                ]
-              ),
-              text: 'Cookies'
-            ),
-            new LegendItemData(
+              padding: new EdgeInsets.only(bottom: 10.0, right: 10.0),
               symbol: new LegendSquareSymbol(
                 paint: [
                   const PaintOptions(color: Colors.green)
                 ]
               ),
+              text: 'Cookies'
+            ),
+            new LegendItemData(
+              padding: new EdgeInsets.only(bottom: 10.0, right: 10.0),
+              symbol: new LegendSquareSymbol(
+                paint: [
+                  const PaintOptions(color: Colors.blue)
+                ]
+              ),
               text: 'Brownies'
-            )
+            ),
+//            new LegendItemData(
+//              padding: new EdgeInsets.only(bottom: 10.0),
+//              symbol: new LegendSquareSymbol(
+//                paint: [
+//                  const PaintOptions(color: Colors.orange)
+//                ]
+//              ),
+//              text: 'Crackers'
+//            )
           ]
         )
       ),
       chartPadding: padding,
-//      rotation: ChartRotation.clockwise,
     );
   }
 }

@@ -12,10 +12,24 @@ import 'package:meta/meta.dart';
 const clipPointPadding = 5.0;
 const clipStrokePadding = 3.0;
 
+
+class LineChartTouchEvent implements ChartTouchEvent {
+  final int nearest;
+
+  final int nearestHorizontally;
+
+  LineChartTouchEvent(this.nearest, this.nearestHorizontally);
+
+  @override
+  String toString() {
+    return 'LineChartTouchEvent($nearest, $nearestHorizontally)';
+  }
+}
+
 /// A line chart is a set of points with (x, y) coordinates. A line
 /// can connect the points and an area can be filled beneath the line.
 /// Points can be illustrated by their own paint options.
-class LineChartDrawable implements ChartDrawable<LineChartDrawable> {
+class LineChartDrawable implements ChartDrawable<LineChartDrawable, LineChartTouchEvent> {
   LineChartDrawable({
     @required this.points,
     this.stroke: const PaintOptions.stroke(color: Colors.black),
@@ -43,6 +57,35 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable> {
   ///
   /// When false (default), null values create a break in the graph.
   final bool bridgeNulls;
+
+  @override
+  LineChartTouchEvent resolveTouch(Size area, Offset touch) {
+    final scaledPoints = points.map((p) => p._locationWithin(area)).toList();
+
+    int nearest;
+    int nearestHoriz;
+    double nearestDist = double.infinity;
+    double nearestHorizDist = double.infinity;
+
+    for (var i = 0; i < scaledPoints.length; i++) {
+      final point = scaledPoints[i];
+      final offset = point - touch;
+
+      final d = (point - touch).distanceSquared;
+
+      if (d < nearestDist) {
+        nearest = i;
+        nearestDist = d;
+      }
+
+      if (offset.dx.abs() < nearestHorizDist) {
+        nearestHoriz = i;
+        nearestHorizDist = offset.dx.abs();
+      }
+    }
+
+    return new LineChartTouchEvent(nearest, nearestHoriz);
+  }
 
   void _moveToLineTo(CanvasArea bounds, Path path, Offset point, {bool moveTo: false}) {
     var bounded = bounds.boundPoint(point);
@@ -117,7 +160,7 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable> {
 
       // scale points to the canvas
       final scaledPoints = segment.map((p) {
-        final loc = p._locationWithin(area);
+        final loc = p._locationWithin(area.size);
         pointToLoc[p] = loc;
         return loc;
       }).toList();
@@ -272,9 +315,9 @@ class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
   }
 
   /// Get the coordinates of this point witin a canvas area.
-  Offset _locationWithin(CanvasArea area) {
-    final width = area.width;
-    final height = area.height;
+  Offset _locationWithin(Size size) {
+    final width = size.width;
+    final height = size.height;
 
     final actualX = x * width;
     final actualY = (1 - value) * height;

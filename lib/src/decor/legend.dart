@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:fcharts/src/utils/chart_position.dart';
 import 'package:fcharts/src/utils/painting.dart';
 import 'package:flutter/material.dart';
-
+import 'package:collection/collection.dart';
 
 enum LegendLayout {
   /// Each item is on the same horizontal plane, they are
@@ -35,41 +35,64 @@ class LegendData {
   final Offset offset;
 
   void draw(CanvasArea fullArea, CanvasArea chartArea) {
+    double width, height;
+
     if (layout == LegendLayout.vertical) {
-      final totalHeight = items.map((item) => item.height).fold(0.0, (a, b) => a + b);
-      final maxWidth = items.map((item) => item.width).reduce(math.max);
+      width = items.map((item) => item.width).reduce(math.max);
+      height = items.map((item) => item.height).reduce((a, b) => a + b);
+    }
+    else {
+      width = items.map((item) => item.width).reduce((a, b) => a + b);
+      height = items.map((item) => item.height).reduce(math.max);
+    }
 
-      Offset topLeft;
-      Size size;
+    double x, y;
+    Size size = new Size(width, height);
 
-      switch (position) {
-        case ChartPosition.right:
-          topLeft = chartArea.rect.centerRight.translate(0.0, -totalHeight / 2);
-          size = new Size(
-            fullArea.width - chartArea.width - chartArea.rect.left,
-            totalHeight
-          );
-          break;
-        case ChartPosition.left:
-          topLeft = chartArea.rect.centerLeft.translate(-chartArea.rect.left, -totalHeight / 2);
-          size = new Size(
-            chartArea.rect.left,
-            totalHeight
-          );
-          break;
-        default:
-          break;
-      }
+    switch (position) {
+      case ChartPosition.right:
+        x = chartArea.width;
+        y = chartArea.height / 2 - height / 2;
+        break;
+      case ChartPosition.left:
+        x = -width;
+        y = chartArea.height / 2 - height / 2;
+        break;
+      case ChartPosition.top:
+        x = chartArea.width / 2 - width / 2;
+        y = -height;
+        break;
+      case ChartPosition.bottom:
+        x = chartArea.width / 2 - width / 2;
+        y = chartArea.height;
+        break;
+      default:
+        break;
+    }
 
-      final legendRect = (topLeft + offset) & size;
-      final legendArea = fullArea.child(legendRect);
+    final legendRect = offset.translate(x, y) & size;
+    final legendArea = chartArea.child(legendRect);
 
+    var d = 0.0;
+    if (layout == LegendLayout.vertical) {
       for (var i = 0; i < items.length; i++) {
-        final offset = i / items.length * legendRect.height;
+        final curr = items[i];
         final legendItemArea = legendArea.child(new Rect.fromLTWH(
-          0.0, offset, legendArea.width, legendRect.height / items.length
+          (legendRect.width - curr.width) / 2, d, legendArea.width, legendRect.height / items.length
         ));
+        legendItemArea.drawDebugCross(color: Colors.blue);
         items[i].draw(legendItemArea);
+        d += curr.height;
+      }
+    }
+    else {
+      for (var i = 0; i < items.length; i++) {
+        final curr = items[i];
+        final legendItemArea = legendArea.child(new Rect.fromLTWH(
+          d, (legendRect.height - curr.height) / 2, legendArea.width / items.length, legendRect.height
+        ));
+        curr.draw(legendItemArea);
+        d += curr.width;
       }
     }
   }
@@ -80,8 +103,7 @@ class LegendItemData {
     this.symbol,
     this.text: '',
     this.textStyle: const TextStyle(color: Colors.black),
-    this.padding: const EdgeInsets.all(5.0),
-    this.fixedWidth,
+    this.padding: const EdgeInsets.all(0.0),
   });
 
   final LegendSymbol symbol;
@@ -91,10 +113,6 @@ class LegendItemData {
   final TextStyle textStyle;
 
   final EdgeInsets padding;
-
-  /// The fixed width of this legend item. When set to null, the width
-  /// is automatically computed based on the width of the text and symbol.
-  final double fixedWidth;
 
   void draw(CanvasArea area) {
     // contract area by padding
@@ -111,7 +129,7 @@ class LegendItemData {
     final textArea = area.child(new Rect.fromLTWH(
       symbol.width, (maxHeight - textPainter.height), width - symbol.width, textPainter.height
     ));
-    textArea.drawText(Offset.zero, text, options: textOptions);
+    textArea.drawText(new Offset(3.0, 0.0), text, options: textOptions);
 
     // draw symbol
     final symbolArea = area.child(new Rect.fromLTWH(
@@ -130,7 +148,7 @@ class LegendItemData {
 
   /// The total width of this legend.
   double get width =>
-    math.max(symbol.width, _textOptions.build(text).width) + padding.vertical;
+    symbol.width + _textOptions.build(text).width + padding.horizontal + 3.0;
 }
 
 

@@ -5,7 +5,8 @@ import 'package:fcharts/src/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-abstract class Chart<Datum> extends StatelessWidget {
+
+abstract class Chart<Datum> extends StatefulWidget {
   final List<AxisBase<Datum>> axes;
   final EdgeInsets padding;
 
@@ -25,16 +26,20 @@ abstract class Chart<Datum> extends StatelessWidget {
 
 abstract class AxisBase<T> {
   AxisBase({
-    this.id,
-    this.stroke,
-    this.labelStyle,
-    this.position
+    @required this.id,
+    @required this.stroke,
+    @required this.labelStyle,
+    @required this.position,
+    @required this.size,
+    @required this.offset,
   });
 
   final String id;
   final PaintOptions stroke;
   final TextStyle labelStyle;
   final ChartPosition position;
+  final double size;
+  final double offset;
 }
 
 class XAxis<Datum> extends AxisBase<Datum> {
@@ -43,10 +48,12 @@ class XAxis<Datum> extends AxisBase<Datum> {
     String id,
     PaintOptions stroke: const PaintOptions.stroke(),
     TextStyle labelStyle: const TextStyle(color: Colors.black),
-    ChartPosition position: ChartPosition.bottom
+    ChartPosition position: ChartPosition.bottom,
+    double size,
+    double offset: 0.0,
   }) :
       assert(position == ChartPosition.top || position == ChartPosition.bottom),
-      super(id: id, stroke: stroke, labelStyle: labelStyle, position: position);
+      super(id: id, stroke: stroke, labelStyle: labelStyle, position: position, size: size, offset: offset);
 
   final UnaryFunction<Datum, String> label;
 }
@@ -59,10 +66,12 @@ class YAxis<Datum> extends AxisBase<Datum> {
     String id,
     PaintOptions stroke: const PaintOptions.stroke(),
     TextStyle labelStyle: const TextStyle(color: Colors.black),
-    ChartPosition position: ChartPosition.left
+    ChartPosition position: ChartPosition.left,
+    double size,
+    double offset: 0.0,
   }) :
       assert(position == ChartPosition.left || position == ChartPosition.right),
-      super(id: id,stroke: stroke, labelStyle: labelStyle, position: position);
+      super(id: id, stroke: stroke, labelStyle: labelStyle, position: position, size: size, offset: offset);
 
   final UnaryFunction<double, String> label;
   final Range range;

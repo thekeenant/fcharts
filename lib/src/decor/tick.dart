@@ -1,5 +1,6 @@
 import 'dart:ui' show lerpDouble;
 
+import 'package:collection/collection.dart';
 import 'package:fcharts/src/decor/axis.dart';
 import 'package:fcharts/src/utils/painting.dart';
 import 'package:fcharts/src/utils/merge_tween.dart';
@@ -54,17 +55,26 @@ class AxisTickData implements MergeTweenable<AxisTickData> {
 
 /// Lerp between two axis ticks.
 class _AxisTickDataTween extends Tween<AxisTickData> {
-  _AxisTickDataTween(AxisTickData begin, AxisTickData end) : super(begin: begin, end: end);
+  _AxisTickDataTween(AxisTickData begin, AxisTickData end) :
+      super(begin: begin, end: end) {
+
+    Function listsEqual = const ListEquality().equals;
+    _labelersEqual = listsEqual(begin.labelers, end.labelers);
+  }
+
+  bool _labelersEqual;
 
   @override
   AxisTickData lerp(double t) {
-    double opacity;
+    double opacity = 1.0;
 
-    // fade to 0 at t=0.5, then to 1
-    if (t < 0.5)
-      opacity = lerpDouble(begin.opacity, 0.0, t * 2);
-    else
-      opacity = lerpDouble(0.0, end.opacity, (t - 0.5) * 2);
+    if (!_labelersEqual) {
+      // fade to 0 at t=0.5, then to 1
+      if (t < 0.5)
+        opacity = lerpDouble(begin.opacity, 0.0, t * 2);
+      else
+        opacity = lerpDouble(0.0, end.opacity, (t - 0.5) * 2);
+    }
 
     return new AxisTickData(
       value: lerpDouble(begin.value, end.value, t),
@@ -111,6 +121,15 @@ class TextTickLabeler implements TickLabeler {
     return style.copyWith(
       color: (style.color ?? Colors.black).withOpacity(opacity)
     );
+  }
+
+  @override
+  bool operator ==(o) {
+    if (o is TextTickLabeler) {
+      return text == o.text && style == o.style && offset == o.offset &&
+              rotation == o.rotation && distance == o.distance;
+    }
+    return false;
   }
 
   @override
@@ -176,6 +195,12 @@ class NotchTickLabeler implements TickLabeler {
     return paint.copyWith(
       color: (paint.color ?? Colors.black).withOpacity(opacity)
     );
+  }
+
+  @override
+  bool operator ==(o) {
+    return o is NotchTickLabeler && length == o.length && paint == o.paint &&
+            begin == o.begin;
   }
 
   @override

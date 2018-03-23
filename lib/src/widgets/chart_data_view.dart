@@ -6,6 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'dart:math';
 
+typedef void ChartTouchListener(int pointer, Map<int, ChartTouchEvent> events);
+typedef void ChartTouchCallback(int pointer);
+
 /// The rotation of a chart.
 @immutable
 class ChartRotation {
@@ -31,8 +34,11 @@ class ChartDataView extends StatefulWidget {
     this.decor,
     this.rotation: ChartRotation.none,
     this.chartPadding: const EdgeInsets.all(0.0),
-    this.animationDuration: const Duration(milliseconds: 500),
+    this.animationDuration: const Duration(milliseconds: 400),
     this.animationCurve: Curves.fastOutSlowIn,
+    this.onTouch,
+    this.onMove,
+    this.onRelease,
   }) :
       assert(charts != null),
       assert(rotation != null),
@@ -59,6 +65,12 @@ class ChartDataView extends StatefulWidget {
 
   /// The animation curve.
   final Curve animationCurve;
+
+  final ChartTouchListener onTouch;
+
+  final ChartTouchListener onMove;
+
+  final ChartTouchCallback onRelease;
 
   @override
   _ChartDataViewState createState() => new _ChartDataViewState();
@@ -128,9 +140,14 @@ class _ChartDataViewState extends State<ChartDataView> with TickerProviderStateM
   }
 
   void _updatePainter() {
+    // TODO: Figure out why Duration.zero doesn't actually work...
+    var duration = widget.animationDuration ?? Duration.zero;
+    if (duration.inMilliseconds == 0)
+      duration = new Duration(milliseconds: 1);
+
     _controller = new AnimationController(
       vsync: this,
-      duration: widget.animationDuration ?? Duration.zero,
+      duration: duration
     );
     _curve = new CurvedAnimation(
       parent: _controller,
@@ -141,6 +158,7 @@ class _ChartDataViewState extends State<ChartDataView> with TickerProviderStateM
     setState(() {
       _painter = painter;
     });
+
     _controller.forward(from: 0.0);
   }
 
@@ -158,10 +176,36 @@ class _ChartDataViewState extends State<ChartDataView> with TickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    return new CustomPaint(
-      key: _paintKey,
-      painter: _painter,
-      child: new AspectRatio(aspectRatio: 1.0),
+    return new Listener(
+      onPointerDown: (event) {
+        if (widget.onTouch != null) {
+          RenderBox box = _paintKey.currentContext.findRenderObject();
+          Offset offset = box.globalToLocal(event.position);
+          final events = _painter.resolveTouch(offset, box.size);
+          if (events != null)
+            widget.onTouch(event.pointer, events);
+        }
+      },
+      onPointerMove: (event) {
+        if (widget.onMove != null) {
+          RenderBox box = _paintKey.currentContext.findRenderObject();
+          Offset offset = box.globalToLocal(event.position);
+
+          final events = _painter.resolveTouch(offset, box.size);
+          if (events != null)
+            widget.onMove(event.pointer, events);
+        }
+      },
+      onPointerUp: (event) {
+        if (widget.onRelease != null) {
+          widget.onRelease(event.pointer);
+        }
+      },
+      child: new CustomPaint(
+        key: _paintKey,
+        painter: _painter,
+        child: new AspectRatio(aspectRatio: 1.0),
+      ),
     );
   }
 }
@@ -173,6 +217,8 @@ class _ChartPainter extends CustomPainter {
   final ChartRotation rotation;
   final EdgeInsets chartPadding;
 
+  Size _size;
+
   _ChartPainter({
     @required this.charts,
     @required this.decor,
@@ -182,8 +228,37 @@ class _ChartPainter extends CustomPainter {
   }) :
       super(repaint: repaint);
 
+  Map<int, ChartTouchEvent> resolveTouch(Offset touch, Size boxSize) {
+    print(touch);
+
+
+    final size = _size ?? boxSize;
+    final touchChart = touch.translate(-chartPadding.left, -chartPadding.top);
+
+    final width = size.width - chartPadding.left - chartPadding.right;
+    final height = size.height - chartPadding.top - chartPadding.bottom;
+
+    if (touchChart.dx < 0 || touchChart.dy < 0)
+      return null;
+    if (touchChart.dx > width || touchChart.dy > height)
+      return null;
+
+    final events = <int, ChartTouchEvent>{};
+
+    for (var i = 0; i < charts.length; i++) {
+      final chart = charts[i];
+
+      final event = chart.value.resolveTouch(new Size(width, height), touchChart);
+      events[i] = event;
+    }
+
+    return events;
+  }
+
   @override
   void paint(Canvas canvas, Size size) {
+    _size = size;
+
     // it is important to definitively not draw outside the canvas so we clip
     //  to the size of the canvas. subsequent drawings can be clipped further
     // (i.e. the chart should stay within its bounds, not reach outside the
@@ -216,16 +291,15 @@ class _ChartPainter extends CustomPainter {
     var canvasArea = new CanvasArea.fromCanvas(canvas, canvasSize);
     var chartArea = canvasArea;
 
-    if (decor != null)
+    if (decor != null) {
       chartArea = chartArea.contract(chartPadding);
+      decor.value.draw(canvasArea, chartArea);
+    }
 
     for (final animation in charts) {
       final chart = animation.value;
       chart.draw(chartArea);
     }
-
-    if (decor != null)
-      decor.value.draw(canvasArea, chartArea);
 
     // restore to before clip (see start of method)
     canvas.restore();

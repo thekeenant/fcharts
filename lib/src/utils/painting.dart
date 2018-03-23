@@ -67,8 +67,7 @@ class CanvasArea {
 
   /// Construct a canvas area that resides somewhere within this canvas area.
   CanvasArea child(Rect child) {
-    final bounded = isCanvas ? boundRect(child) : child;
-    final offsetRect = bounded.shift(rect.topLeft);
+    final offsetRect = child.shift(rect.topLeft);
     return new CanvasArea._(canvas, offsetRect);
   }
 
@@ -192,6 +191,15 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
     this.gradient,
     this.style: PaintingStyle.fill
   });
+
+  bool operator ==(o) {
+    if (o is PaintOptions) {
+      return color == o.color && strokeWidth == o.strokeWidth &&
+              strokeCap == o.strokeCap && gradient == o.gradient &&
+              style == o.style;
+    }
+    return false;
+  }
 
   /// Construct paint options automatically with stroke, instead
   /// of the default fill painting style.

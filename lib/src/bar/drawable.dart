@@ -9,79 +9,19 @@ import 'package:fcharts/src/utils/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
+
+class BarGraphTouchEvent implements ChartTouchEvent {
+
+}
+
 /// A drawable bar graph.
 @immutable
-class BarGraphDrawable implements ChartDrawable<BarGraphDrawable> {
+class BarGraphDrawable implements ChartDrawable<BarGraphDrawable, BarGraphTouchEvent> {
   const BarGraphDrawable({
     @required this.groups
   });
 
   final List<BarGroupDrawable> groups;
-
-  /// Generate a randomized pretty bar graph!
-  factory BarGraphDrawable.random() {
-    var random = new math.Random();
-
-    final groupCount = random.nextInt(4) + 1;
-    final stackCount = 3;
-
-    final groupWidthFraction = 0.75;
-    final stackWidthFraction = 0.9;
-
-    final groupDistance = 1 / groupCount;
-    final groupWidth = groupDistance * groupWidthFraction;
-
-    final startX = groupDistance * (1 - groupWidthFraction) / 2;
-
-    final groups = new List.generate(groupCount, (i) {
-      final stackDistance = groupWidth / stackCount;
-      final stackWidth = stackDistance * stackWidthFraction;
-
-      final groupX = startX + i * groupDistance;
-
-      final stacks = new List.generate(stackCount, (j) {
-        final barCount = random.nextInt(4) + 1;
-
-        final baseColor = ColorPalette.primary[j];
-        final monochrome = new ColorPalette.monochrome(baseColor, barCount * 2);
-
-        final stackX = groupX + j * stackDistance + stackDistance * (1 - stackWidthFraction) / 2;
-
-        var lastMax = 0.0;
-
-        final bars = new List.generate(barCount, (k) {
-          final base = lastMax;
-          final value = base + random.nextDouble() * 0.3;
-          lastMax = value;
-
-          return new BarDrawable(
-            value: value.clamp(0.0, 1.0).toDouble(),
-            base: base.clamp(0.0, 1.0).toDouble(),
-            stackBase: 0.0,
-            paint: [
-              new PaintOptions(
-                color: monochrome[k]
-              )
-            ],
-          );
-        });
-
-        return new BarStackDrawable(
-          x: stackX,
-          width: stackWidth,
-          bars: bars
-        );
-      });
-
-      return new BarGroupDrawable(
-        stacks: stacks,
-      );
-    });
-
-    return new BarGraphDrawable(
-      groups: groups
-    );
-  }
 
   @override
   void draw(CanvasArea area) {
@@ -104,6 +44,11 @@ class BarGraphDrawable implements ChartDrawable<BarGraphDrawable> {
       );
     }).toList()
   );
+
+  @override
+  BarGraphTouchEvent resolveTouch(Size area, Offset touch) {
+    return null;
+  }
 }
 
 /// Lerp between two bar graphs.

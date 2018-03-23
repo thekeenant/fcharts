@@ -12,7 +12,7 @@ class ChartAxisData implements MergeTweenable<ChartAxisData> {
     @required this.position,
     this.ticks: const [],
     this.paint: const PaintOptions.stroke(),
-    this.size: 1.0,
+    this.size,
     this.offset,
   });
 
@@ -27,7 +27,6 @@ class ChartAxisData implements MergeTweenable<ChartAxisData> {
 
   final double size;
 
-  /// TODO: when null, default to 1-size?
   final double offset;
 
   void draw(CanvasArea fullArea, CanvasArea chartArea) {
@@ -43,21 +42,19 @@ class ChartAxisData implements MergeTweenable<ChartAxisData> {
     Offset lineStart;
     Offset lineEnd;
 
-    final actualOffset = this.offset == null ? 1 - size : this.offset;
-
     switch (position) {
       case ChartPosition.top:
-        axisRect = new Offset(paddingLeft, 0.0) & new Size(
+        axisRect = new Offset(paddingLeft, offset) & new Size(
           chartArea.width,
-          paddingTop * size
+          size ?? paddingTop
         );
         lineStart = axisRect.bottomLeft;
         lineEnd = axisRect.bottomRight;
         break;
       case ChartPosition.left:
         vertical = true;
-        axisRect = new Offset(actualOffset * paddingLeft, paddingTop) & new Size(
-          paddingLeft * size,
+        axisRect = new Offset(offset, paddingTop) & new Size(
+          size ?? paddingLeft,
           chartArea.height
         );
         lineStart = axisRect.bottomRight;
@@ -65,17 +62,17 @@ class ChartAxisData implements MergeTweenable<ChartAxisData> {
         break;
       case ChartPosition.right:
         vertical = true;
-        axisRect = chartArea.rect.topRight.translate(0.0, 0.0) & new Size(
-          paddingRight * size,
+        axisRect = chartArea.rect.topRight.translate(offset, 0.0) & new Size(
+          size ?? paddingRight,
           chartArea.height
         );
         lineStart = axisRect.bottomLeft;
         lineEnd = axisRect.topLeft;
         break;
       case ChartPosition.bottom:
-        axisRect = chartArea.rect.bottomLeft.translate(0.0, 0.0) & new Size(
+        axisRect = chartArea.rect.bottomLeft.translate(0.0, offset) & new Size(
           chartArea.width,
-          paddingBottom * size
+          size ?? paddingBottom
         );
         lineStart = axisRect.topLeft;
         lineEnd = axisRect.topRight;
