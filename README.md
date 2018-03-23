@@ -9,12 +9,12 @@ Inspired by [Mikkel Ravn's tutorial](https://medium.com/flutter-io/zero-to-one-w
 **Chart examples:** (Line chart, bar chart, histogram)
 
 
-<img src="https://i.imgur.com/ZSVXaJY.gif" width="250"> <img src="https://i.imgur.com/Xggb9p4.gif" width="250"> <img src="https://i.imgur.com/rBq2r8Q.gif" width="250">
+![Bar chart demo](https://i.imgur.com/D1Rd7jk.gif) ![Histogram demo](https://i.imgur.com/gvRQytG.gif)
 
 
 **Touch event callbacks:**
 
-<img src="https://i.imgur.com/nicF2l4.gif" width="250">
+![Touch demo](https://i.imgur.com/pvHhenr.gif)
 
 ```dart
 final days = <Day>[
