@@ -8,7 +8,7 @@ dependencies:
   flutter:
     sdk: flutter
   meta: "^1.1.2"
-  collection: "^1.14.6"
+  collection: "^1.14.5"
 
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
