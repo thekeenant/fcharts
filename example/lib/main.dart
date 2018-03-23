@@ -72,7 +72,8 @@ class _MyAppState extends State<MyApp> {
             ),
             new AspectRatio(
               aspectRatio: 4/3,
-              child: new LineChart<Day>(
+              child:
+              new LineChart<Day>(
                 onTouch: (day) {
                   setState(() {
                     _active = day;
@@ -103,22 +104,11 @@ class _MyAppState extends State<MyApp> {
                     stroke: new PaintOptions.stroke(color: Colors.blue, strokeWidth: 2.0),
                     position: ChartPosition.right,
                   ),
-  //                new YAxis(
-  //                  id: 'crackers',
-  //                  label: (val) => val.toDouble().toStringAsFixed(1),
-  //                  tickCount: 11,
-  //                  range: new Range(0.0, 20.0),
-  //                  stroke: new PaintOptions.stroke(color: Colors.orange, strokeWidth: 2.0),
-  //                  position: ChartPosition.left,
-  //                  size: 50.0,
-  //                  offset: 50.0,
-  //                ),
                 ],
                 lines: [
                   new Line(
                     value: (stat) => stat.cookies.toDouble(),
                     stroke: new PaintOptions.stroke(color: Colors.green, strokeWidth: 2.0),
-  //                  fill: new PaintOptions(color: Colors.green.withOpacity(0.3)),
                     pointPaint: (stat) => [
                       new PaintOptions(color: Colors.green),
                     ],
@@ -127,20 +117,10 @@ class _MyAppState extends State<MyApp> {
                     value: (stat) => stat.brownies.toDouble(),
                     yAxisId: 'brownies',
                     stroke: new PaintOptions.stroke(color: Colors.blue, strokeWidth: 2.0),
-  //                  fill: new PaintOptions(color: Colors.blue.withOpacity(0.3)),
                     pointPaint: (stat) => [
                       new PaintOptions(color: Colors.blue)
                     ],
                   ),
-  //                new Line(
-  //                  value: (stat) => stat.crackers.toDouble(),
-  //                  yAxisId: 'crackers',
-  //                  stroke: new PaintOptions.stroke(color: Colors.orange, strokeWidth: 2.0),
-  //                  fill: new PaintOptions(color: Colors.orange.withOpacity(0.3)),
-  //                  pointPaint: (stat) => [
-  //                    new PaintOptions(color: Colors.orange)
-  //                  ],
-  //                ),
                 ],
               ),
             ),
