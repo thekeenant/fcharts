@@ -24,8 +24,15 @@ class LineChart<Datum> extends Chart<Datum> {
     this.onRelease,
     List<AxisBase<Datum>> axes: const [],
     EdgeInsets padding: const EdgeInsets.all(50.0),
+    Curve animationCurve: Curves.fastOutSlowIn,
+    Duration animationDuration: const Duration(milliseconds: 500),
     Legend legend,
-  }) : super(axes: axes, padding: padding, legend: legend,);
+  }) : super(
+            axes: axes,
+            padding: padding,
+            legend: legend,
+            animationCurve: animationCurve,
+            animationDuration: animationDuration);
 
   final List<Line<Datum>> lines;
   final List<Datum> data;
@@ -71,17 +78,11 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
         if (value < autoRange.min) autoRange = new Range(value, autoRange.max);
         if (value > autoRange.max) autoRange = new Range(autoRange.min, value);
 
-        var radiusFactor = 1.0;
-
-        if (_active.containsValue(j)) {
-          radiusFactor *= 2;
-        }
-
         return new LinePointData(
           x: x,
           value: value,
           paint: line.pointPaint == null ? [] : line.pointPaint(datum),
-          radius: radiusFactor * (line.pointRadius == null ? 3.0 : line.pointRadius(datum)),
+          radius: line.pointRadius == null ? 3.0 : line.pointRadius(datum),
         );
       });
 
@@ -127,7 +128,9 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
                     text: text,
                     style: axis.labelStyle,
                   ),
-                  new NotchTickLabeler(paint: axis.stroke),
+                  new NotchTickLabeler(
+                    paint: axis.stroke, 
+                  ),
                 ],
               );
             }));
@@ -152,7 +155,9 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
                   text: axis.label(rangedValue),
                   style: axis.labelStyle,
                 ),
-                new NotchTickLabeler(paint: axis.stroke),
+                new NotchTickLabeler(
+                  paint: axis.stroke,
+                ),
               ],
             );
           }),
@@ -162,7 +167,9 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
 
     var legendData;
     if (legend != null) {
-      final padding = legend.layout == LegendLayout.horizontal ? new EdgeInsets.only(right: 5.0) : new EdgeInsets.only(bottom: 5.0);
+      final padding = legend.layout == LegendLayout.horizontal
+          ? new EdgeInsets.only(right: 5.0)
+          : new EdgeInsets.only(bottom: 5.0);
 
       legendData = new LegendData(
         layout: legend.layout,
@@ -173,7 +180,7 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
 
           return new LegendItemData(
             symbol: new LegendSquareSymbol(
-              paint: [line.stroke.copyWith(style: PaintingStyle.fill)]
+              paint: [line.stroke.copyWith(style: PaintingStyle.fill)],
             ),
             text: line.name ?? "",
             padding: padding,
@@ -184,8 +191,8 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
 
     return new ChartDataView(
       charts: lineCharts,
-      animationDuration:
-          _active.isEmpty ? new Duration(milliseconds: 500) : new Duration(milliseconds: 200),
+      animationCurve: widget.animationCurve,
+      animationDuration: widget.animationDuration,
       onMove: (pointer, events) {
         for (final event in events.values) {
           int active = (event as LineChartTouchEvent).nearestHorizontally;

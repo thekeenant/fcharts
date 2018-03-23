@@ -223,8 +223,6 @@ class _ChartPainter extends CustomPainter {
   }) : super(repaint: repaint);
 
   Map<int, ChartTouchEvent> resolveTouch(Offset touch, Size boxSize) {
-    print(touch);
-
     final size = _size ?? boxSize;
     final touchChart = touch.translate(-chartPadding.left, -chartPadding.top);
 

@@ -37,9 +37,16 @@ class _MyAppState extends State<MyApp> {
   ];
 
   Day _active;
+  DateTime _releasedAt = new DateTime.now();
 
   @override
   Widget build(BuildContext context) {
+    var ms = 200;
+    if (_active == null) {
+      final now = new DateTime.now();
+      if (now.difference(_releasedAt) > new Duration(milliseconds: 50)) ms = 1000;
+    }
+
     return new MaterialApp(
       home: new Scaffold(
         appBar: new AppBar(
@@ -67,14 +74,18 @@ class _MyAppState extends State<MyApp> {
               aspectRatio: 4 / 3,
               child: new LineChart<Day>(
                 onTouch: (day) {
-                  setState(() {
-                    _active = day;
-                  });
+                  setState(() => _active = day);
                 },
                 onRelease: () {
-                  setState(() => _active = null);
+                  setState(() {
+                    _active = null;
+                    _releasedAt = new DateTime.now();
+                  });
                 },
                 data: days,
+                animationDuration: new Duration(
+                  milliseconds: ms,
+                ),
                 padding: new EdgeInsets.only(left: 40.0, bottom: 50.0, right: 40.0, top: 15.0),
                 axes: [
                   new XAxis(label: (stat) => stat.name, size: 30.0),
@@ -82,7 +93,6 @@ class _MyAppState extends State<MyApp> {
                     label: (val) => val.toInt().toString(),
                     tickCount: 5,
                     range: new Range(0.0, 15.0),
-                    position: ChartPosition.left,
                     stroke: new PaintOptions.stroke(color: Colors.green, strokeWidth: 2.0),
                   ),
                   new YAxis(
@@ -91,7 +101,7 @@ class _MyAppState extends State<MyApp> {
                     tickCount: 11,
                     range: new Range(0.0, 8.0),
                     stroke: new PaintOptions.stroke(color: Colors.blue, strokeWidth: 2.0),
-                    position: ChartPosition.right,
+                    opposite: true,
                   ),
                 ],
                 lines: [
@@ -99,14 +109,24 @@ class _MyAppState extends State<MyApp> {
                     name: 'Cookies',
                     value: (stat) => stat.cookies.toDouble(),
                     stroke: new PaintOptions.stroke(color: Colors.green, strokeWidth: 2.0),
-                    pointPaint: (stat) => [new PaintOptions(color: Colors.green)],
+                    pointPaint: (day) => [
+                          new PaintOptions(
+                            color: Colors.green,
+                          ),
+                        ],
+                    pointRadius: (day) => _active == day ? 5.0 : 3.0,
                   ),
                   new Line(
                     name: 'Brownies',
                     value: (stat) => stat.brownies.toDouble(),
                     yAxisId: 'brownies',
                     stroke: new PaintOptions.stroke(color: Colors.blue, strokeWidth: 2.0),
-                    pointPaint: (stat) => [new PaintOptions(color: Colors.blue)],
+                    pointPaint: (day) => [
+                          new PaintOptions(
+                            color: Colors.blue,
+                          ),
+                        ],
+                    pointRadius: (day) => _active == day ? 5.0 : 3.0,
                   ),
                 ],
                 legend: new Legend(),
