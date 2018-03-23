@@ -11,7 +11,10 @@ import 'package:meta/meta.dart';
 class ChartDecor {
   static const ChartDecor none = const ChartDecor();
 
-  const ChartDecor({this.axes: const [], this.legend}) : assert(axes != null);
+  const ChartDecor({
+    this.axes: const [],
+    this.legend,
+  }) : assert(axes != null);
 
   /// List of axes to draw around the chart. If two axes have the same
   /// [ChartPosition], they are drawn from the center of the chart outward in
@@ -56,6 +59,8 @@ class ChartDecorTween extends Tween<ChartDecor> {
   @override
   ChartDecor lerp(double t) {
     return new ChartDecor(
-        axes: _axesTween.lerp(t), legend: t < 0.5 ? begin.legend : end.legend);
+      axes: _axesTween.lerp(t),
+      legend: t < 0.5 ? begin.legend : end.legend,
+    );
   }
 }

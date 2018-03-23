@@ -24,7 +24,10 @@ class LineChart<Datum> extends Chart<Datum> {
     this.onRelease,
     List<AxisBase<Datum>> axes: const [],
     EdgeInsets padding: const EdgeInsets.all(50.0),
-  }) : super(axes: axes, padding: padding);
+  }) : super(
+          axes: axes,
+          padding: padding,
+        );
 
   final List<Line<Datum>> lines;
   final List<Datum> data;
@@ -76,11 +79,11 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
         }
 
         return new LinePointData(
-            x: x,
-            value: value,
-            paint: line.pointPaint == null ? [] : line.pointPaint(datum),
-            radius: radiusFactor *
-                (line.pointRadius == null ? 3.0 : line.pointRadius(datum)));
+          x: x,
+          value: value,
+          paint: line.pointPaint == null ? [] : line.pointPaint(datum),
+          radius: radiusFactor * (line.pointRadius == null ? 3.0 : line.pointRadius(datum)),
+        );
       });
 
       autoRanges[yAxis] = autoRange;
@@ -155,9 +158,8 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
 
     return new ChartDataView(
       charts: lineCharts,
-      animationDuration: _active.isEmpty
-          ? new Duration(milliseconds: 500)
-          : new Duration(milliseconds: 200),
+      animationDuration:
+          _active.isEmpty ? new Duration(milliseconds: 500) : new Duration(milliseconds: 200),
       onMove: (pointer, events) {
         for (final event in events.values) {
           int active = (event as LineChartTouchEvent).nearestHorizontally;
@@ -167,7 +169,6 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
           });
 
           if (widget.onTouch != null) widget.onTouch(widget.data[active]);
-
           break;
         }
       },
@@ -197,23 +198,13 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
               items: [
                 new LegendItemData(
                     padding: new EdgeInsets.only(bottom: 10.0, right: 10.0),
-                    symbol: new LegendSquareSymbol(
-                        paint: [const PaintOptions(color: Colors.green)]),
+                    symbol:
+                        new LegendSquareSymbol(paint: [const PaintOptions(color: Colors.green)]),
                     text: 'Cookies'),
                 new LegendItemData(
                     padding: new EdgeInsets.only(bottom: 10.0, right: 10.0),
-                    symbol: new LegendSquareSymbol(
-                        paint: [const PaintOptions(color: Colors.blue)]),
+                    symbol: new LegendSquareSymbol(paint: [const PaintOptions(color: Colors.blue)]),
                     text: 'Brownies'),
-//            new LegendItemData(
-//              padding: new EdgeInsets.only(bottom: 10.0),
-//              symbol: new LegendSquareSymbol(
-//                paint: [
-//                  const PaintOptions(color: Colors.orange)
-//                ]
-//              ),
-//              text: 'Crackers'
-//            )
               ])),
       chartPadding: padding,
     );
@@ -221,15 +212,16 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
 }
 
 class Line<T> {
-  Line(
-      {@required this.value,
-      this.xAxisId,
-      this.yAxisId,
-      this.stroke: const PaintOptions.stroke(),
-      this.fill,
-      this.curve: LineCurves.monotone,
-      this.pointPaint,
-      this.pointRadius});
+  Line({
+    @required this.value,
+    this.xAxisId,
+    this.yAxisId,
+    this.stroke: const PaintOptions.stroke(),
+    this.fill,
+    this.curve: LineCurves.monotone,
+    this.pointPaint,
+    this.pointRadius,
+  });
 
   final UnaryFunction<T, double> value;
   final String xAxisId;

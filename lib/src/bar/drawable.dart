@@ -10,9 +10,10 @@ class BarGraphTouchEvent implements ChartTouchEvent {}
 
 /// A drawable bar graph.
 @immutable
-class BarGraphDrawable
-    implements ChartDrawable<BarGraphDrawable, BarGraphTouchEvent> {
-  const BarGraphDrawable({@required this.groups});
+class BarGraphDrawable implements ChartDrawable<BarGraphDrawable, BarGraphTouchEvent> {
+  const BarGraphDrawable({
+    @required this.groups,
+  });
 
   final List<BarGroupDrawable> groups;
 
@@ -24,20 +25,22 @@ class BarGraphDrawable
   }
 
   @override
-  _BarGraphDrawableTween tweenTo(BarGraphDrawable end) =>
-      new _BarGraphDrawableTween(this, end);
+  _BarGraphDrawableTween tweenTo(BarGraphDrawable end) => new _BarGraphDrawableTween(this, end);
 
   @override
   BarGraphDrawable get empty => new BarGraphDrawable(
-          groups: groups.map((group) {
-        return new BarGroupDrawable(
+        groups: groups.map((group) {
+          return new BarGroupDrawable(
             stacks: group.stacks.map((stack) {
-          return stack.empty;
-        }).toList());
-      }).toList());
+              return stack.empty;
+            }).toList(),
+          );
+        }).toList(),
+      );
 
   @override
   BarGraphTouchEvent resolveTouch(Size area, Offset touch) {
+    // todo
     return null;
   }
 }
@@ -52,20 +55,26 @@ class _BarGraphDrawableTween extends Tween<BarGraphDrawable> {
 
   @override
   BarGraphDrawable lerp(double t) {
-    return new BarGraphDrawable(groups: _groupsTween.lerp(t));
+    return new BarGraphDrawable(
+      groups: _groupsTween.lerp(t),
+    );
   }
 }
 
 /// A group of bar stacks.
 @immutable
 class BarGroupDrawable implements MergeTweenable<BarGroupDrawable> {
-  const BarGroupDrawable({@required this.stacks}) : assert(stacks != null);
+  const BarGroupDrawable({
+    @required this.stacks,
+  }) : assert(stacks != null);
 
   /// The group of bar stacks.
   final List<BarStackDrawable> stacks;
 
   @override
-  BarGroupDrawable get empty => new BarGroupDrawable(stacks: []);
+  BarGroupDrawable get empty => new BarGroupDrawable(
+        stacks: [],
+      );
 
   @override
   Tween<BarGroupDrawable> tweenTo(BarGroupDrawable other) {
@@ -137,8 +146,7 @@ class BarStackDrawable implements MergeTweenable<BarStackDrawable> {
       final stackSize = new Size(width * chartArea.width, chartArea.height);
 
       // the area of the stack
-      final stackArea =
-          chartArea.child(new Offset(x * chartArea.width, 0.0) & stackSize);
+      final stackArea = chartArea.child(new Offset(x * chartArea.width, 0.0) & stackSize);
 
       // draw the bar
       bar.draw(stackArea);
@@ -149,8 +157,11 @@ class BarStackDrawable implements MergeTweenable<BarStackDrawable> {
   /// It retains it's x value but removes all bars and shrinks to 0 width.
   ///
   /// This can be overridden on a per-barstack basis with [collapsed].
-  static BarStackDrawable collapse(BarStackDrawable stack) =>
-      new BarStackDrawable(x: stack.x, width: 0.0, bars: []);
+  static BarStackDrawable collapse(BarStackDrawable stack) => new BarStackDrawable(
+        x: stack.x,
+        width: 0.0,
+        bars: [],
+      );
 }
 
 /// Lerp between two bar stacks.
@@ -173,15 +184,16 @@ class _BarStackDrawableTween extends Tween<BarStackDrawable> {
 /// A segment of a stacked bar.
 @immutable
 class BarDrawable implements MergeTweenable<BarDrawable> {
-  const BarDrawable(
-      {@required this.value,
-      @required this.base,
-      @required this.stackBase,
-      this.paint: const [const PaintOptions()],
-      this.paintGenerator,
-      this.widthFactor: 1.0,
-      this.xOffset: 0.0,
-      this.collapsed});
+  const BarDrawable({
+    @required this.value,
+    @required this.base,
+    @required this.stackBase,
+    this.paint: const [const PaintOptions()],
+    this.paintGenerator,
+    this.widthFactor: 1.0,
+    this.xOffset: 0.0,
+    this.collapsed,
+  });
 
   /// The base of the bar, usually between 0 and 1.
   /// A value of 0 means the bar starts at the base of the graph.
@@ -216,24 +228,26 @@ class BarDrawable implements MergeTweenable<BarDrawable> {
   /// animation.
   final BarDrawable collapsed;
 
-  BarDrawable copyWith(
-      {double value,
-      double base,
-      double stackBase,
-      List<PaintOptions> paint,
-      PaintGenerator paintGenerator,
-      double widthFactor,
-      double xOffset,
-      BarDrawable collapsed}) {
+  BarDrawable copyWith({
+    double value,
+    double base,
+    double stackBase,
+    List<PaintOptions> paint,
+    PaintGenerator paintGenerator,
+    double widthFactor,
+    double xOffset,
+    BarDrawable collapsed,
+  }) {
     return new BarDrawable(
-        value: value ?? this.value,
-        base: base ?? this.base,
-        stackBase: stackBase ?? this.stackBase,
-        paint: paint ?? this.paint,
-        paintGenerator: paintGenerator ?? this.paintGenerator,
-        widthFactor: widthFactor ?? this.widthFactor,
-        xOffset: xOffset ?? this.xOffset,
-        collapsed: collapsed ?? this.collapsed);
+      value: value ?? this.value,
+      base: base ?? this.base,
+      stackBase: stackBase ?? this.stackBase,
+      paint: paint ?? this.paint,
+      paintGenerator: paintGenerator ?? this.paintGenerator,
+      widthFactor: widthFactor ?? this.widthFactor,
+      xOffset: xOffset ?? this.xOffset,
+      collapsed: collapsed ?? this.collapsed,
+    );
   }
 
   /// Generate the paint options for the area in which this bar is to painted.
@@ -245,7 +259,9 @@ class BarDrawable implements MergeTweenable<BarDrawable> {
   BarDrawable get empty {
     final collapsed = this.collapsed ?? collapse(this);
     // collapse the collapsed to itself
-    return collapsed.copyWith(collapsed: collapsed);
+    return collapsed.copyWith(
+      collapsed: collapsed,
+    );
   }
 
   @override
@@ -271,8 +287,8 @@ class BarDrawable implements MergeTweenable<BarDrawable> {
     final actualHeight = stackArea.height * barHeight;
 
     // the area of the bar
-    CanvasArea barArea = stackArea.child(
-        new Rect.fromLTWH(actualXOffset, actualTop, actualWidth, actualHeight));
+    CanvasArea barArea =
+        stackArea.child(new Rect.fromLTWH(actualXOffset, actualTop, actualWidth, actualHeight));
 
     // fill in the bar area
     for (final paint in paintFor(barArea)) {

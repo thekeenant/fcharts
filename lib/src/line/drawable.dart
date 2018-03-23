@@ -27,15 +27,14 @@ class LineChartTouchEvent implements ChartTouchEvent {
 /// A line chart is a set of points with (x, y) coordinates. A line
 /// can connect the points and an area can be filled beneath the line.
 /// Points can be illustrated by their own paint options.
-class LineChartDrawable
-    implements ChartDrawable<LineChartDrawable, LineChartTouchEvent> {
-  LineChartDrawable(
-      {@required this.points,
-      this.stroke: const PaintOptions.stroke(color: Colors.black),
-      this.fill,
-      this.curve: LineCurves.linear,
-      this.bridgeNulls: false})
-      : assert(bridgeNulls != null);
+class LineChartDrawable implements ChartDrawable<LineChartDrawable, LineChartTouchEvent> {
+  LineChartDrawable({
+    @required this.points,
+    this.stroke: const PaintOptions.stroke(color: Colors.black),
+    this.fill,
+    this.curve: LineCurves.linear,
+    this.bridgeNulls: false,
+  }) : assert(bridgeNulls != null);
 
   /// The list of points (ascending x value).
   final List<LinePointDrawable> points;
@@ -86,8 +85,7 @@ class LineChartDrawable
     return new LineChartTouchEvent(nearest, nearestHoriz);
   }
 
-  void _moveToLineTo(CanvasArea bounds, Path path, Offset point,
-      {bool moveTo: false}) {
+  void _moveToLineTo(CanvasArea bounds, Path path, Offset point, {bool moveTo: false}) {
     var bounded = bounds.boundPoint(point);
 
     // todo? remove this
@@ -185,8 +183,7 @@ class LineChartDrawable
       }
 
       // a rectangle covering the entire area of the line
-      Rect lineRect =
-          new Rect.fromPoints(new Offset(leftMostX, area.height), topRight);
+      Rect lineRect = new Rect.fromPoints(new Offset(leftMostX, area.height), topRight);
 
       // finish off the fill area
       fillPath.lineTo(lineRect.bottomRight.dx, lineRect.bottomRight.dy);
@@ -217,16 +214,16 @@ class LineChartDrawable
   }
 
   @override
-  _LineChartDrawableTween tweenTo(LineChartDrawable end) =>
-      new _LineChartDrawableTween(this, end);
+  _LineChartDrawableTween tweenTo(LineChartDrawable end) => new _LineChartDrawableTween(this, end);
 
   @override
   LineChartDrawable get empty => new LineChartDrawable(
-      points: points.map((point) => point.copyWith(value: 0.0)).toList(),
-      curve: curve,
-      stroke: stroke,
-      fill: fill,
-      bridgeNulls: bridgeNulls);
+        points: points.map((point) => point.copyWith(value: 0.0)).toList(),
+        curve: curve,
+        stroke: stroke,
+        fill: fill,
+        bridgeNulls: bridgeNulls,
+      );
 }
 
 /// Lerp between two line charts.
@@ -248,12 +245,13 @@ class _LineChartDrawableTween extends Tween<LineChartDrawable> {
 
 /// A point on a line chart.
 class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
-  LinePointDrawable(
-      {@required this.x,
-      @required this.value,
-      this.pointRadius: 3.0,
-      this.paint: const [],
-      this.collapsed});
+  LinePointDrawable({
+    @required this.x,
+    @required this.value,
+    this.pointRadius: 3.0,
+    this.paint: const [],
+    this.collapsed,
+  });
 
   /// The relative x value of this point. Should be 0..1 inclusive.
   final double x;
@@ -272,18 +270,20 @@ class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
   /// collapse to when it disappears, or when it comes from nothing.
   final LinePointDrawable collapsed;
 
-  LinePointDrawable copyWith(
-      {double x,
-      double value,
-      double pointRadius,
-      List<PaintOptions> paint,
-      LinePointDrawable collapsed}) {
+  LinePointDrawable copyWith({
+    double x,
+    double value,
+    double pointRadius,
+    List<PaintOptions> paint,
+    LinePointDrawable collapsed,
+  }) {
     return new LinePointDrawable(
-        x: x ?? this.x,
-        value: value ?? this.value,
-        pointRadius: pointRadius ?? this.pointRadius,
-        paint: paint ?? this.paint,
-        collapsed: collapsed ?? this.collapsed);
+      x: x ?? this.x,
+      value: value ?? this.value,
+      pointRadius: pointRadius ?? this.pointRadius,
+      paint: paint ?? this.paint,
+      collapsed: collapsed ?? this.collapsed,
+    );
   }
 
   /// Draw this point on the canvas within a given canvas area.

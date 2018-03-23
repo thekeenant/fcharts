@@ -9,15 +9,15 @@ abstract class Chart<Datum> extends StatefulWidget {
   final List<AxisBase<Datum>> axes;
   final EdgeInsets padding;
 
-  Chart({@required this.axes, @required this.padding})
-      : assert(axes != null),
+  Chart({
+    @required this.axes,
+    @required this.padding,
+  })  : assert(axes != null),
         assert(padding != null);
 
-  get xAxes =>
-      axes.where((a) => a is XAxis<Datum>).map((a) => a as XAxis<Datum>);
+  get xAxes => axes.where((a) => a is XAxis<Datum>).map((a) => a as XAxis<Datum>);
 
-  get yAxes =>
-      axes.where((a) => a is YAxis<Datum>).map((a) => a as YAxis<Datum>);
+  get yAxes => axes.where((a) => a is YAxis<Datum>).map((a) => a as YAxis<Datum>);
 }
 
 abstract class AxisBase<T> {
@@ -47,15 +47,15 @@ class XAxis<Datum> extends AxisBase<Datum> {
     ChartPosition position: ChartPosition.bottom,
     double size,
     double offset: 0.0,
-  })  : assert(
-            position == ChartPosition.top || position == ChartPosition.bottom),
+  })  : assert(position == ChartPosition.top || position == ChartPosition.bottom),
         super(
-            id: id,
-            stroke: stroke,
-            labelStyle: labelStyle,
-            position: position,
-            size: size,
-            offset: offset);
+          id: id,
+          stroke: stroke,
+          labelStyle: labelStyle,
+          position: position,
+          size: size,
+          offset: offset,
+        );
 
   final UnaryFunction<Datum, String> label;
 }
@@ -71,8 +71,7 @@ class YAxis<Datum> extends AxisBase<Datum> {
     ChartPosition position: ChartPosition.left,
     double size,
     double offset: 0.0,
-  })  : assert(
-            position == ChartPosition.left || position == ChartPosition.right),
+  })  : assert(position == ChartPosition.left || position == ChartPosition.right),
         super(
             id: id,
             stroke: stroke,

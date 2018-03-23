@@ -56,10 +56,7 @@ class LineChartData implements ChartData {
       final scaledValue = point.value / range.span - yOffset;
 
       return new LinePointDrawable(
-          x: x,
-          value: scaledValue,
-          paint: point.paint,
-          pointRadius: point.radius);
+          x: x, value: scaledValue, paint: point.paint, pointRadius: point.radius);
     });
 
     return new LineChartDrawable(
@@ -73,12 +70,12 @@ class LineChartData implements ChartData {
 
 /// A point on a line chart.
 class LinePointData {
-  LinePointData(
-      {@required this.x,
-      @required this.value,
-      this.paint: const [],
-      this.radius: 1.0})
-      : assert(x != null && x >= 0 && x <= 1.0),
+  LinePointData({
+    @required this.x,
+    @required this.value,
+    this.paint: const [],
+    this.radius: 1.0,
+  })  : assert(x != null && x >= 0 && x <= 1.0),
         assert(paint != null),
         assert(radius != null);
 

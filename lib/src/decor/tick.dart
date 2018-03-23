@@ -10,11 +10,12 @@ import 'package:meta/meta.dart';
 
 /// A tick located on a [ChartAxisData].
 class AxisTickData implements MergeTweenable<AxisTickData> {
-  AxisTickData(
-      {@required this.value,
-      @required this.width,
-      this.labelers: const [const NotchTickLabeler()],
-      this.opacity: 1.0});
+  AxisTickData({
+    @required this.value,
+    @required this.width,
+    this.labelers: const [const NotchTickLabeler()],
+    this.opacity: 1.0,
+  });
 
   /// The relative value of this tick. Should be 0..1 inclusive.
   /// A value of 0.25 means this tick falls at 25% the way up the axis.
@@ -38,18 +39,16 @@ class AxisTickData implements MergeTweenable<AxisTickData> {
   }
 
   @override
-  AxisTickData get empty => new AxisTickData(
-      value: value, width: width, labelers: labelers, opacity: 0.0);
+  AxisTickData get empty =>
+      new AxisTickData(value: value, width: width, labelers: labelers, opacity: 0.0);
 
   @override
-  Tween<AxisTickData> tweenTo(AxisTickData other) =>
-      new _AxisTickDataTween(this, other);
+  Tween<AxisTickData> tweenTo(AxisTickData other) => new _AxisTickDataTween(this, other);
 }
 
 /// Lerp between two axis ticks.
 class _AxisTickDataTween extends Tween<AxisTickData> {
-  _AxisTickDataTween(AxisTickData begin, AxisTickData end)
-      : super(begin: begin, end: end) {
+  _AxisTickDataTween(AxisTickData begin, AxisTickData end) : super(begin: begin, end: end) {
     Function listsEqual = const ListEquality().equals;
     _labelersEqual = listsEqual(begin.labelers, end.labelers);
   }
@@ -109,8 +108,7 @@ class TextTickLabeler implements TickLabeler {
   final double distance;
 
   _styleWithOpacity(double opacity) {
-    return style.copyWith(
-        color: (style.color ?? Colors.black).withOpacity(opacity));
+    return style.copyWith(color: (style.color ?? Colors.black).withOpacity(opacity));
   }
 
   @override
@@ -149,9 +147,7 @@ class TextTickLabeler implements TickLabeler {
     // Todo: Pass in rotation all the way down here?
 
     final textOptions = new TextOptions(
-        minWidth: minWidth,
-        textAlign: TextAlign.center,
-        style: _styleWithOpacity(opacity));
+        minWidth: minWidth, textAlign: TextAlign.center, style: _styleWithOpacity(opacity));
 
     tickArea.drawText(
       tickArea.center,
@@ -186,16 +182,12 @@ class NotchTickLabeler implements TickLabeler {
   final double begin;
 
   PaintOptions _paintWithOpacity(double opacity) {
-    return paint.copyWith(
-        color: (paint.color ?? Colors.black).withOpacity(opacity));
+    return paint.copyWith(color: (paint.color ?? Colors.black).withOpacity(opacity));
   }
 
   @override
   bool operator ==(o) {
-    return o is NotchTickLabeler &&
-        length == o.length &&
-        paint == o.paint &&
-        begin == o.begin;
+    return o is NotchTickLabeler && length == o.length && paint == o.paint && begin == o.begin;
   }
 
   @override
@@ -230,7 +222,6 @@ class NotchTickLabeler implements TickLabeler {
     }
 
     // draw the line from start to end
-    tickArea.drawLine(lineStart, lineStart.translate(lineX, lineY),
-        _paintWithOpacity(opacity));
+    tickArea.drawLine(lineStart, lineStart.translate(lineX, lineY), _paintWithOpacity(opacity));
   }
 }

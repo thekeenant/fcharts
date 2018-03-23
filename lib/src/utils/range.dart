@@ -21,7 +21,6 @@ class Range {
 
   /// Linearly interpolate between two range values and a given time.
   static Range lerp(Range begin, Range end, double t) {
-    return new Range(
-        lerpDouble(begin.min, end.min, t), lerpDouble(begin.max, end.max, t));
+    return new Range(lerpDouble(begin.min, end.min, t), lerpDouble(begin.max, end.max, t));
   }
 }

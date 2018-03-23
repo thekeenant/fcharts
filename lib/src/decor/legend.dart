@@ -16,12 +16,12 @@ enum LegendLayout {
 
 /// TODO
 class LegendData {
-  LegendData(
-      {this.items,
-      this.layout: LegendLayout.vertical,
-      this.position: ChartPosition.right,
-      this.offset: const Offset(0.0, 0.0)})
-      : assert(items != null),
+  LegendData({
+    this.items,
+    this.layout: LegendLayout.vertical,
+    this.position: ChartPosition.right,
+    this.offset: const Offset(0.0, 0.0),
+  })  : assert(items != null),
         assert(layout != null),
         assert(position != null);
 
@@ -128,32 +128,29 @@ class LegendItemData {
 
     // draw the text
     final textArea = area.child(new Rect.fromLTWH(
-        symbol.width,
-        (maxHeight - textPainter.height),
-        width - symbol.width,
-        textPainter.height));
+        symbol.width, (maxHeight - textPainter.height), width - symbol.width, textPainter.height));
     textArea.drawText(new Offset(3.0, 0.0), text, options: textOptions);
 
     // draw symbol
-    final symbolArea = area.child(new Rect.fromLTWH(
-        0.0, (maxHeight - symbol.height) / 2, symbol.width, symbol.height));
+    final symbolArea = area.child(
+        new Rect.fromLTWH(0.0, (maxHeight - symbol.height) / 2, symbol.width, symbol.height));
     symbol.draw(symbolArea);
   }
 
   TextOptions get _textOptions => new TextOptions(style: textStyle);
 
   /// The total height of this legend.
-  double get height =>
-      math.max(symbol.height, _textOptions.build(text).height) +
-      padding.vertical;
+  double get height => math.max(symbol.height, _textOptions.build(text).height) + padding.vertical;
 
   /// The total width of this legend.
-  double get width =>
-      symbol.width + _textOptions.build(text).width + padding.horizontal + 3.0;
+  double get width => symbol.width + _textOptions.build(text).width + padding.horizontal + 3.0;
 }
 
 class LegendSquareSymbol implements LegendSymbol {
-  LegendSquareSymbol({this.size: 14.0, this.paint});
+  LegendSquareSymbol({
+    this.size: 14.0,
+    this.paint,
+  });
 
   final double size;
 

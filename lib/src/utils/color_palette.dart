@@ -6,13 +6,13 @@ import 'package:flutter/material.dart';
 class ColorPalette extends ColorSwatch<int> {
   /// Primary colors from material specs.
   static final ColorPalette primary = new ColorPalette.fromList(<Color>[
-    Colors.blue[400],
-    Colors.red[400],
-    Colors.green[400],
-    Colors.yellow[400],
-    Colors.purple[400],
-    Colors.orange[400],
-    Colors.teal[400],
+    Colors.blue,
+    Colors.red,
+    Colors.green,
+    Colors.yellow,
+    Colors.purple,
+    Colors.orange,
+    Colors.teal,
   ]);
 
   ColorPalette(Color primary, Map<int, Color> colors)
@@ -20,8 +20,7 @@ class ColorPalette extends ColorSwatch<int> {
         super(primary.value, colors);
 
   factory ColorPalette.fromList(List<Color> colors) {
-    final map = new Map.fromIterables(
-        new List.generate(colors.length, (i) => i), colors);
+    final map = new Map.fromIterables(new List.generate(colors.length, (i) => i), colors);
     return new ColorPalette(map[0], map);
   }
 
@@ -39,11 +38,8 @@ class ColorPalette extends ColorSwatch<int> {
   Color random(Random random) => this[random.nextInt(length)];
 
   static Color _brighterColor(Color base, int i, int n) {
-    return new Color.fromARGB(
-        base.alpha,
-        _brighterComponent(base.red, i, n),
-        _brighterComponent(base.green, i, n),
-        _brighterComponent(base.blue, i, n));
+    return new Color.fromARGB(base.alpha, _brighterComponent(base.red, i, n),
+        _brighterComponent(base.green, i, n), _brighterComponent(base.blue, i, n));
   }
 
   static int _brighterComponent(int base, int i, int n) {
