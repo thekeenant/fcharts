@@ -1,4 +1,3 @@
-import 'dart:math' as math;
 import 'dart:ui' show lerpDouble;
 
 import 'package:fcharts/src/utils/merge_tween.dart';
@@ -10,9 +9,9 @@ import 'package:meta/meta.dart';
 class CanvasArea {
   const CanvasArea._(this.canvas, this.rect, [this.isCanvas = false]);
 
-  CanvasArea.fromCanvas(this.canvas, Size size) :
-    rect = Offset.zero & size,
-    isCanvas = true;
+  CanvasArea.fromCanvas(this.canvas, Size size)
+      : rect = Offset.zero & size,
+        isCanvas = true;
 
   /// the canvas this paint area resides
   final Canvas canvas;
@@ -36,12 +35,13 @@ class CanvasArea {
 
   /// Contract this canvas area inwards by a given [delta].
   CanvasArea contract(EdgeInsets delta) {
-    return new CanvasArea._(canvas, new Rect.fromLTWH(
-      rect.left + delta.left,
-      rect.top + delta.top,
-      rect.width - delta.left - delta.right,
-      rect.height - delta.top - delta.bottom
-    ));
+    return new CanvasArea._(
+        canvas,
+        new Rect.fromLTWH(
+            rect.left + delta.left,
+            rect.top + delta.top,
+            rect.width - delta.left - delta.right,
+            rect.height - delta.top - delta.bottom));
   }
 
   /// Expand this canvas area outwards by a given [delta].
@@ -81,69 +81,54 @@ class CanvasArea {
   }
 
   /// Force a point into this area's bounds.
-  Offset boundPoint(Offset p) => new Offset(
-    p.dx.clamp(0.0, width),
-    p.dy.clamp(0.0, height)
-  );
+  Offset boundPoint(Offset p) =>
+      new Offset(p.dx.clamp(0.0, width), p.dy.clamp(0.0, height));
 
   /// Force a rectangle into this area's bounds.
   Rect boundRect(Rect rect) => new Rect.fromPoints(
-    boundPoint(rect.topLeft),
-    boundPoint(rect.bottomRight)
-  );
+      boundPoint(rect.topLeft), boundPoint(rect.bottomRight));
 
   /// Draw an arc within a rectangle.
-  void drawArc(Rect arcArea, double startAngle, double sweepAngle, PaintOptions paint) {
+  void drawArc(
+      Rect arcArea, double startAngle, double sweepAngle, PaintOptions paint) {
     performDraw(() {
       canvas.drawArc(
-        arcArea,
-        startAngle,
-        sweepAngle,
-        false,
-        paint.build(rect: arcArea)
-      );
+          arcArea, startAngle, sweepAngle, false, paint.build(rect: arcArea));
     });
   }
 
   /// Draw a rectangle.
   void drawRect(Rect rect, PaintOptions paint) {
-    performDraw(() =>
-      canvas.drawRect(rect, paint.build(rect: rect))
-    );
+    performDraw(() => canvas.drawRect(rect, paint.build(rect: rect)));
   }
 
   /// Draw a path.
-  /// 
+  ///
   /// Warning: Make sure the path is within the bounds of this chart area
   /// by using [boundPoint]!
   void drawPath(Path path, PaintOptions paint, {Rect rect}) {
-    performDraw(() =>
-      canvas.drawPath(path, paint.build(rect: rect))
-    );
+    performDraw(() => canvas.drawPath(path, paint.build(rect: rect)));
   }
 
   /// Draw a line.
   void drawLine(Offset p1, Offset p2, PaintOptions paint) {
-    performDraw(() =>
-      canvas.drawLine(p1, p2, paint.build())
-    );
+    performDraw(() => canvas.drawLine(p1, p2, paint.build()));
   }
 
   /// Draw text.
-  void drawText(Offset point, String text, {
-    TextOptions options: const TextOptions(),
-    double rotation: 0.0,
-    Offset rotationOrigin: Offset.zero,
+  void drawText(Offset point, String text,
+      {TextOptions options: const TextOptions(),
+      double rotation: 0.0,
+      Offset rotationOrigin: Offset.zero,
 
-    /// kind of like the anchor point of the drawing --
-    /// i.e. (0.5, 0.5) means the text is drawn such that [point]
-    ///      is the center of the text both horizontally and vertically.
-    /// i.e. (0.0, 0.0), the default, means the text is drawn such that the
-    ///      text appears below and to the right of [point]
-    /// i.e. (1.0, 1.0) means the text is drawn such that the text is above
-    ///      and to the left of [point].
-    Offset shift: Offset.zero
-  }) {
+      /// kind of like the anchor point of the drawing --
+      /// i.e. (0.5, 0.5) means the text is drawn such that [point]
+      ///      is the center of the text both horizontally and vertically.
+      /// i.e. (0.0, 0.0), the default, means the text is drawn such that the
+      ///      text appears below and to the right of [point]
+      /// i.e. (1.0, 1.0) means the text is drawn such that the text is above
+      ///      and to the left of [point].
+      Offset shift: Offset.zero}) {
     TextPainter painter = options.build(text);
 
     performDraw(() {
@@ -153,10 +138,7 @@ class CanvasArea {
       canvas.translate(0.0, 0.0);
 
       // pre shift before rotation transform
-      canvas.translate(
-        -shift.dx * painter.width,
-        -shift.dy * painter.height
-      );
+      canvas.translate(-shift.dx * painter.width, -shift.dy * painter.height);
 
       if (rotation != 0.0) {
         final dx = painter.width * rotationOrigin.dx;
@@ -173,8 +155,10 @@ class CanvasArea {
 
   /// Draw an X pattern (for debugging).
   void drawDebugCross({Color color: Colors.red}) {
-    drawLine(Offset.zero, new Offset(size.width, size.height), new PaintOptions.stroke(color: color));
-    drawLine(new Offset(0.0, size.height), new Offset(size.width, 0.0), new PaintOptions.stroke(color: color));
+    drawLine(Offset.zero, new Offset(size.width, size.height),
+        new PaintOptions.stroke(color: color));
+    drawLine(new Offset(0.0, size.height), new Offset(size.width, 0.0),
+        new PaintOptions.stroke(color: color));
   }
 }
 
@@ -184,31 +168,32 @@ typedef List<PaintOptions> PaintGenerator(CanvasArea area);
 /// Options for conveniently building a [Paint].
 @immutable
 class PaintOptions implements MergeTweenable<PaintOptions> {
-  const PaintOptions({
-    this.color: Colors.black,
-    this.strokeWidth: 1.0,
-    this.strokeCap: StrokeCap.square,
-    this.gradient,
-    this.style: PaintingStyle.fill
-  });
+  const PaintOptions(
+      {this.color: Colors.black,
+      this.strokeWidth: 1.0,
+      this.strokeCap: StrokeCap.square,
+      this.gradient,
+      this.style: PaintingStyle.fill});
 
   bool operator ==(o) {
     if (o is PaintOptions) {
-      return color == o.color && strokeWidth == o.strokeWidth &&
-              strokeCap == o.strokeCap && gradient == o.gradient &&
-              style == o.style;
+      return color == o.color &&
+          strokeWidth == o.strokeWidth &&
+          strokeCap == o.strokeCap &&
+          gradient == o.gradient &&
+          style == o.style;
     }
     return false;
   }
 
   /// Construct paint options automatically with stroke, instead
   /// of the default fill painting style.
-  const PaintOptions.stroke({
-    this.color: Colors.black,
-    this.strokeWidth: 1.0,
-    this.strokeCap: StrokeCap.square,
-    this.gradient
-  }) : this.style = PaintingStyle.stroke;
+  const PaintOptions.stroke(
+      {this.color: Colors.black,
+      this.strokeWidth: 1.0,
+      this.strokeCap: StrokeCap.square,
+      this.gradient})
+      : this.style = PaintingStyle.stroke;
 
   /// The color of the paint.
   final Color color;
@@ -228,16 +213,12 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
   Paint build({Rect rect}) {
     final paint = new Paint();
 
-    if (color != null)
-      paint.color = color;
+    if (color != null) paint.color = color;
 
     // stroke
-    if (strokeWidth != null)
-      paint.strokeWidth = strokeWidth;
-    if (strokeCap != null)
-      paint.strokeCap = strokeCap;
-    if (style != null)
-      paint.style = style;
+    if (strokeWidth != null) paint.strokeWidth = strokeWidth;
+    if (strokeCap != null) paint.strokeCap = strokeCap;
+    if (style != null) paint.style = style;
 
     // gradient used for rectangles
     if (gradient != null && rect != null)
@@ -263,10 +244,8 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
   }
 
   static PaintOptions lerp(PaintOptions begin, PaintOptions end, double t) {
-    if (begin == null)
-      begin = const PaintOptions(color: Colors.transparent);
-    if (end == null)
-      end = const PaintOptions(color: Colors.transparent);
+    if (begin == null) begin = const PaintOptions(color: Colors.transparent);
+    if (end == null) end = const PaintOptions(color: Colors.transparent);
 
     return new PaintOptions(
       color: Color.lerp(begin.color, end.color, t),
@@ -281,34 +260,28 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
   PaintOptions get empty {
     // if we dont have a gradient, then fade to transparent color
     if (gradient == null) {
-      return this.copyWith(
-        color: Colors.transparent,
-        strokeWidth: 0.0
-      );
+      return this.copyWith(color: Colors.transparent, strokeWidth: 0.0);
     }
 
     // otherwise fade to transparent gradient
     else {
       return this.copyWith(
-        gradient: new LinearGradient(
-          colors: [
-            Colors.transparent,
-            Colors.transparent
-          ],
-        ),
-        strokeWidth: 0.0
-      );
+          gradient: new LinearGradient(
+            colors: [Colors.transparent, Colors.transparent],
+          ),
+          strokeWidth: 0.0);
     }
   }
 
   @override
   Tween<PaintOptions> tweenTo(PaintOptions other) =>
-    new _PaintOptionsTween(this, other);
+      new _PaintOptionsTween(this, other);
 }
 
 /// Lerp between tow paint options.
 class _PaintOptionsTween extends Tween<PaintOptions> {
-  _PaintOptionsTween(PaintOptions begin, PaintOptions end) : super(begin: begin, end: end);
+  _PaintOptionsTween(PaintOptions begin, PaintOptions end)
+      : super(begin: begin, end: end);
 
   @override
   PaintOptions lerp(double t) => PaintOptions.lerp(begin, end, t);
@@ -354,16 +327,12 @@ class TextOptions {
 
   TextPainter build(String text) {
     TextPainter span = new TextPainter(
-      text: new TextSpan(
-        text: text,
-        style: style
-      ),
-      textAlign: textAlign,
-      textDirection: TextDirection.ltr,
-      maxLines: maxLines,
-      ellipsis: ellipsis,
-      textScaleFactor: scaleFactor
-    );
+        text: new TextSpan(text: text, style: style),
+        textAlign: textAlign,
+        textDirection: TextDirection.ltr,
+        maxLines: maxLines,
+        ellipsis: ellipsis,
+        textScaleFactor: scaleFactor);
 
     // prevent layout from crashing
     var maxWidth = this.maxWidth;
@@ -371,9 +340,7 @@ class TextOptions {
       maxWidth = minWidth + 1;
 
     span.layout(
-      maxWidth: maxWidth ?? double.INFINITY,
-      minWidth: minWidth ?? 0.0
-    );
+        maxWidth: maxWidth ?? double.INFINITY, minWidth: minWidth ?? 0.0);
 
     return span;
   }

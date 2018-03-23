@@ -1,9 +1,8 @@
-import 'package:fcharts/src/chart_data.dart';
 import 'package:fcharts/src/decor/axis.dart';
 import 'package:fcharts/src/decor/legend.dart';
-import 'package:fcharts/src/utils/painting.dart';
-import 'package:fcharts/src/utils/merge_tween.dart';
 import 'package:fcharts/src/utils/chart_position.dart';
+import 'package:fcharts/src/utils/merge_tween.dart';
+import 'package:fcharts/src/utils/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -12,10 +11,7 @@ import 'package:meta/meta.dart';
 class ChartDecor {
   static const ChartDecor none = const ChartDecor();
 
-  const ChartDecor({
-    this.axes: const [],
-    this.legend
-  }) : assert(axes != null);
+  const ChartDecor({this.axes: const [], this.legend}) : assert(axes != null);
 
   /// List of axes to draw around the chart. If two axes have the same
   /// [ChartPosition], they are drawn from the center of the chart outward in
@@ -51,17 +47,15 @@ class ChartDecor {
 
 /// Lerp between two [ChartDecor]'s.
 class ChartDecorTween extends Tween<ChartDecor> {
-  ChartDecorTween(ChartDecor begin, ChartDecor end) :
-      _axesTween = new MergeTween(begin.axes, end.axes),
-      super(begin: begin, end: end);
+  ChartDecorTween(ChartDecor begin, ChartDecor end)
+      : _axesTween = new MergeTween(begin.axes, end.axes),
+        super(begin: begin, end: end);
 
   final MergeTween<ChartAxisData> _axesTween;
 
   @override
   ChartDecor lerp(double t) {
     return new ChartDecor(
-      axes: _axesTween.lerp(t),
-      legend: t < 0.5 ? begin.legend : end.legend
-    );
+        axes: _axesTween.lerp(t), legend: t < 0.5 ? begin.legend : end.legend);
   }
 }

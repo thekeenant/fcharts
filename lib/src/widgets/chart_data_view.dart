@@ -1,10 +1,11 @@
+import 'dart:math';
+
 import 'package:fcharts/src/chart_data.dart';
 import 'package:fcharts/src/chart_drawable.dart';
 import 'package:fcharts/src/decor/decor.dart';
 import 'package:fcharts/src/utils/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
-import 'dart:math';
 
 typedef void ChartTouchListener(int pointer, Map<int, ChartTouchEvent> events);
 typedef void ChartTouchCallback(int pointer);
@@ -14,10 +15,13 @@ typedef void ChartTouchCallback(int pointer);
 class ChartRotation {
   /// rotated 0 degrees
   static const none = const ChartRotation._(0.0);
+
   /// rotated 180 degrees
   static const upsideDown = const ChartRotation._(pi);
+
   /// rotated 90 degrees clockwise
   static const clockwise = const ChartRotation._(pi / 2);
+
   /// rotated 90 degrees counter clockwise (270 clockwise)
   static const counterClockwise = const ChartRotation._(-pi / 2);
 
@@ -39,11 +43,10 @@ class ChartDataView extends StatefulWidget {
     this.onTouch,
     this.onMove,
     this.onRelease,
-  }) :
-      assert(charts != null),
-      assert(rotation != null),
-      assert(chartPadding != null),
-      assert(animationCurve != null);
+  })  : assert(charts != null),
+        assert(rotation != null),
+        assert(chartPadding != null),
+        assert(animationCurve != null);
 
   /// The charts to draw within the view. The order of the list is the
   /// order that they are drawn (later means they are on top).
@@ -76,7 +79,8 @@ class ChartDataView extends StatefulWidget {
   _ChartDataViewState createState() => new _ChartDataViewState();
 }
 
-class _ChartDataViewState extends State<ChartDataView> with TickerProviderStateMixin {
+class _ChartDataViewState extends State<ChartDataView>
+    with TickerProviderStateMixin {
   final GlobalKey _paintKey = new GlobalKey();
 
   AnimationController _controller;
@@ -96,8 +100,7 @@ class _ChartDataViewState extends State<ChartDataView> with TickerProviderStateM
     if (_painter == null) {
       fromDecor = ChartDecor.none;
       fromCharts = widget.charts.map((c) => c.createDrawable().empty).toList();
-    }
-    else {
+    } else {
       fromDecor = _painter.decor.value;
       fromCharts = _painter.charts.map((c) => c.value).toList();
     }
@@ -111,15 +114,15 @@ class _ChartDataViewState extends State<ChartDataView> with TickerProviderStateM
       final drawable = chart.createDrawable();
 
       // find a chart which be tween to the new chart
-      final matches = fromCharts.where((c) => c.runtimeType == drawable.runtimeType);
+      final matches =
+          fromCharts.where((c) => c.runtimeType == drawable.runtimeType);
 
       ChartDrawable prevDrawable;
 
       if (matches.isEmpty) {
         // if there is no match, animate from empty
         prevDrawable = drawable.empty;
-      }
-      else {
+      } else {
         // otherwise we take the first match and remove it from the list,
         // to prevent other charts in the list from tweening from it
         prevDrawable = matches.first;
@@ -131,24 +134,19 @@ class _ChartDataViewState extends State<ChartDataView> with TickerProviderStateM
     }
 
     return new _ChartPainter(
-      charts: toCharts,
-      decor: toDecor,
-      rotation: rotation,
-      chartPadding: chartPadding,
-      repaint: _controller
-    );
+        charts: toCharts,
+        decor: toDecor,
+        rotation: rotation,
+        chartPadding: chartPadding,
+        repaint: _controller);
   }
 
   void _updatePainter() {
     // TODO: Figure out why Duration.zero doesn't actually work...
     var duration = widget.animationDuration ?? Duration.zero;
-    if (duration.inMilliseconds == 0)
-      duration = new Duration(milliseconds: 1);
+    if (duration.inMilliseconds == 0) duration = new Duration(milliseconds: 1);
 
-    _controller = new AnimationController(
-      vsync: this,
-      duration: duration
-    );
+    _controller = new AnimationController(vsync: this, duration: duration);
     _curve = new CurvedAnimation(
       parent: _controller,
       curve: widget.animationCurve,
@@ -182,8 +180,7 @@ class _ChartDataViewState extends State<ChartDataView> with TickerProviderStateM
           RenderBox box = _paintKey.currentContext.findRenderObject();
           Offset offset = box.globalToLocal(event.position);
           final events = _painter.resolveTouch(offset, box.size);
-          if (events != null)
-            widget.onTouch(event.pointer, events);
+          if (events != null) widget.onTouch(event.pointer, events);
         }
       },
       onPointerMove: (event) {
@@ -192,8 +189,7 @@ class _ChartDataViewState extends State<ChartDataView> with TickerProviderStateM
           Offset offset = box.globalToLocal(event.position);
 
           final events = _painter.resolveTouch(offset, box.size);
-          if (events != null)
-            widget.onMove(event.pointer, events);
+          if (events != null) widget.onMove(event.pointer, events);
         }
       },
       onPointerUp: (event) {
@@ -225,12 +221,10 @@ class _ChartPainter extends CustomPainter {
     @required this.rotation,
     @required this.chartPadding,
     @required Listenable repaint,
-  }) :
-      super(repaint: repaint);
+  }) : super(repaint: repaint);
 
   Map<int, ChartTouchEvent> resolveTouch(Offset touch, Size boxSize) {
     print(touch);
-
 
     final size = _size ?? boxSize;
     final touchChart = touch.translate(-chartPadding.left, -chartPadding.top);
@@ -238,17 +232,16 @@ class _ChartPainter extends CustomPainter {
     final width = size.width - chartPadding.left - chartPadding.right;
     final height = size.height - chartPadding.top - chartPadding.bottom;
 
-    if (touchChart.dx < 0 || touchChart.dy < 0)
-      return null;
-    if (touchChart.dx > width || touchChart.dy > height)
-      return null;
+    if (touchChart.dx < 0 || touchChart.dy < 0) return null;
+    if (touchChart.dx > width || touchChart.dy > height) return null;
 
     final events = <int, ChartTouchEvent>{};
 
     for (var i = 0; i < charts.length; i++) {
       final chart = charts[i];
 
-      final event = chart.value.resolveTouch(new Size(width, height), touchChart);
+      final event =
+          chart.value.resolveTouch(new Size(width, height), touchChart);
       events[i] = event;
     }
 

@@ -15,22 +15,20 @@ class ColorPalette extends ColorSwatch<int> {
     Colors.teal[400],
   ]);
 
-  ColorPalette(Color primary, Map<int, Color> colors) :
-      this.length = colors.length,
-      super(primary.value, colors);
+  ColorPalette(Color primary, Map<int, Color> colors)
+      : this.length = colors.length,
+        super(primary.value, colors);
 
   factory ColorPalette.fromList(List<Color> colors) {
     final map = new Map.fromIterables(
-      new List.generate(colors.length, (i) => i),
-      colors
-    );
+        new List.generate(colors.length, (i) => i), colors);
     return new ColorPalette(map[0], map);
   }
 
   factory ColorPalette.monochrome(Color base, int length) {
     return new ColorPalette.fromList(new List.generate(
       length,
-        (i) => _brighterColor(base, i, length),
+      (i) => _brighterColor(base, i, length),
     ));
   }
 
@@ -42,10 +40,10 @@ class ColorPalette extends ColorSwatch<int> {
 
   static Color _brighterColor(Color base, int i, int n) {
     return new Color.fromARGB(
-      base.alpha,
-      _brighterComponent(base.red, i, n),
-      _brighterComponent(base.green, i, n),
-      _brighterComponent(base.blue, i, n));
+        base.alpha,
+        _brighterComponent(base.red, i, n),
+        _brighterComponent(base.green, i, n),
+        _brighterComponent(base.blue, i, n));
   }
 
   static int _brighterComponent(int base, int i, int n) {

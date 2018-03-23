@@ -37,9 +37,8 @@ class CardinalSpline implements LineCurve {
   const CardinalSpline({
     this.tension: 0.5,
     this.segmentCount: 10,
-  }) :
-      assert(tension != null && tension >= 0.0 && tension <= 1.0),
-      assert(segmentCount != null && segmentCount > 0);
+  })  : assert(tension != null && tension >= 0.0 && tension <= 1.0),
+        assert(segmentCount != null && segmentCount > 0);
 
   final double tension;
   final int segmentCount;
@@ -54,14 +53,9 @@ class CardinalSpline implements LineCurve {
 
     for (var i = 1; i < pts.length - 2; i++) {
       var t1 = new Offset(
-        pts[i + 1].dx - pts[i - 1].dx,
-        pts[i + 1].dy - pts[i - 1].dy
-      );
+          pts[i + 1].dx - pts[i - 1].dx, pts[i + 1].dy - pts[i - 1].dy);
 
-      var t2 = new Offset(
-        pts[i + 2].dx - pts[i].dx,
-        pts[i + 2].dy - pts[i].dy
-      );
+      var t2 = new Offset(pts[i + 2].dx - pts[i].dx, pts[i + 2].dy - pts[i].dy);
 
       t1 *= tension;
       t2 *= tension;
@@ -100,8 +94,7 @@ class MonotoneCurve implements LineCurve {
 
   @override
   List<Offset> generate(List<Offset> points) {
-    if (points.length <= 1)
-      return new List.from(points);
+    if (points.length <= 1) return new List.from(points);
 
     final interpolator = new _MonotoneInterpolator.fromPoints(points);
     final count = points.length * stepsPer;
@@ -149,11 +142,11 @@ class _MonotoneInterpolator {
   final List<Offset> _points;
   final List<double> _m;
 
-  factory _MonotoneInterpolator.fromPoints(List<Offset> points, {bool sort: true}) {
+  factory _MonotoneInterpolator.fromPoints(List<Offset> points,
+      {bool sort: true}) {
     assert(points.isNotEmpty);
 
-    if (sort)
-      points.sort((a, b) => a.dx.compareTo(b.dx));
+    if (sort) points.sort((a, b) => a.dx.compareTo(b.dx));
 
     final n = points.length;
     final d = new List<double>(n - 1);
@@ -163,7 +156,8 @@ class _MonotoneInterpolator {
     for (var i = 0; i < n - 1; i++) {
       final h = points[i + 1].dx - points[i].dx;
       if (h <= 0) {
-        throw new StateError("The control points must all have strictly increasing X values.");
+        throw new StateError(
+            "The control points must all have strictly increasing X values.");
       }
       d[i] = (points[i + 1].dy - points[i].dy) / h;
     }
@@ -177,11 +171,11 @@ class _MonotoneInterpolator {
 
     // Update the tangents to preserve monotonicity.
     for (var i = 0; i < n - 1; i++) {
-      if (d[i] == 0) { // successive Y values are equal
+      if (d[i] == 0) {
+        // successive Y values are equal
         m[i] = 0.0;
         m[i + 1] = 0.0;
-      }
-      else {
+      } else {
         final a = m[i] / d[i];
         final b = m[i + 1] / d[i];
         final h = sqrt(pow(a, 2) + pow(b, 2));
@@ -219,7 +213,7 @@ class _MonotoneInterpolator {
     final h = _points[i + 1].dx - _points[i].dx;
     final t = (x - _points[i].dx) / h;
 
-    return (_points[i].dy * (1 + 2 * t) + h * _m[i] * t) * (1 - t) * (1 - t)
-      + (_points[i + 1].dy * (3 - 2 * t) + h * _m[i + 1] * (t - 1)) * t * t;
+    return (_points[i].dy * (1 + 2 * t) + h * _m[i] * t) * (1 - t) * (1 - t) +
+        (_points[i + 1].dy * (3 - 2 * t) + h * _m[i + 1] * (t - 1)) * t * t;
   }
 }

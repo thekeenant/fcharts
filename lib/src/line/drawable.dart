@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 import 'dart:ui' show lerpDouble;
 
-import 'package:fcharts/src/chart_data.dart';
 import 'package:fcharts/src/chart_drawable.dart';
 import 'package:fcharts/src/line/curves.dart';
 import 'package:fcharts/src/utils/merge_tween.dart';
@@ -11,7 +10,6 @@ import 'package:meta/meta.dart';
 
 const clipPointPadding = 5.0;
 const clipStrokePadding = 3.0;
-
 
 class LineChartTouchEvent implements ChartTouchEvent {
   final int nearest;
@@ -29,14 +27,15 @@ class LineChartTouchEvent implements ChartTouchEvent {
 /// A line chart is a set of points with (x, y) coordinates. A line
 /// can connect the points and an area can be filled beneath the line.
 /// Points can be illustrated by their own paint options.
-class LineChartDrawable implements ChartDrawable<LineChartDrawable, LineChartTouchEvent> {
-  LineChartDrawable({
-    @required this.points,
-    this.stroke: const PaintOptions.stroke(color: Colors.black),
-    this.fill,
-    this.curve: LineCurves.linear,
-    this.bridgeNulls: false
-  }) : assert(bridgeNulls != null);
+class LineChartDrawable
+    implements ChartDrawable<LineChartDrawable, LineChartTouchEvent> {
+  LineChartDrawable(
+      {@required this.points,
+      this.stroke: const PaintOptions.stroke(color: Colors.black),
+      this.fill,
+      this.curve: LineCurves.linear,
+      this.bridgeNulls: false})
+      : assert(bridgeNulls != null);
 
   /// The list of points (ascending x value).
   final List<LinePointDrawable> points;
@@ -87,14 +86,14 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable, LineChartTou
     return new LineChartTouchEvent(nearest, nearestHoriz);
   }
 
-  void _moveToLineTo(CanvasArea bounds, Path path, Offset point, {bool moveTo: false}) {
+  void _moveToLineTo(CanvasArea bounds, Path path, Offset point,
+      {bool moveTo: false}) {
     var bounded = bounds.boundPoint(point);
 
     // todo? remove this
     bounded = point;
 
-    if (moveTo)
-      path.moveTo(bounded.dx, bounded.dy);
+    if (moveTo) path.moveTo(bounded.dx, bounded.dy);
     path.lineTo(bounded.dx, bounded.dy);
   }
 
@@ -106,22 +105,20 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable, LineChartTou
 
   /// Generate the sequence of points based on any given curve.
   List<Offset> _curvePoints(List<Offset> points) {
-    if (curve == null)
-      return points;
+    if (curve == null) return points;
 
     return curve.generate(points);
   }
 
   /// Create a list of paths which will each be drawn separately with their own
   /// line and fill area.
-  /// 
+  ///
   /// This is necessary to support null values, which create a break in the line.
   /// A null value will create two segments, one on the left of it, one on the right
   /// (assuming it is not on the ends).
   List<List<LinePointDrawable>> _generateSegments() {
     final result = <List<LinePointDrawable>>[];
-    if (points.isEmpty)
-      return result;
+    if (points.isEmpty) return result;
     var current = <LinePointDrawable>[];
     points.forEach((point) {
       final value = point.value;
@@ -130,21 +127,18 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable, LineChartTou
           result.add(current);
           current = <LinePointDrawable>[];
         }
-      }
-      else {
+      } else {
         current.add(point);
       }
     });
-    if (current.isNotEmpty)
-      result.add(current);
+    if (current.isNotEmpty) result.add(current);
     return result;
   }
 
   @override
   void draw(CanvasArea area) {
-    if (points.isEmpty)
-      return;
-  
+    if (points.isEmpty) return;
+
     final lineSegments = _generateSegments();
 
     // each segment gets its own paths
@@ -177,8 +171,7 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable, LineChartTou
 
       for (final loc in curvedPoints) {
         // if the first line, we move the fill path to the bottom left
-        if (isFirst)
-          fillPath.moveTo(loc.dx, area.height);
+        if (isFirst) fillPath.moveTo(loc.dx, area.height);
 
         // update bounding box of fill area
         leftMostX = math.min(leftMostX, loc.dx);
@@ -192,21 +185,17 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable, LineChartTou
       }
 
       // a rectangle covering the entire area of the line
-      Rect lineRect = new Rect.fromPoints(
-        new Offset(leftMostX, area.height),
-        topRight
-      );
+      Rect lineRect =
+          new Rect.fromPoints(new Offset(leftMostX, area.height), topRight);
 
       // finish off the fill area
       fillPath.lineTo(lineRect.bottomRight.dx, lineRect.bottomRight.dy);
 
       area.clipDrawing(() {
         // draw the fill (beneath the line)
-        if (fill != null)
-          area.drawPath(fillPath, fill, rect: lineRect);
+        if (fill != null) area.drawPath(fillPath, fill, rect: lineRect);
         // draw the line
-        if (stroke != null)
-          area.drawPath(linePath, stroke, rect: lineRect);
+        if (stroke != null) area.drawPath(linePath, stroke, rect: lineRect);
       }, const EdgeInsets.all(clipStrokePadding));
 
       area.clipDrawing(() {
@@ -229,45 +218,42 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable, LineChartTou
 
   @override
   _LineChartDrawableTween tweenTo(LineChartDrawable end) =>
-    new _LineChartDrawableTween(this, end);
+      new _LineChartDrawableTween(this, end);
 
   @override
   LineChartDrawable get empty => new LineChartDrawable(
-    points: points.map((point) => point.copyWith(value: 0.0)).toList(),
-    curve: curve,
-    stroke: stroke,
-    fill: fill,
-    bridgeNulls: bridgeNulls
-  );
+      points: points.map((point) => point.copyWith(value: 0.0)).toList(),
+      curve: curve,
+      stroke: stroke,
+      fill: fill,
+      bridgeNulls: bridgeNulls);
 }
 
 /// Lerp between two line charts.
 class _LineChartDrawableTween extends Tween<LineChartDrawable> {
-  _LineChartDrawableTween(LineChartDrawable begin, LineChartDrawable end) :
-      _pointsTween = new MergeTween(begin.points, end.points),
-      super(begin: begin, end: end);
+  _LineChartDrawableTween(LineChartDrawable begin, LineChartDrawable end)
+      : _pointsTween = new MergeTween(begin.points, end.points),
+        super(begin: begin, end: end);
 
   final MergeTween<LinePointDrawable> _pointsTween;
 
   @override
   LineChartDrawable lerp(double t) => new LineChartDrawable(
-    points: _pointsTween.lerp(t),
-    stroke: PaintOptions.lerp(begin.stroke, end.stroke, t),
-    fill: PaintOptions.lerp(begin.fill, end.fill, t),
-    curve: t < 0.5 ? begin.curve : end.curve,
-    bridgeNulls: t < 0.5 ? begin.bridgeNulls : end.bridgeNulls
-  );
+      points: _pointsTween.lerp(t),
+      stroke: PaintOptions.lerp(begin.stroke, end.stroke, t),
+      fill: PaintOptions.lerp(begin.fill, end.fill, t),
+      curve: t < 0.5 ? begin.curve : end.curve,
+      bridgeNulls: t < 0.5 ? begin.bridgeNulls : end.bridgeNulls);
 }
 
 /// A point on a line chart.
 class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
-  LinePointDrawable({
-    @required this.x,
-    @required this.value,
-    this.pointRadius: 3.0,
-    this.paint: const [],
-    this.collapsed
-  });
+  LinePointDrawable(
+      {@required this.x,
+      @required this.value,
+      this.pointRadius: 3.0,
+      this.paint: const [],
+      this.collapsed});
 
   /// The relative x value of this point. Should be 0..1 inclusive.
   final double x;
@@ -286,31 +272,24 @@ class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
   /// collapse to when it disappears, or when it comes from nothing.
   final LinePointDrawable collapsed;
 
-  LinePointDrawable copyWith({
-    double x,
-    double value,
-    double pointRadius,
-    List<PaintOptions> paint,
-    LinePointDrawable collapsed
-  }) {
+  LinePointDrawable copyWith(
+      {double x,
+      double value,
+      double pointRadius,
+      List<PaintOptions> paint,
+      LinePointDrawable collapsed}) {
     return new LinePointDrawable(
-      x: x ?? this.x,
-      value: value ?? this.value,
-      pointRadius: pointRadius ?? this.pointRadius,
-      paint: paint ?? this.paint,
-      collapsed: collapsed ?? this.collapsed
-    );
+        x: x ?? this.x,
+        value: value ?? this.value,
+        pointRadius: pointRadius ?? this.pointRadius,
+        paint: paint ?? this.paint,
+        collapsed: collapsed ?? this.collapsed);
   }
 
   /// Draw this point on the canvas within a given canvas area.
   void draw(CanvasArea pointArea) {
     for (final paint in this.paint) {
-      pointArea.drawArc(
-        Offset.zero & pointArea.size,
-        0.0,
-        math.pi * 2,
-        paint
-      );
+      pointArea.drawArc(Offset.zero & pointArea.size, 0.0, math.pi * 2, paint);
     }
   }
 
@@ -338,27 +317,24 @@ class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
   }
 
   static LinePointDrawable collapse(LinePointDrawable point) {
-    return new LinePointDrawable(
-      x: 1.0,
-      value: point.value
-    );
+    return new LinePointDrawable(x: 1.0, value: point.value);
   }
 }
 
 /// Lerp between two line points.
 class _LinePointDrawableTween extends Tween<LinePointDrawable> {
-  _LinePointDrawableTween(LinePointDrawable begin, LinePointDrawable end) :
-    _paintsTween = new MergeTween(begin.paint, end.paint),
-    super(begin: begin, end: end);
+  _LinePointDrawableTween(LinePointDrawable begin, LinePointDrawable end)
+      : _paintsTween = new MergeTween(begin.paint, end.paint),
+        super(begin: begin, end: end);
 
   final MergeTween<PaintOptions> _paintsTween;
 
   @override
   LinePointDrawable lerp(double t) => new LinePointDrawable(
-    x: lerpDouble(begin.x, end.x, t),
-    value: lerpDouble(begin.value, end.value, t),
-    paint: _paintsTween.lerp(t),
-    pointRadius: lerpDouble(begin.pointRadius, end.pointRadius, t),
-    collapsed: end.collapsed,
-  );
+        x: lerpDouble(begin.x, end.x, t),
+        value: lerpDouble(begin.value, end.value, t),
+        paint: _paintsTween.lerp(t),
+        pointRadius: lerpDouble(begin.pointRadius, end.pointRadius, t),
+        collapsed: end.collapsed,
+      );
 }

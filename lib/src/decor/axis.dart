@@ -1,7 +1,7 @@
 import 'package:fcharts/src/decor/tick.dart';
-import 'package:fcharts/src/utils/painting.dart';
-import 'package:fcharts/src/utils/merge_tween.dart';
 import 'package:fcharts/src/utils/chart_position.dart';
+import 'package:fcharts/src/utils/merge_tween.dart';
+import 'package:fcharts/src/utils/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -44,36 +44,28 @@ class ChartAxisData implements MergeTweenable<ChartAxisData> {
 
     switch (position) {
       case ChartPosition.top:
-        axisRect = new Offset(paddingLeft, offset) & new Size(
-          chartArea.width,
-          size ?? paddingTop
-        );
+        axisRect = new Offset(paddingLeft, offset) &
+            new Size(chartArea.width, size ?? paddingTop);
         lineStart = axisRect.bottomLeft;
         lineEnd = axisRect.bottomRight;
         break;
       case ChartPosition.left:
         vertical = true;
-        axisRect = new Offset(offset, paddingTop) & new Size(
-          size ?? paddingLeft,
-          chartArea.height
-        );
+        axisRect = new Offset(offset, paddingTop) &
+            new Size(size ?? paddingLeft, chartArea.height);
         lineStart = axisRect.bottomRight;
         lineEnd = axisRect.topRight;
         break;
       case ChartPosition.right:
         vertical = true;
-        axisRect = chartArea.rect.topRight.translate(offset, 0.0) & new Size(
-          size ?? paddingRight,
-          chartArea.height
-        );
+        axisRect = chartArea.rect.topRight.translate(offset, 0.0) &
+            new Size(size ?? paddingRight, chartArea.height);
         lineStart = axisRect.bottomLeft;
         lineEnd = axisRect.topLeft;
         break;
       case ChartPosition.bottom:
-        axisRect = chartArea.rect.bottomLeft.translate(0.0, offset) & new Size(
-          chartArea.width,
-          size ?? paddingBottom
-        );
+        axisRect = chartArea.rect.bottomLeft.translate(0.0, offset) &
+            new Size(chartArea.width, size ?? paddingBottom);
         lineStart = axisRect.topLeft;
         lineEnd = axisRect.topRight;
         break;
@@ -81,8 +73,7 @@ class ChartAxisData implements MergeTweenable<ChartAxisData> {
         break;
     }
 
-    if (paint != null)
-      fullArea.drawLine(lineStart, lineEnd, paint);
+    if (paint != null) fullArea.drawLine(lineStart, lineEnd, paint);
 
     CanvasArea axisArea = fullArea.child(axisRect);
 
@@ -91,26 +82,17 @@ class ChartAxisData implements MergeTweenable<ChartAxisData> {
 
     for (var tick in ticks) {
       final tickCenter = vertical ? (1 - tick.value) : tick.value;
-      final tickPosition = (tickCenter  - tick.width / 2) * primary;
+      final tickPosition = (tickCenter - tick.width / 2) * primary;
       final tickAreaSize = tick.width * primary;
 
       Rect tickRect;
 
       if (vertical) {
-        tickRect = new Rect.fromLTWH(
-          0.0,
-          tickPosition,
-          secondary,
-          tickAreaSize
-        );
-      }
-      else {
-        tickRect = new Rect.fromLTWH(
-          tickPosition,
-          0.0,
-          tickAreaSize,
-          secondary
-        );
+        tickRect =
+            new Rect.fromLTWH(0.0, tickPosition, secondary, tickAreaSize);
+      } else {
+        tickRect =
+            new Rect.fromLTWH(tickPosition, 0.0, tickAreaSize, secondary);
       }
 
       tick.draw(axisArea.child(tickRect), position);
@@ -119,33 +101,32 @@ class ChartAxisData implements MergeTweenable<ChartAxisData> {
 
   @override
   ChartAxisData get empty => new ChartAxisData(
-    position: position,
-    ticks: ticks.map((tick) => tick.empty).toList(),
-    paint: paint,
-    size: size,
-    offset: offset
-  );
+      position: position,
+      ticks: ticks.map((tick) => tick.empty).toList(),
+      paint: paint,
+      size: size,
+      offset: offset);
 
   @override
-  Tween<ChartAxisData> tweenTo(ChartAxisData other) => new _ChartAxisDataTween(this, other);
+  Tween<ChartAxisData> tweenTo(ChartAxisData other) =>
+      new _ChartAxisDataTween(this, other);
 }
 
 /// Lerp between two [ChartAxisData]'s.
 class _ChartAxisDataTween extends Tween<ChartAxisData> {
-  _ChartAxisDataTween(ChartAxisData begin, ChartAxisData end) :
-    _ticksTween = new MergeTween(begin.ticks, end.ticks),
-    super(begin: begin, end: end);
+  _ChartAxisDataTween(ChartAxisData begin, ChartAxisData end)
+      : _ticksTween = new MergeTween(begin.ticks, end.ticks),
+        super(begin: begin, end: end);
 
   final MergeTween<AxisTickData> _ticksTween;
 
   @override
   ChartAxisData lerp(double t) {
     return new ChartAxisData(
-      position: t < 0.5 ? begin.position : end.position,
-      ticks: _ticksTween.lerp(t),
-      paint: PaintOptions.lerp(begin.paint, end.paint, t),
-      size: t < 0.5 ? begin.size : end.size,
-      offset: t < 0.5 ? begin.offset : end.offset
-    );
+        position: t < 0.5 ? begin.position : end.position,
+        ticks: _ticksTween.lerp(t),
+        paint: PaintOptions.lerp(begin.paint, end.paint, t),
+        size: t < 0.5 ? begin.size : end.size,
+        offset: t < 0.5 ? begin.offset : end.offset);
   }
 }

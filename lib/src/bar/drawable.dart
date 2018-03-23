@@ -1,25 +1,18 @@
-import 'dart:math' as math;
 import 'dart:ui' show lerpDouble;
 
-import 'package:fcharts/src/chart_data.dart';
 import 'package:fcharts/src/chart_drawable.dart';
-import 'package:fcharts/src/utils/color_palette.dart';
 import 'package:fcharts/src/utils/merge_tween.dart';
 import 'package:fcharts/src/utils/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-
-class BarGraphTouchEvent implements ChartTouchEvent {
-
-}
+class BarGraphTouchEvent implements ChartTouchEvent {}
 
 /// A drawable bar graph.
 @immutable
-class BarGraphDrawable implements ChartDrawable<BarGraphDrawable, BarGraphTouchEvent> {
-  const BarGraphDrawable({
-    @required this.groups
-  });
+class BarGraphDrawable
+    implements ChartDrawable<BarGraphDrawable, BarGraphTouchEvent> {
+  const BarGraphDrawable({@required this.groups});
 
   final List<BarGroupDrawable> groups;
 
@@ -32,18 +25,16 @@ class BarGraphDrawable implements ChartDrawable<BarGraphDrawable, BarGraphTouchE
 
   @override
   _BarGraphDrawableTween tweenTo(BarGraphDrawable end) =>
-    new _BarGraphDrawableTween(this, end);
+      new _BarGraphDrawableTween(this, end);
 
   @override
   BarGraphDrawable get empty => new BarGraphDrawable(
-    groups: groups.map((group) {
-      return new BarGroupDrawable(
-        stacks: group.stacks.map((stack) {
+          groups: groups.map((group) {
+        return new BarGroupDrawable(
+            stacks: group.stacks.map((stack) {
           return stack.empty;
-        }).toList()
-      );
-    }).toList()
-  );
+        }).toList());
+      }).toList());
 
   @override
   BarGraphTouchEvent resolveTouch(Size area, Offset touch) {
@@ -53,26 +44,22 @@ class BarGraphDrawable implements ChartDrawable<BarGraphDrawable, BarGraphTouchE
 
 /// Lerp between two bar graphs.
 class _BarGraphDrawableTween extends Tween<BarGraphDrawable> {
-  _BarGraphDrawableTween(BarGraphDrawable begin, BarGraphDrawable end) :
-      _groupsTween = new MergeTween(begin.groups, end.groups),
-      super(begin: begin, end: end);
+  _BarGraphDrawableTween(BarGraphDrawable begin, BarGraphDrawable end)
+      : _groupsTween = new MergeTween(begin.groups, end.groups),
+        super(begin: begin, end: end);
 
   final MergeTween<BarGroupDrawable> _groupsTween;
 
   @override
   BarGraphDrawable lerp(double t) {
-    return new BarGraphDrawable(
-      groups: _groupsTween.lerp(t)
-    );
+    return new BarGraphDrawable(groups: _groupsTween.lerp(t));
   }
 }
 
 /// A group of bar stacks.
 @immutable
 class BarGroupDrawable implements MergeTweenable<BarGroupDrawable> {
-  const BarGroupDrawable({
-    @required this.stacks
-  }) : assert(stacks != null);
+  const BarGroupDrawable({@required this.stacks}) : assert(stacks != null);
 
   /// The group of bar stacks.
   final List<BarStackDrawable> stacks;
@@ -94,9 +81,9 @@ class BarGroupDrawable implements MergeTweenable<BarGroupDrawable> {
 
 /// Lerp between two bar groups.
 class _BarGroupDrawableTween extends Tween<BarGroupDrawable> {
-  _BarGroupDrawableTween(BarGroupDrawable begin, BarGroupDrawable end) :
-      this._stacksTween = new MergeTween(begin.stacks, end.stacks),
-      super(begin: begin, end: end);
+  _BarGroupDrawableTween(BarGroupDrawable begin, BarGroupDrawable end)
+      : this._stacksTween = new MergeTween(begin.stacks, end.stacks),
+        super(begin: begin, end: end);
 
   final MergeTween<BarStackDrawable> _stacksTween;
 
@@ -117,11 +104,10 @@ class BarStackDrawable implements MergeTweenable<BarStackDrawable> {
     @required this.width,
     @required this.bars,
     this.collapsed,
-  }) :
-      assert(x != null),
-      assert(bars != null),
-      assert(width != null),
-      assert(bars != null);
+  })  : assert(x != null),
+        assert(bars != null),
+        assert(width != null),
+        assert(bars != null);
 
   /// The x position of the bar.
   /// It should usually be between 0 and 1.
@@ -142,7 +128,8 @@ class BarStackDrawable implements MergeTweenable<BarStackDrawable> {
   BarStackDrawable get empty => collapsed ?? collapse(this);
 
   @override
-  Tween<BarStackDrawable> tweenTo(BarStackDrawable other) => new _BarStackDrawableTween(this, other);
+  Tween<BarStackDrawable> tweenTo(BarStackDrawable other) =>
+      new _BarStackDrawableTween(this, other);
 
   void draw(CanvasArea chartArea) {
     for (final bar in bars) {
@@ -150,9 +137,8 @@ class BarStackDrawable implements MergeTweenable<BarStackDrawable> {
       final stackSize = new Size(width * chartArea.width, chartArea.height);
 
       // the area of the stack
-      final stackArea = chartArea.child(
-        new Offset(x * chartArea.width, 0.0) & stackSize
-      );
+      final stackArea =
+          chartArea.child(new Offset(x * chartArea.width, 0.0) & stackSize);
 
       // draw the bar
       bar.draw(stackArea);
@@ -163,44 +149,39 @@ class BarStackDrawable implements MergeTweenable<BarStackDrawable> {
   /// It retains it's x value but removes all bars and shrinks to 0 width.
   ///
   /// This can be overridden on a per-barstack basis with [collapsed].
-  static BarStackDrawable collapse(BarStackDrawable stack) => new BarStackDrawable(
-    x: stack.x,
-    width: 0.0,
-    bars: []
-  );
+  static BarStackDrawable collapse(BarStackDrawable stack) =>
+      new BarStackDrawable(x: stack.x, width: 0.0, bars: []);
 }
 
 /// Lerp between two bar stacks.
 class _BarStackDrawableTween extends Tween<BarStackDrawable> {
-  _BarStackDrawableTween(BarStackDrawable begin, BarStackDrawable end) :
-      _barsTween = new MergeTween(begin.bars, end.bars),
-      super(begin: begin, end: end);
+  _BarStackDrawableTween(BarStackDrawable begin, BarStackDrawable end)
+      : _barsTween = new MergeTween(begin.bars, end.bars),
+        super(begin: begin, end: end);
 
   final MergeTween<BarDrawable> _barsTween;
 
   @override
   BarStackDrawable lerp(double t) {
     return new BarStackDrawable(
-      x: lerpDouble(begin.x, end.x, t),
-      width: lerpDouble(begin.width, end.width, t),
-      bars: _barsTween.lerp(t)
-    );
+        x: lerpDouble(begin.x, end.x, t),
+        width: lerpDouble(begin.width, end.width, t),
+        bars: _barsTween.lerp(t));
   }
 }
 
 /// A segment of a stacked bar.
 @immutable
 class BarDrawable implements MergeTweenable<BarDrawable> {
-  const BarDrawable({
-    @required this.value,
-    @required this.base,
-    @required this.stackBase,
-    this.paint: const [const PaintOptions()],
-    this.paintGenerator,
-    this.widthFactor: 1.0,
-    this.xOffset: 0.0,
-    this.collapsed
-  });
+  const BarDrawable(
+      {@required this.value,
+      @required this.base,
+      @required this.stackBase,
+      this.paint: const [const PaintOptions()],
+      this.paintGenerator,
+      this.widthFactor: 1.0,
+      this.xOffset: 0.0,
+      this.collapsed});
 
   /// The base of the bar, usually between 0 and 1.
   /// A value of 0 means the bar starts at the base of the graph.
@@ -235,26 +216,24 @@ class BarDrawable implements MergeTweenable<BarDrawable> {
   /// animation.
   final BarDrawable collapsed;
 
-  BarDrawable copyWith({
-    double value,
-    double base,
-    double stackBase,
-    List<PaintOptions> paint,
-    PaintGenerator paintGenerator,
-    double widthFactor,
-    double xOffset,
-    BarDrawable collapsed
-  }) {
+  BarDrawable copyWith(
+      {double value,
+      double base,
+      double stackBase,
+      List<PaintOptions> paint,
+      PaintGenerator paintGenerator,
+      double widthFactor,
+      double xOffset,
+      BarDrawable collapsed}) {
     return new BarDrawable(
-      value: value ?? this.value,
-      base: base ?? this.base,
-      stackBase: stackBase ?? this.stackBase,
-      paint: paint ?? this.paint,
-      paintGenerator: paintGenerator ?? this.paintGenerator,
-      widthFactor: widthFactor ?? this.widthFactor,
-      xOffset: xOffset ?? this.xOffset,
-      collapsed: collapsed ?? this.collapsed
-    );
+        value: value ?? this.value,
+        base: base ?? this.base,
+        stackBase: stackBase ?? this.stackBase,
+        paint: paint ?? this.paint,
+        paintGenerator: paintGenerator ?? this.paintGenerator,
+        widthFactor: widthFactor ?? this.widthFactor,
+        xOffset: xOffset ?? this.xOffset,
+        collapsed: collapsed ?? this.collapsed);
   }
 
   /// Generate the paint options for the area in which this bar is to painted.
@@ -275,8 +254,7 @@ class BarDrawable implements MergeTweenable<BarDrawable> {
   }
 
   void draw(CanvasArea stackArea) {
-    if (value == null || base == null)
-      return;
+    if (value == null || base == null) return;
 
     // invert value (y is down, weirdo)
     final barTop = 1 - value;
@@ -293,12 +271,8 @@ class BarDrawable implements MergeTweenable<BarDrawable> {
     final actualHeight = stackArea.height * barHeight;
 
     // the area of the bar
-    CanvasArea barArea = stackArea.child(new Rect.fromLTWH(
-      actualXOffset,
-      actualTop,
-      actualWidth,
-      actualHeight
-    ));
+    CanvasArea barArea = stackArea.child(
+        new Rect.fromLTWH(actualXOffset, actualTop, actualWidth, actualHeight));
 
     // fill in the bar area
     for (final paint in paintFor(barArea)) {
@@ -311,21 +285,21 @@ class BarDrawable implements MergeTweenable<BarDrawable> {
   ///
   /// This result be overridden on a per-bar basis with [collapsed].
   static BarDrawable collapse(BarDrawable bar) => new BarDrawable(
-    base: bar.stackBase ?? bar.base,
-    stackBase: bar.stackBase,
-    value: 0.0,
-    paint: bar.paint,
-    paintGenerator: bar.paintGenerator,
-    widthFactor: bar.widthFactor,
-    xOffset: bar.xOffset,
-  );
+        base: bar.stackBase ?? bar.base,
+        stackBase: bar.stackBase,
+        value: 0.0,
+        paint: bar.paint,
+        paintGenerator: bar.paintGenerator,
+        widthFactor: bar.widthFactor,
+        xOffset: bar.xOffset,
+      );
 }
 
 /// Lerp between two bars.
 class _BarDrawableTween extends Tween<BarDrawable> {
-  _BarDrawableTween(BarDrawable begin, BarDrawable end) :
-      this._paintTween = new MergeTween(begin.paint, end.paint),
-      super(begin: begin, end: end);
+  _BarDrawableTween(BarDrawable begin, BarDrawable end)
+      : this._paintTween = new MergeTween(begin.paint, end.paint),
+        super(begin: begin, end: end);
 
   final MergeTween<PaintOptions> _paintTween;
 

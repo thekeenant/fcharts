@@ -11,42 +11,31 @@ import 'package:meta/meta.dart';
 /// discrete data), or a histogram (continuous data).
 @immutable
 class BarGraphData implements ChartData {
-  BarGraphData({
-    @required this.groups,
-    @required this.groupWidthFraction
-  });
+  BarGraphData({@required this.groups, @required this.groupWidthFraction});
 
   /// Create a bar graph from histogram bins and a range for those bins.
-  factory BarGraphData.fromHistogram({
-    @required List<BinData> bins,
-    @required Range range
-  }) {
+  factory BarGraphData.fromHistogram(
+      {@required List<BinData> bins, @required Range range}) {
     final groups = new List.generate(bins.length, (i) {
       final bin = bins[i];
 
-      return new BarGroupData(
-        stacks: [
-          new BarStackData(
-            range: range,
-            base: 0.0,
-            bars: [
-              new BarData(
-                base: 0.0,
-                value: bin.value,
-                paint: bin.paint,
-                paintGenerator: bin.paintGenerator,
-              )
-            ],
-          )
-        ],
-        stackWidthFraction: 1.0
-      );
+      return new BarGroupData(stacks: [
+        new BarStackData(
+          range: range,
+          base: 0.0,
+          bars: [
+            new BarData(
+              base: 0.0,
+              value: bin.value,
+              paint: bin.paint,
+              paintGenerator: bin.paintGenerator,
+            )
+          ],
+        )
+      ], stackWidthFraction: 1.0);
     });
 
-    return new BarGraphData(
-      groups: groups,
-      groupWidthFraction: 1.0
-    );
+    return new BarGraphData(groups: groups, groupWidthFraction: 1.0);
   }
 
   /// The bar groups.
@@ -56,14 +45,11 @@ class BarGraphData implements ChartData {
   /// no spacing in between groups.
   final double groupWidthFraction;
 
-  BarGraphData copyWith({
-    List<BarGroupData> groups,
-    double groupWidthFraction
-  }) {
+  BarGraphData copyWith(
+      {List<BarGroupData> groups, double groupWidthFraction}) {
     return new BarGraphData(
-      groups: groups ?? this.groups,
-      groupWidthFraction: groupWidthFraction ?? this.groupWidthFraction
-    );
+        groups: groups ?? this.groups,
+        groupWidthFraction: groupWidthFraction ?? this.groupWidthFraction);
   }
 
   @override
@@ -85,7 +71,9 @@ class BarGraphData implements ChartData {
       final stackDrawables = group.stacks.map((stack) {
         final range = stack.range;
         final yOffset = range.min / range.span;
-        final stackX = groupX + j * stackDistance + stackDistance * (1 - stackWidthFraction) / 2;
+        final stackX = groupX +
+            j * stackDistance +
+            stackDistance * (1 - stackWidthFraction) / 2;
 
         final barDrawables = stack.bars.map((bar) {
           bool isNull = bar.base == null || bar.value == null;
@@ -104,21 +92,14 @@ class BarGraphData implements ChartData {
 
         j++;
         return new BarStackDrawable(
-          x: stackX,
-          width: stackWidth,
-          bars: barDrawables.toList()
-        );
+            x: stackX, width: stackWidth, bars: barDrawables.toList());
       });
 
       i++;
-      return new BarGroupDrawable(
-        stacks: stackDrawables.toList()
-      );
+      return new BarGroupDrawable(stacks: stackDrawables.toList());
     });
 
-    return new BarGraphDrawable(
-      groups: groupDrawables.toList()
-    );
+    return new BarGraphDrawable(groups: groupDrawables.toList());
   }
 
   List<double> xValues() {
@@ -133,11 +114,10 @@ class BarGraphData implements ChartData {
 /// A bar in a histogram.
 @immutable
 class BinData {
-  BinData({
-    @required this.value,
-    this.paint: const [const PaintOptions(color: Colors.black)],
-    this.paintGenerator
-  });
+  BinData(
+      {@required this.value,
+      this.paint: const [const PaintOptions(color: Colors.black)],
+      this.paintGenerator});
 
   /// The value for this bin.
   final double value;
@@ -153,10 +133,8 @@ class BinData {
 /// A group of bar stacks in a bar chart.
 @immutable
 class BarGroupData {
-  const BarGroupData({
-    @required this.stacks,
-    @required this.stackWidthFraction
-  });
+  const BarGroupData(
+      {@required this.stacks, @required this.stackWidthFraction});
 
   /// The stacks of this group.
   final List<BarStackData> stacks;
@@ -165,14 +143,11 @@ class BarGroupData {
   /// 100% of their width, there is no spacing between them.
   final double stackWidthFraction;
 
-  BarGroupData copyWith({
-    List<BarStackData> stacks,
-    double stackWidthFraction
-  }) {
+  BarGroupData copyWith(
+      {List<BarStackData> stacks, double stackWidthFraction}) {
     return new BarGroupData(
-      stacks: stacks ?? this.stacks,
-      stackWidthFraction: stackWidthFraction ?? this.stackWidthFraction
-    );
+        stacks: stacks ?? this.stacks,
+        stackWidthFraction: stackWidthFraction ?? this.stackWidthFraction);
   }
 }
 
@@ -197,28 +172,22 @@ class BarStackData {
   /// value.
   final double base;
 
-  BarStackData copyWith({
-    List<BarData> bars,
-    Range range,
-    double base
-  }) {
+  BarStackData copyWith({List<BarData> bars, Range range, double base}) {
     return new BarStackData(
-      bars: bars ?? this.bars,
-      range: range ?? this.range,
-      base: base ?? this.base
-    );
+        bars: bars ?? this.bars,
+        range: range ?? this.range,
+        base: base ?? this.base);
   }
 }
 
 /// A single continuous bar in a bar chart.
 @immutable
 class BarData {
-  const BarData({
-    @required this.value,
-    @required this.base,
-    this.paint: const [const PaintOptions(color: Colors.black)],
-    this.paintGenerator
-  });
+  const BarData(
+      {@required this.value,
+      @required this.base,
+      this.paint: const [const PaintOptions(color: Colors.black)],
+      this.paintGenerator});
 
   /// The value of this bar. It is usually something like the "height" or
   /// how far it extends vertically. It is relative to the bar stack's range.
@@ -235,17 +204,15 @@ class BarData {
   /// An optional paint generator to use on this bar. This overrides [paint].
   final PaintGenerator paintGenerator;
 
-  BarData copyWith({
-    double value,
-    double base,
-    List<PaintOptions> paint,
-    PaintGenerator paintGenerator
-  }) {
+  BarData copyWith(
+      {double value,
+      double base,
+      List<PaintOptions> paint,
+      PaintGenerator paintGenerator}) {
     return new BarData(
-      value: value ?? this.value,
-      base: base ?? this.base,
-      paint: paint ?? this.paint,
-      paintGenerator: paintGenerator ?? this.paintGenerator
-    );
+        value: value ?? this.value,
+        base: base ?? this.base,
+        paint: paint ?? this.paint,
+        paintGenerator: paintGenerator ?? this.paintGenerator);
   }
 }

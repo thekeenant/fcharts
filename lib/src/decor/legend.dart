@@ -3,7 +3,6 @@ import 'dart:math' as math;
 import 'package:fcharts/src/utils/chart_position.dart';
 import 'package:fcharts/src/utils/painting.dart';
 import 'package:flutter/material.dart';
-import 'package:collection/collection.dart';
 
 enum LegendLayout {
   /// Each item is on the same horizontal plane, they are
@@ -17,14 +16,14 @@ enum LegendLayout {
 
 /// TODO
 class LegendData {
-  LegendData({
-    this.items,
-    this.layout: LegendLayout.vertical,
-    this.position: ChartPosition.right,
-    this.offset: const Offset(0.0, 0.0)
-  }) : assert(items != null),
-       assert(layout != null),
-       assert(position != null);
+  LegendData(
+      {this.items,
+      this.layout: LegendLayout.vertical,
+      this.position: ChartPosition.right,
+      this.offset: const Offset(0.0, 0.0)})
+      : assert(items != null),
+        assert(layout != null),
+        assert(position != null);
 
   final List<LegendItemData> items;
 
@@ -40,8 +39,7 @@ class LegendData {
     if (layout == LegendLayout.vertical) {
       width = items.map((item) => item.width).reduce(math.max);
       height = items.map((item) => item.height).reduce((a, b) => a + b);
-    }
-    else {
+    } else {
       width = items.map((item) => item.width).reduce((a, b) => a + b);
       height = items.map((item) => item.height).reduce(math.max);
     }
@@ -78,19 +76,22 @@ class LegendData {
       for (var i = 0; i < items.length; i++) {
         final curr = items[i];
         final legendItemArea = legendArea.child(new Rect.fromLTWH(
-          (legendRect.width - curr.width) / 2, d, legendArea.width, legendRect.height / items.length
-        ));
+            (legendRect.width - curr.width) / 2,
+            d,
+            legendArea.width,
+            legendRect.height / items.length));
         legendItemArea.drawDebugCross(color: Colors.blue);
         items[i].draw(legendItemArea);
         d += curr.height;
       }
-    }
-    else {
+    } else {
       for (var i = 0; i < items.length; i++) {
         final curr = items[i];
         final legendItemArea = legendArea.child(new Rect.fromLTWH(
-          d, (legendRect.height - curr.height) / 2, legendArea.width / items.length, legendRect.height
-        ));
+            d,
+            (legendRect.height - curr.height) / 2,
+            legendArea.width / items.length,
+            legendRect.height));
         curr.draw(legendItemArea);
         d += curr.width;
       }
@@ -127,36 +128,32 @@ class LegendItemData {
 
     // draw the text
     final textArea = area.child(new Rect.fromLTWH(
-      symbol.width, (maxHeight - textPainter.height), width - symbol.width, textPainter.height
-    ));
+        symbol.width,
+        (maxHeight - textPainter.height),
+        width - symbol.width,
+        textPainter.height));
     textArea.drawText(new Offset(3.0, 0.0), text, options: textOptions);
 
     // draw symbol
     final symbolArea = area.child(new Rect.fromLTWH(
-      0.0, (maxHeight - symbol.height) / 2, symbol.width, symbol.height
-    ));
+        0.0, (maxHeight - symbol.height) / 2, symbol.width, symbol.height));
     symbol.draw(symbolArea);
   }
 
-  TextOptions get _textOptions => new TextOptions(
-    style: textStyle
-  );
+  TextOptions get _textOptions => new TextOptions(style: textStyle);
 
   /// The total height of this legend.
   double get height =>
-    math.max(symbol.height, _textOptions.build(text).height) + padding.vertical;
+      math.max(symbol.height, _textOptions.build(text).height) +
+      padding.vertical;
 
   /// The total width of this legend.
   double get width =>
-    symbol.width + _textOptions.build(text).width + padding.horizontal + 3.0;
+      symbol.width + _textOptions.build(text).width + padding.horizontal + 3.0;
 }
 
-
 class LegendSquareSymbol implements LegendSymbol {
-  LegendSquareSymbol({
-    this.size: 14.0,
-    this.paint
-  });
+  LegendSquareSymbol({this.size: 14.0, this.paint});
 
   final double size;
 
@@ -164,8 +161,7 @@ class LegendSquareSymbol implements LegendSymbol {
 
   @override
   void draw(CanvasArea area) {
-    for (final paint in this.paint)
-      area.paint(paint);
+    for (final paint in this.paint) area.paint(paint);
   }
 
   @override
@@ -174,7 +170,6 @@ class LegendSquareSymbol implements LegendSymbol {
   @override
   double get width => size;
 }
-
 
 abstract class LegendSymbol {
   void draw(CanvasArea area);

@@ -13,10 +13,9 @@ class LineChartData implements ChartData {
     this.stroke: const PaintOptions.stroke(),
     this.fill,
     this.curve: const MonotoneCurve(),
-  }) :
-      assert(points != null),
-      assert(range != null),
-      assert(curve != null);
+  })  : assert(points != null),
+        assert(range != null),
+        assert(curve != null);
 
   /// The points for the line chart, in ascending x value.
   final List<LinePointData> points;
@@ -34,20 +33,18 @@ class LineChartData implements ChartData {
   /// See [LineCurves].
   final LineCurve curve;
 
-  LineChartData copyWith({
-    List<LinePointData> points,
-    Range range,
-    PaintOptions stroke,
-    PaintOptions fill,
-    LineCurve curve
-  }) {
+  LineChartData copyWith(
+      {List<LinePointData> points,
+      Range range,
+      PaintOptions stroke,
+      PaintOptions fill,
+      LineCurve curve}) {
     return new LineChartData(
-      points: points ?? this.points,
-      range: range ?? this.range,
-      stroke: stroke ?? this.stroke,
-      fill: fill ?? this.fill,
-      curve: curve ?? this.curve
-    );
+        points: points ?? this.points,
+        range: range ?? this.range,
+        stroke: stroke ?? this.stroke,
+        fill: fill ?? this.fill,
+        curve: curve ?? this.curve);
   }
 
   @override
@@ -59,11 +56,10 @@ class LineChartData implements ChartData {
       final scaledValue = point.value / range.span - yOffset;
 
       return new LinePointDrawable(
-        x: x,
-        value: scaledValue,
-        paint: point.paint,
-        pointRadius: point.radius
-      );
+          x: x,
+          value: scaledValue,
+          paint: point.paint,
+          pointRadius: point.radius);
     });
 
     return new LineChartDrawable(
@@ -77,16 +73,14 @@ class LineChartData implements ChartData {
 
 /// A point on a line chart.
 class LinePointData {
-  LinePointData({
-    @required this.x,
-    @required this.value,
-    this.paint: const [],
-    this.radius: 1.0
-  }) :
-      assert(x != null && x >= 0 && x <= 1.0),
-      assert(paint != null),
-      assert(radius != null);
-
+  LinePointData(
+      {@required this.x,
+      @required this.value,
+      this.paint: const [],
+      this.radius: 1.0})
+      : assert(x != null && x >= 0 && x <= 1.0),
+        assert(paint != null),
+        assert(radius != null);
 
   /// The x position of this point. Should be 0..1 inclusive.
   final double x;

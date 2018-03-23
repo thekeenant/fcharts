@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:fcharts/src/decor/axis.dart';
 import 'package:fcharts/src/decor/decor.dart';
 import 'package:fcharts/src/decor/legend.dart';
@@ -68,10 +66,8 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
         final x = j / (data.length - 1);
         final value = line.value(datum);
 
-        if (value < autoRange.min)
-          autoRange = new Range(value, autoRange.max);
-        if (value > autoRange.max)
-          autoRange = new Range(autoRange.min, value);
+        if (value < autoRange.min) autoRange = new Range(value, autoRange.max);
+        if (value > autoRange.max) autoRange = new Range(autoRange.min, value);
 
         var radiusFactor = 1.0;
 
@@ -80,11 +76,11 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
         }
 
         return new LinePointData(
-          x: x,
-          value: value,
-          paint: line.pointPaint == null ? [] : line.pointPaint(datum),
-          radius: radiusFactor * (line.pointRadius == null ? 3.0 : line.pointRadius(datum))
-        );
+            x: x,
+            value: value,
+            paint: line.pointPaint == null ? [] : line.pointPaint(datum),
+            radius: radiusFactor *
+                (line.pointRadius == null ? 3.0 : line.pointRadius(datum)));
       });
 
       autoRanges[yAxis] = autoRange;
@@ -99,7 +95,7 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
     });
 
     final axesPerPosition = <ChartPosition, List<AxisBase<Datum>>>{};
-    for (var i = 0 ; i < axes.length; i++) {
+    for (var i = 0; i < axes.length; i++) {
       final axis = axes[i];
       axesPerPosition.putIfAbsent(axis.position, () => []);
       axesPerPosition[axis.position].add(axis);
@@ -110,78 +106,67 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
 
       if (axis is XAxis<Datum>) {
         return new ChartAxisData(
-          position: axis.position,
-          paint: axis.stroke,
-          size: axis.size,
-          offset: axis.offset,
-          ticks: new List.generate(data.length, (j) {
-            final datum = data[j];
-            final text = axis.label(datum);
+            position: axis.position,
+            paint: axis.stroke,
+            size: axis.size,
+            offset: axis.offset,
+            ticks: new List.generate(data.length, (j) {
+              final datum = data[j];
+              final text = axis.label(datum);
 
-            final value = j / (data.length - 1);
-            final width = 1 / data.length;
+              final value = j / (data.length - 1);
+              final width = 1 / data.length;
 
-            return new AxisTickData(
-              value: value,
-              width: width,
-              labelers: [
+              return new AxisTickData(value: value, width: width, labelers: [
                 new TextTickLabeler(
                   text: text,
                   style: axis.labelStyle,
                 ),
-                new NotchTickLabeler(
-                  paint: axis.stroke
-                )
-              ]
-            );
-          })
-        );
-      }
-      else if (axis is YAxis<Datum>) {
+                new NotchTickLabeler(paint: axis.stroke)
+              ]);
+            }));
+      } else if (axis is YAxis<Datum>) {
         final range = axis.range ?? autoRanges[axis];
 
         return new ChartAxisData(
-          position: axis.position,
-          paint: axis.stroke,
-          size: axis.size,
-          offset: axis.offset,
-          ticks: new List.generate(range == null ? 0 : axis.tickCount, (j) {
-            final value = j / (axis.tickCount - 1);
-            final width = 1 / axis.tickCount;
-            final rangedValue = value * range.span + range.min;
+            position: axis.position,
+            paint: axis.stroke,
+            size: axis.size,
+            offset: axis.offset,
+            ticks: new List.generate(range == null ? 0 : axis.tickCount, (j) {
+              final value = j / (axis.tickCount - 1);
+              final width = 1 / axis.tickCount;
+              final rangedValue = value * range.span + range.min;
 
-            return new AxisTickData(
-              value: value,
-              width: width,
-              labelers: [
-                new TextTickLabeler(
-                  text: axis.label(rangedValue),
-                  style: axis.labelStyle,
-                ),
-                new NotchTickLabeler(
-                  paint: axis.stroke
-                )
-              ],
-            );
-          })
-        );
+              return new AxisTickData(
+                value: value,
+                width: width,
+                labelers: [
+                  new TextTickLabeler(
+                    text: axis.label(rangedValue),
+                    style: axis.labelStyle,
+                  ),
+                  new NotchTickLabeler(paint: axis.stroke)
+                ],
+              );
+            }));
       }
     });
 
     return new ChartDataView(
       charts: lineCharts,
-      animationDuration: _active.isEmpty ? new Duration(milliseconds: 500) : new Duration(milliseconds: 200),
+      animationDuration: _active.isEmpty
+          ? new Duration(milliseconds: 500)
+          : new Duration(milliseconds: 200),
       onMove: (pointer, events) {
         for (final event in events.values) {
           int active = (event as LineChartTouchEvent).nearestHorizontally;
-          if (_active[pointer] == active)
-            return;
+          if (_active[pointer] == active) return;
           setState(() {
             _active[pointer] = active;
           });
 
-          if (widget.onTouch != null)
-            widget.onTouch(widget.data[active]);
+          if (widget.onTouch != null) widget.onTouch(widget.data[active]);
 
           break;
         }
@@ -193,43 +178,33 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
             _active[pointer] = active;
           });
 
-          if (widget.onTouch != null)
-            widget.onTouch(widget.data[active]);
+          if (widget.onTouch != null) widget.onTouch(widget.data[active]);
           break;
         }
       },
       onRelease: (pointer) {
         setState(() {
           _active.remove(pointer);
-          if (widget.onRelease != null)
-            widget.onRelease();
+          if (widget.onRelease != null) widget.onRelease();
         });
       },
       decor: new ChartDecor(
-        axes: chartAxes,
-        legend: new LegendData(
-          layout: LegendLayout.horizontal,
-          position: ChartPosition.bottom,
-          offset: new Offset(0.0, 35.0),
-          items: [
-            new LegendItemData(
-              padding: new EdgeInsets.only(bottom: 10.0, right: 10.0),
-              symbol: new LegendSquareSymbol(
-                paint: [
-                  const PaintOptions(color: Colors.green)
-                ]
-              ),
-              text: 'Cookies'
-            ),
-            new LegendItemData(
-              padding: new EdgeInsets.only(bottom: 10.0, right: 10.0),
-              symbol: new LegendSquareSymbol(
-                paint: [
-                  const PaintOptions(color: Colors.blue)
-                ]
-              ),
-              text: 'Brownies'
-            ),
+          axes: chartAxes,
+          legend: new LegendData(
+              layout: LegendLayout.horizontal,
+              position: ChartPosition.bottom,
+              offset: new Offset(0.0, 35.0),
+              items: [
+                new LegendItemData(
+                    padding: new EdgeInsets.only(bottom: 10.0, right: 10.0),
+                    symbol: new LegendSquareSymbol(
+                        paint: [const PaintOptions(color: Colors.green)]),
+                    text: 'Cookies'),
+                new LegendItemData(
+                    padding: new EdgeInsets.only(bottom: 10.0, right: 10.0),
+                    symbol: new LegendSquareSymbol(
+                        paint: [const PaintOptions(color: Colors.blue)]),
+                    text: 'Brownies'),
 //            new LegendItemData(
 //              padding: new EdgeInsets.only(bottom: 10.0),
 //              symbol: new LegendSquareSymbol(
@@ -239,25 +214,22 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
 //              ),
 //              text: 'Crackers'
 //            )
-          ]
-        )
-      ),
+              ])),
       chartPadding: padding,
     );
   }
 }
 
 class Line<T> {
-  Line({
-    @required this.value,
-    this.xAxisId,
-    this.yAxisId,
-    this.stroke: const PaintOptions.stroke(),
-    this.fill,
-    this.curve: LineCurves.monotone,
-    this.pointPaint,
-    this.pointRadius
-  });
+  Line(
+      {@required this.value,
+      this.xAxisId,
+      this.yAxisId,
+      this.stroke: const PaintOptions.stroke(),
+      this.fill,
+      this.curve: LineCurves.monotone,
+      this.pointPaint,
+      this.pointRadius});
 
   final UnaryFunction<T, double> value;
   final String xAxisId;

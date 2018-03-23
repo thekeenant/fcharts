@@ -31,24 +31,16 @@ LineChartData randomLineChart(final int pointCount) {
     return new LinePointData(
       x: x,
       value: (value).clamp(0.0, 1.0).toDouble(),
-      paint: [
-        new PaintOptions(color: color)
-      ],
+      paint: [new PaintOptions(color: color)],
     );
   });
 
   return new LineChartData(
-    points: points,
-    stroke: new PaintOptions.stroke(
-      color: color,
-      strokeWidth: 3.0,
-      strokeCap: StrokeCap.round
-    ),
-    fill: new PaintOptions(
-      color: monochrome[3].withOpacity(0.4)
-    ),
-    range: new Range(0.0, 1.0)
-  );
+      points: points,
+      stroke: new PaintOptions.stroke(
+          color: color, strokeWidth: 3.0, strokeCap: StrokeCap.round),
+      fill: new PaintOptions(color: monochrome[3].withOpacity(0.4)),
+      range: new Range(0.0, 1.0));
 }
 
 BarGraphData randomHistogram(int binCount) {
@@ -66,20 +58,13 @@ BarGraphData randomHistogram(int binCount) {
 
     theta += _random.nextDouble() * 0.5;
 
-    return new BinData(
-      value: value,
-      paint: [
-        new PaintOptions(color: color),
-        new PaintOptions(
-          color: Colors.grey[800], style: PaintingStyle.stroke),
-      ]
-    );
+    return new BinData(value: value, paint: [
+      new PaintOptions(color: color),
+      new PaintOptions(color: Colors.grey[800], style: PaintingStyle.stroke),
+    ]);
   });
 
-  return new BarGraphData.fromHistogram(
-    bins: bins,
-    range: range
-  );
+  return new BarGraphData.fromHistogram(bins: bins, range: range);
 }
 
 BarGraphData randomBarChart() {
@@ -104,20 +89,13 @@ BarGraphData randomBarChart() {
         nextBase = value;
 
         return new BarData(
-          value: value,
-          base: base,
-          paint: [new PaintOptions(color: color)]
-        );
+            value: value, base: base, paint: [new PaintOptions(color: color)]);
       });
 
       return new BarStackData(
-        bars: bars,
-        range: new Range(
-          0.0,
-          50.0
-        ),
-        base: bars.map((b) => b.base).reduce(math.min)
-      );
+          bars: bars,
+          range: new Range(0.0, 50.0),
+          base: bars.map((b) => b.base).reduce(math.min));
     });
 
     return new BarGroupData(

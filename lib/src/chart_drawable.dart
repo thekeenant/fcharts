@@ -4,10 +4,8 @@ import 'package:flutter/material.dart';
 
 /// A chart which can be drawn within a [CanvasArea]. It can also
 /// be tweened from/to a chart of the same type.
-abstract class ChartDrawable
-  <T extends ChartDrawable<T,E>, E extends ChartTouchEvent>
-  extends MergeTweenable<T> {
-
+abstract class ChartDrawable<T extends ChartDrawable<T, E>,
+    E extends ChartTouchEvent> extends MergeTweenable<T> {
   /// Draw the chart within a [CanvasArea]. It should scale according
   /// to the width and height of the area.
   void draw(CanvasArea area);
@@ -19,7 +17,4 @@ abstract class ChartDrawable
   E resolveTouch(Size chartSize, Offset touch);
 }
 
-
-abstract class ChartTouchEvent {
-
-}
+abstract class ChartTouchEvent {}

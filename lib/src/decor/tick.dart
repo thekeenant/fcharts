@@ -2,22 +2,19 @@ import 'dart:ui' show lerpDouble;
 
 import 'package:collection/collection.dart';
 import 'package:fcharts/src/decor/axis.dart';
-import 'package:fcharts/src/utils/painting.dart';
-import 'package:fcharts/src/utils/merge_tween.dart';
 import 'package:fcharts/src/utils/chart_position.dart';
+import 'package:fcharts/src/utils/merge_tween.dart';
+import 'package:fcharts/src/utils/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 /// A tick located on a [ChartAxisData].
 class AxisTickData implements MergeTweenable<AxisTickData> {
-  AxisTickData({
-    @required this.value,
-    @required this.width,
-    this.labelers: const [
-      const NotchTickLabeler()
-    ],
-    this.opacity: 1.0
-  });
+  AxisTickData(
+      {@required this.value,
+      @required this.width,
+      this.labelers: const [const NotchTickLabeler()],
+      this.opacity: 1.0});
 
   /// The relative value of this tick. Should be 0..1 inclusive.
   /// A value of 0.25 means this tick falls at 25% the way up the axis.
@@ -37,27 +34,22 @@ class AxisTickData implements MergeTweenable<AxisTickData> {
 
   /// Draw this axis tick within its [tickArea] given an [side].
   void draw(CanvasArea tickArea, ChartPosition side) {
-    for (final labeler in labelers)
-      labeler.draw(tickArea, side, opacity);
+    for (final labeler in labelers) labeler.draw(tickArea, side, opacity);
   }
 
   @override
   AxisTickData get empty => new AxisTickData(
-    value: value,
-    width: width,
-    labelers: labelers,
-    opacity: 0.0
-  );
+      value: value, width: width, labelers: labelers, opacity: 0.0);
 
   @override
-  Tween<AxisTickData> tweenTo(AxisTickData other) => new _AxisTickDataTween(this, other);
+  Tween<AxisTickData> tweenTo(AxisTickData other) =>
+      new _AxisTickDataTween(this, other);
 }
 
 /// Lerp between two axis ticks.
 class _AxisTickDataTween extends Tween<AxisTickData> {
-  _AxisTickDataTween(AxisTickData begin, AxisTickData end) :
-      super(begin: begin, end: end) {
-
+  _AxisTickDataTween(AxisTickData begin, AxisTickData end)
+      : super(begin: begin, end: end) {
     Function listsEqual = const ListEquality().equals;
     _labelersEqual = listsEqual(begin.labelers, end.labelers);
   }
@@ -77,11 +69,10 @@ class _AxisTickDataTween extends Tween<AxisTickData> {
     }
 
     return new AxisTickData(
-      value: lerpDouble(begin.value, end.value, t),
-      width: lerpDouble(begin.width, end.width, t),
-      labelers: t < 0.5 ? begin.labelers : end.labelers,
-      opacity: opacity
-    );
+        value: lerpDouble(begin.value, end.value, t),
+        width: lerpDouble(begin.width, end.width, t),
+        labelers: t < 0.5 ? begin.labelers : end.labelers,
+        opacity: opacity);
   }
 }
 
@@ -119,15 +110,17 @@ class TextTickLabeler implements TickLabeler {
 
   _styleWithOpacity(double opacity) {
     return style.copyWith(
-      color: (style.color ?? Colors.black).withOpacity(opacity)
-    );
+        color: (style.color ?? Colors.black).withOpacity(opacity));
   }
 
   @override
   bool operator ==(o) {
     if (o is TextTickLabeler) {
-      return text == o.text && style == o.style && offset == o.offset &&
-              rotation == o.rotation && distance == o.distance;
+      return text == o.text &&
+          style == o.style &&
+          offset == o.offset &&
+          rotation == o.rotation &&
+          distance == o.distance;
     }
     return false;
   }
@@ -156,12 +149,13 @@ class TextTickLabeler implements TickLabeler {
     // Todo: Pass in rotation all the way down here?
 
     final textOptions = new TextOptions(
-      minWidth: minWidth,
-      textAlign: TextAlign.center,
-      style: _styleWithOpacity(opacity)
-    );
+        minWidth: minWidth,
+        textAlign: TextAlign.center,
+        style: _styleWithOpacity(opacity));
 
-    tickArea.drawText(tickArea.center, text,
+    tickArea.drawText(
+      tickArea.center,
+      text,
       shift: new Offset(0.5, 0.5),
       options: textOptions,
       rotation: rotation,
@@ -193,14 +187,15 @@ class NotchTickLabeler implements TickLabeler {
 
   PaintOptions _paintWithOpacity(double opacity) {
     return paint.copyWith(
-      color: (paint.color ?? Colors.black).withOpacity(opacity)
-    );
+        color: (paint.color ?? Colors.black).withOpacity(opacity));
   }
 
   @override
   bool operator ==(o) {
-    return o is NotchTickLabeler && length == o.length && paint == o.paint &&
-            begin == o.begin;
+    return o is NotchTickLabeler &&
+        length == o.length &&
+        paint == o.paint &&
+        begin == o.begin;
   }
 
   @override
@@ -235,10 +230,7 @@ class NotchTickLabeler implements TickLabeler {
     }
 
     // draw the line from start to end
-    tickArea.drawLine(
-      lineStart,
-      lineStart.translate(lineX, lineY),
-      _paintWithOpacity(opacity)
-    );
+    tickArea.drawLine(lineStart, lineStart.translate(lineX, lineY),
+        _paintWithOpacity(opacity));
   }
 }
