@@ -129,7 +129,7 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
                     style: axis.labelStyle,
                   ),
                   new NotchTickLabeler(
-                    paint: axis.stroke, 
+                    paint: axis.stroke,
                   ),
                 ],
               );

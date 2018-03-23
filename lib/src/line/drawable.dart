@@ -200,7 +200,7 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable, LineChartTou
         for (final entry in pointToLoc.entries) {
           final point = entry.key;
           final loc = entry.value;
-          final r = point.pointRadius;
+          final r = point.radius;
 
           // create rectangle for arc
           final pointSquare = loc.translate(-r, -r) & new Size.fromRadius(r);
@@ -248,7 +248,7 @@ class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
   LinePointDrawable({
     @required this.x,
     @required this.value,
-    this.pointRadius: 3.0,
+    this.radius: 3.0,
     this.paint: const [],
     this.collapsed,
   });
@@ -261,7 +261,7 @@ class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
 
   /// Points can be illustrated by a circe on the graph. This indicates
   /// the radius of the point. Be sure to provide the point with [paint].
-  final double pointRadius;
+  final double radius;
 
   /// All paint to be applied to the point.
   final List<PaintOptions> paint;
@@ -273,14 +273,14 @@ class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
   LinePointDrawable copyWith({
     double x,
     double value,
-    double pointRadius,
+    double radius,
     List<PaintOptions> paint,
     LinePointDrawable collapsed,
   }) {
     return new LinePointDrawable(
       x: x ?? this.x,
       value: value ?? this.value,
-      pointRadius: pointRadius ?? this.pointRadius,
+      radius: radius ?? this.radius,
       paint: paint ?? this.paint,
       collapsed: collapsed ?? this.collapsed,
     );
@@ -334,7 +334,7 @@ class _LinePointDrawableTween extends Tween<LinePointDrawable> {
         x: lerpDouble(begin.x, end.x, t),
         value: lerpDouble(begin.value, end.value, t),
         paint: _paintsTween.lerp(t),
-        pointRadius: lerpDouble(begin.pointRadius, end.pointRadius, t),
+        radius: lerpDouble(begin.radius, end.radius, t),
         collapsed: end.collapsed,
       );
 }

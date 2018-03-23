@@ -92,7 +92,7 @@ class _MyAppState extends State<MyApp> {
                   new YAxis(
                     label: (val) => val.toInt().toString(),
                     tickCount: 5,
-                    range: new Range(0.0, 15.0),
+                    range: new Range(0.0, 16.0),
                     stroke: new PaintOptions.stroke(color: Colors.green, strokeWidth: 2.0),
                   ),
                   new YAxis(
@@ -114,7 +114,7 @@ class _MyAppState extends State<MyApp> {
                             color: Colors.green,
                           ),
                         ],
-                    pointRadius: (day) => _active == day ? 5.0 : 3.0,
+                    pointRadius: (day) => _active == day ? 6.0 : 3.0,
                   ),
                   new Line(
                     name: 'Brownies',
@@ -126,7 +126,7 @@ class _MyAppState extends State<MyApp> {
                             color: Colors.blue,
                           ),
                         ],
-                    pointRadius: (day) => _active == day ? 5.0 : 3.0,
+                    pointRadius: (day) => _active == day ? 6.0 : 3.0,
                   ),
                 ],
                 legend: new Legend(),

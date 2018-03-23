@@ -33,18 +33,20 @@ class LineChartData implements ChartData {
   /// See [LineCurves].
   final LineCurve curve;
 
-  LineChartData copyWith(
-      {List<LinePointData> points,
-      Range range,
-      PaintOptions stroke,
-      PaintOptions fill,
-      LineCurve curve}) {
+  LineChartData copyWith({
+    List<LinePointData> points,
+    Range range,
+    PaintOptions stroke,
+    PaintOptions fill,
+    LineCurve curve,
+  }) {
     return new LineChartData(
-        points: points ?? this.points,
-        range: range ?? this.range,
-        stroke: stroke ?? this.stroke,
-        fill: fill ?? this.fill,
-        curve: curve ?? this.curve);
+      points: points ?? this.points,
+      range: range ?? this.range,
+      stroke: stroke ?? this.stroke,
+      fill: fill ?? this.fill,
+      curve: curve ?? this.curve,
+    );
   }
 
   @override
@@ -56,7 +58,11 @@ class LineChartData implements ChartData {
       final scaledValue = point.value / range.span - yOffset;
 
       return new LinePointDrawable(
-          x: x, value: scaledValue, paint: point.paint, pointRadius: point.radius);
+        x: x,
+        value: scaledValue,
+        paint: point.paint,
+        radius: point.radius,
+      );
     });
 
     return new LineChartDrawable(

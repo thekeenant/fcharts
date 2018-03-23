@@ -91,7 +91,15 @@ class CanvasArea {
   /// Draw an arc within a rectangle.
   void drawArc(Rect arcArea, double startAngle, double sweepAngle, PaintOptions paint) {
     performDraw(() {
-      canvas.drawArc(arcArea, startAngle, sweepAngle, false, paint.build(rect: arcArea));
+      canvas.drawArc(
+        arcArea,
+        startAngle,
+        sweepAngle,
+        false,
+        paint.build(
+          rect: Offset.zero & arcArea.size,
+        ),
+      );
     });
   }
 
