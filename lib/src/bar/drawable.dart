@@ -24,8 +24,6 @@ class BarGraphDrawable implements ChartDrawable<BarGraphDrawable, BarGraphTouchE
     }
   }
 
-  @override
-  _BarGraphDrawableTween tweenTo(BarGraphDrawable end) => new _BarGraphDrawableTween(this, end);
 
   @override
   BarGraphDrawable get empty => new BarGraphDrawable(
@@ -43,6 +41,9 @@ class BarGraphDrawable implements ChartDrawable<BarGraphDrawable, BarGraphTouchE
     // todo
     return null;
   }
+
+  @override
+  _BarGraphDrawableTween tweenTo(BarGraphDrawable end) => new _BarGraphDrawableTween(this, end);
 }
 
 /// Lerp between two bar graphs.

@@ -165,7 +165,7 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
       }
     });
 
-    var legendData;
+    LegendData legendData;
     if (legend != null) {
       final padding = legend.layout == LegendLayout.horizontal
           ? new EdgeInsets.only(right: 5.0)

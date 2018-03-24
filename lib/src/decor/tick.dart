@@ -49,7 +49,7 @@ class AxisTickData implements MergeTweenable<AxisTickData> {
 /// Lerp between two axis ticks.
 class _AxisTickDataTween extends Tween<AxisTickData> {
   _AxisTickDataTween(AxisTickData begin, AxisTickData end) : super(begin: begin, end: end) {
-    Function listsEqual = const ListEquality().equals;
+    final listsEqual = const ListEquality<TickLabeler>().equals;
     _labelersEqual = listsEqual(begin.labelers, end.labelers);
   }
 
@@ -107,12 +107,12 @@ class TextTickLabeler implements TickLabeler {
   /// The distance in canvas units from the axis.
   final double distance;
 
-  _styleWithOpacity(double opacity) {
+  TextStyle _styleWithOpacity(double opacity) {
     return style.copyWith(color: (style.color ?? Colors.black).withOpacity(opacity));
   }
 
   @override
-  bool operator ==(o) {
+  bool operator ==(dynamic o) {
     if (o is TextTickLabeler) {
       return text == o.text &&
           style == o.style &&
@@ -186,7 +186,7 @@ class NotchTickLabeler implements TickLabeler {
   }
 
   @override
-  bool operator ==(o) {
+  bool operator ==(dynamic o) {
     return o is NotchTickLabeler && length == o.length && paint == o.paint && begin == o.begin;
   }
 

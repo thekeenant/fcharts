@@ -82,7 +82,7 @@ class CanvasArea {
   }
 
   /// Force a point into this area's bounds.
-  Offset boundPoint(Offset p) => new Offset(p.dx.clamp(0.0, width), p.dy.clamp(0.0, height));
+  Offset boundPoint(Offset p) => new Offset(p.dx.clamp(0.0, width).toDouble(), p.dy.clamp(0.0, height).toDouble());
 
   /// Force a rectangle into this area's bounds.
   Rect boundRect(Rect rect) =>
@@ -185,7 +185,7 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
     this.style: PaintingStyle.fill,
   });
 
-  bool operator ==(o) {
+  bool operator ==(dynamic o) {
     // todo impl hashcode
     if (o is PaintOptions) {
       return color == o.color &&

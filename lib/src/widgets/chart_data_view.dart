@@ -98,7 +98,7 @@ class _ChartDataViewState extends State<ChartDataView> with TickerProviderStateM
 
     if (_painter == null) {
       fromDecor = ChartDecor.none;
-      fromCharts = widget.charts.map((c) => c.createDrawable().empty).toList();
+      fromCharts = widget.charts.map((c) => c.createDrawable().empty as ChartDrawable).toList();
     } else {
       fromDecor = _painter.decor.value;
       fromCharts = _painter.charts.map((c) => c.value).toList();
@@ -119,7 +119,7 @@ class _ChartDataViewState extends State<ChartDataView> with TickerProviderStateM
 
       if (matches.isEmpty) {
         // if there is no match, animate from empty
-        prevDrawable = drawable.empty;
+        prevDrawable = drawable.empty as ChartDrawable;
       } else {
         // otherwise we take the first match and remove it from the list,
         // to prevent other charts in the list from tweening from it
@@ -128,7 +128,7 @@ class _ChartDataViewState extends State<ChartDataView> with TickerProviderStateM
       }
 
       final tween = prevDrawable.tweenTo(drawable);
-      toCharts.add(tween.animate(_curve));
+      toCharts.add(tween.animate(_curve) as Animation<ChartDrawable>);
     }
 
     return new _ChartPainter(
