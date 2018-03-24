@@ -9,6 +9,7 @@ abstract class LineCurve {
 }
 
 /// Some default curves without explicit configuration.
+@immutable
 class LineCurves {
   /// Go straight from one point to the next. No interpolation.
   static const linear = const Linear._();
@@ -22,6 +23,7 @@ class LineCurves {
 
 /// Use [Curves].none.
 /// Go straight from one point to the next. No interpolation.
+@immutable
 class Linear implements LineCurve {
   const Linear._();
 
@@ -37,7 +39,8 @@ class CardinalSpline implements LineCurve {
   const CardinalSpline({
     this.tension: 0.5,
     this.segmentCount: 10,
-  })  : assert(tension != null && tension >= 0.0 && tension <= 1.0),
+  })
+      : assert(tension != null && tension >= 0.0 && tension <= 1.0),
         assert(segmentCount != null && segmentCount > 0);
 
   final double tension;

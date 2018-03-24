@@ -82,7 +82,8 @@ class CanvasArea {
   }
 
   /// Force a point into this area's bounds.
-  Offset boundPoint(Offset p) => new Offset(p.dx.clamp(0.0, width).toDouble(), p.dy.clamp(0.0, height).toDouble());
+  Offset boundPoint(Offset p) =>
+      new Offset(p.dx.clamp(0.0, width).toDouble(), p.dy.clamp(0.0, height).toDouble());
 
   /// Force a rectangle into this area's bounds.
   Rect boundRect(Rect rect) =>
@@ -186,7 +187,6 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
   });
 
   bool operator ==(dynamic o) {
-    // todo impl hashcode
     if (o is PaintOptions) {
       return color == o.color &&
           strokeWidth == o.strokeWidth &&
@@ -197,6 +197,12 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
     return false;
   }
 
+  @override
+  int get hashCode {
+    // TODO
+    throw new UnimplementedError();
+  }
+
   /// Construct paint options automatically with stroke, instead
   /// of the default fill painting style.
   const PaintOptions.stroke({
@@ -204,7 +210,8 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
     this.strokeWidth: 1.0,
     this.strokeCap: StrokeCap.square,
     this.gradient,
-  }) : this.style = PaintingStyle.stroke;
+  })
+      : this.style = PaintingStyle.stroke;
 
   /// The color of the paint.
   final Color color;
@@ -351,7 +358,10 @@ class TextOptions {
     var maxWidth = this.maxWidth;
     if (maxWidth != null && minWidth != null && maxWidth - minWidth < 0) maxWidth = minWidth + 1;
 
-    span.layout(maxWidth: maxWidth ?? double.INFINITY, minWidth: minWidth ?? 0.0);
+    span.layout(
+      maxWidth: maxWidth ?? double.INFINITY,
+      minWidth: minWidth ?? 0.0,
+    );
 
     return span;
   }

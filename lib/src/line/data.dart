@@ -6,14 +6,16 @@ import 'package:fcharts/src/utils/range.dart';
 import 'package:meta/meta.dart';
 
 /// A type of chart where a group of points are connected by a line.
+@immutable
 class LineChartData implements ChartData {
-  LineChartData({
+  const LineChartData({
     @required this.points,
     @required this.range,
     this.stroke: const PaintOptions.stroke(),
     this.fill,
     this.curve: const MonotoneCurve(),
-  })  : assert(points != null),
+  })
+      : assert(points != null),
         assert(range != null),
         assert(curve != null);
 
@@ -75,13 +77,15 @@ class LineChartData implements ChartData {
 }
 
 /// A point on a line chart.
+@immutable
 class LinePointData {
-  LinePointData({
+  const LinePointData({
     @required this.x,
     @required this.value,
     this.paint: const [],
     this.radius: 1.0,
-  })  : assert(x != null && x >= 0 && x <= 1.0),
+  })
+      : assert(x != null && x >= 0 && x <= 1.0),
         assert(paint != null),
         assert(radius != null);
 

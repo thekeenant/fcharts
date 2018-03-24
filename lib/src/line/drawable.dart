@@ -11,12 +11,16 @@ import 'package:meta/meta.dart';
 const clipPointPadding = 5.0;
 const clipStrokePadding = 3.0;
 
+@immutable
 class LineChartTouchEvent implements ChartTouchEvent {
+  const LineChartTouchEvent(this.nearest, this.nearestHorizontally);
+
+  /// The index of the line point which was nearest to the touch.
   final int nearest;
 
+  /// The index of the line point which was nearest to the touch
+  /// horizontally. Vertical distance is not taken into account.
   final int nearestHorizontally;
-
-  LineChartTouchEvent(this.nearest, this.nearestHorizontally);
 
   @override
   String toString() {
@@ -27,14 +31,16 @@ class LineChartTouchEvent implements ChartTouchEvent {
 /// A line chart is a set of points with (x, y) coordinates. A line
 /// can connect the points and an area can be filled beneath the line.
 /// Points can be illustrated by their own paint options.
+@immutable
 class LineChartDrawable implements ChartDrawable<LineChartDrawable, LineChartTouchEvent> {
-  LineChartDrawable({
+  const LineChartDrawable({
     @required this.points,
     this.stroke: const PaintOptions.stroke(color: Colors.black),
     this.fill,
     this.curve: LineCurves.linear,
     this.bridgeNulls: false,
-  }) : assert(bridgeNulls != null);
+  })
+      : assert(bridgeNulls != null);
 
   /// The list of points (ascending x value).
   final List<LinePointDrawable> points;
@@ -244,8 +250,9 @@ class _LineChartDrawableTween extends Tween<LineChartDrawable> {
 }
 
 /// A point on a line chart.
+@immutable
 class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
-  LinePointDrawable({
+  const LinePointDrawable({
     @required this.x,
     @required this.value,
     this.radius: 3.0,

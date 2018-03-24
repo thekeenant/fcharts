@@ -8,7 +8,7 @@ import 'package:meta/meta.dart';
 /// An axis of a chart.
 @immutable
 class ChartAxisData implements MergeTweenable<ChartAxisData> {
-  ChartAxisData({
+  const ChartAxisData({
     @required this.position,
     this.ticks: const [],
     this.paint: const PaintOptions.stroke(),

@@ -9,8 +9,9 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 /// A tick located on a [ChartAxisData].
+@immutable
 class AxisTickData implements MergeTweenable<AxisTickData> {
-  AxisTickData({
+  const AxisTickData({
     @required this.value,
     @required this.width,
     this.labelers: const [const NotchTickLabeler()],
@@ -80,11 +81,18 @@ abstract class TickLabeler {
   /// Draw this label in its [tickArea], given the [side] of the axis
   /// which this tick resides, and its [opacity] (used for animation).
   void draw(CanvasArea tickArea, ChartPosition side, double opacity);
+
+  @override
+  operator ==(dynamic o);
+
+  @override
+  int get hashCode;
 }
 
 /// Text to place at the tick.
+@immutable
 class TextTickLabeler implements TickLabeler {
-  TextTickLabeler({
+  const TextTickLabeler({
     @required this.text,
     this.style: const TextStyle(color: Colors.black),
     this.offset: Offset.zero,
@@ -108,7 +116,9 @@ class TextTickLabeler implements TickLabeler {
   final double distance;
 
   TextStyle _styleWithOpacity(double opacity) {
-    return style.copyWith(color: (style.color ?? Colors.black).withOpacity(opacity));
+    return style.copyWith(
+      color: (style.color ?? Colors.black).withOpacity(opacity),
+    );
   }
 
   @override
@@ -121,6 +131,12 @@ class TextTickLabeler implements TickLabeler {
           distance == o.distance;
     }
     return false;
+  }
+
+  @override
+  int get hashCode {
+    // TODO
+    throw new UnimplementedError();
   }
 
   @override
@@ -182,12 +198,20 @@ class NotchTickLabeler implements TickLabeler {
   final double begin;
 
   PaintOptions _paintWithOpacity(double opacity) {
-    return paint.copyWith(color: (paint.color ?? Colors.black).withOpacity(opacity));
+    return paint.copyWith(
+      color: (paint.color ?? Colors.black).withOpacity(opacity),
+    );
   }
 
   @override
   bool operator ==(dynamic o) {
     return o is NotchTickLabeler && length == o.length && paint == o.paint && begin == o.begin;
+  }
+
+  @override
+  int get hashCode {
+    // TODO
+    throw new UnimplementedError();
   }
 
   @override

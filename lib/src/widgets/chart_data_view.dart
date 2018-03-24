@@ -43,7 +43,8 @@ class ChartDataView extends StatefulWidget {
     this.onTouch,
     this.onMove,
     this.onRelease,
-  })  : assert(charts != null),
+  })
+      : assert(charts != null),
         assert(rotation != null),
         assert(chartPadding != null),
         assert(animationCurve != null);
@@ -220,7 +221,8 @@ class _ChartPainter extends CustomPainter {
     @required this.rotation,
     @required this.chartPadding,
     @required Listenable repaint,
-  }) : super(repaint: repaint);
+  })
+      : super(repaint: repaint);
 
   Map<int, ChartTouchEvent> resolveTouch(Offset touch, Size boxSize) {
     final size = _size ?? boxSize;

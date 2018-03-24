@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 
 final _random = new math.Random();
 
+/// Create random line chart data.
 LineChartData randomLineChart(final int pointCount) {
   final random = new math.Random();
 
@@ -43,6 +44,7 @@ LineChartData randomLineChart(final int pointCount) {
   );
 }
 
+/// Create a random histogram.
 BarGraphData randomHistogram(int binCount) {
   final range = new Range(0.0, _random.nextDouble() * 100);
 
@@ -73,6 +75,7 @@ BarGraphData randomHistogram(int binCount) {
   );
 }
 
+/// Create random bar chart data.
 BarGraphData randomBarChart() {
   var random = new math.Random();
 

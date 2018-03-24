@@ -6,14 +6,16 @@ import 'package:fcharts/src/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
+@immutable
 abstract class Chart<Datum> extends StatefulWidget {
-  Chart({
+  const Chart({
     @required this.axes,
     @required this.padding,
     @required this.legend,
     @required this.animationCurve,
     @required this.animationDuration,
-  })  : assert(axes != null),
+  })
+      : assert(axes != null),
         assert(padding != null);
 
   final List<AxisBase<Datum>> axes;
@@ -22,9 +24,11 @@ abstract class Chart<Datum> extends StatefulWidget {
   final Curve animationCurve;
   final Duration animationDuration;
 
-  Iterable<XAxis<Datum>> get xAxes => axes.where((a) => a is XAxis<Datum>).map((a) => a as XAxis<Datum>);
+  Iterable<XAxis<Datum>> get xAxes =>
+      axes.where((a) => a is XAxis<Datum>).map((a) => a as XAxis<Datum>);
 
-  Iterable<YAxis<Datum>> get yAxes => axes.where((a) => a is YAxis<Datum>).map((a) => a as YAxis<Datum>);
+  Iterable<YAxis<Datum>> get yAxes =>
+      axes.where((a) => a is YAxis<Datum>).map((a) => a as YAxis<Datum>);
 }
 
 abstract class AxisBase<T> {
@@ -56,7 +60,8 @@ class XAxis<Datum> extends AxisBase<Datum> {
     bool opposite: false,
     double size,
     double offset: 0.0,
-  }) : super(
+  })
+      : super(
           id: id,
           stroke: stroke,
           labelStyle: labelStyle,
@@ -82,7 +87,8 @@ class YAxis<Datum> extends AxisBase<Datum> {
     bool opposite: false,
     double size,
     double offset: 0.0,
-  }) : super(
+  })
+      : super(
           id: id,
           stroke: stroke,
           labelStyle: labelStyle,

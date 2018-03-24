@@ -16,8 +16,9 @@ import 'package:meta/meta.dart';
 
 typedef void LineChartCallback<Datum>(Datum touched);
 
+@immutable
 class LineChart<Datum> extends Chart<Datum> {
-  LineChart({
+  const LineChart({
     this.data,
     this.lines,
     this.onTouch,
@@ -27,7 +28,8 @@ class LineChart<Datum> extends Chart<Datum> {
     Curve animationCurve: Curves.fastOutSlowIn,
     Duration animationDuration: const Duration(milliseconds: 500),
     Legend legend,
-  }) : super(
+  })
+      : super(
             axes: axes,
             padding: padding,
             legend: legend,

@@ -1,4 +1,4 @@
-/// A side.
+/// A position on the chart.
 enum ChartPosition {
   /// The top.
   top,

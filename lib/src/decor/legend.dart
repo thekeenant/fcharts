@@ -4,6 +4,8 @@ import 'package:fcharts/src/utils/chart_position.dart';
 import 'package:fcharts/src/utils/painting.dart';
 import 'package:flutter/material.dart';
 
+import 'package:meta/meta.dart';
+
 enum LegendLayout {
   /// Each item is on the same horizontal plane, they are
   /// side by side, left to right.
@@ -15,13 +17,15 @@ enum LegendLayout {
 }
 
 /// TODO
+@immutable
 class LegendData {
-  LegendData({
+  const LegendData({
     this.items,
     this.layout: LegendLayout.vertical,
     this.position: ChartPosition.right,
     this.offset: const Offset(0.0, 0.0),
-  })  : assert(items != null),
+  })
+      : assert(items != null),
         assert(layout != null),
         assert(position != null);
 
@@ -99,8 +103,9 @@ class LegendData {
   }
 }
 
+@immutable
 class LegendItemData {
-  LegendItemData({
+  const LegendItemData({
     this.symbol,
     this.text: '',
     this.textStyle: const TextStyle(color: Colors.black),
@@ -146,8 +151,9 @@ class LegendItemData {
   double get width => symbol.width + _textOptions.build(text).width + padding.horizontal + 3.0;
 }
 
+@immutable
 class LegendSquareSymbol implements LegendSymbol {
-  LegendSquareSymbol({
+  const LegendSquareSymbol({
     this.size: 14.0,
     this.paint,
   });
@@ -168,6 +174,7 @@ class LegendSquareSymbol implements LegendSymbol {
   double get width => size;
 }
 
+@immutable
 abstract class LegendSymbol {
   void draw(CanvasArea area);
 

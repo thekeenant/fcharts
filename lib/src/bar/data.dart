@@ -17,7 +17,10 @@ class BarGraphData implements ChartData {
   });
 
   /// Create a bar graph from histogram bins and a range for those bins.
-  factory BarGraphData.fromHistogram({@required List<BinData> bins, @required Range range}) {
+  factory BarGraphData.fromHistogram({
+    @required List<BinData> bins,
+    @required Range range,
+  }) {
     final groups = new List.generate(bins.length, (i) {
       final bin = bins[i];
 
@@ -130,7 +133,7 @@ class BarGraphData implements ChartData {
 /// A bar in a histogram.
 @immutable
 class BinData {
-  BinData({
+  const BinData({
     @required this.value,
     this.paint: const [const PaintOptions(color: Colors.black)],
     this.paintGenerator,
@@ -162,7 +165,10 @@ class BarGroupData {
   /// 100% of their width, there is no spacing between them.
   final double stackWidthFraction;
 
-  BarGroupData copyWith({List<BarStackData> stacks, double stackWidthFraction}) {
+  BarGroupData copyWith({
+    List<BarStackData> stacks,
+    double stackWidthFraction,
+  }) {
     return new BarGroupData(
       stacks: stacks ?? this.stacks,
       stackWidthFraction: stackWidthFraction ?? this.stackWidthFraction,
@@ -191,7 +197,11 @@ class BarStackData {
   /// value.
   final double base;
 
-  BarStackData copyWith({List<BarData> bars, Range range, double base}) {
+  BarStackData copyWith({
+    List<BarData> bars,
+    Range range,
+    double base,
+  }) {
     return new BarStackData(
       bars: bars ?? this.bars,
       range: range ?? this.range,
@@ -225,8 +235,12 @@ class BarData {
   /// An optional paint generator to use on this bar. This overrides [paint].
   final PaintGenerator paintGenerator;
 
-  BarData copyWith(
-      {double value, double base, List<PaintOptions> paint, PaintGenerator paintGenerator}) {
+  BarData copyWith({
+    double value,
+    double base,
+    List<PaintOptions> paint,
+    PaintGenerator paintGenerator,
+  }) {
     return new BarData(
       value: value ?? this.value,
       base: base ?? this.base,

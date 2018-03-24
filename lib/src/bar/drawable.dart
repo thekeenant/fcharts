@@ -24,7 +24,6 @@ class BarGraphDrawable implements ChartDrawable<BarGraphDrawable, BarGraphTouchE
     }
   }
 
-
   @override
   BarGraphDrawable get empty => new BarGraphDrawable(
         groups: groups.map((group) {
@@ -67,15 +66,14 @@ class _BarGraphDrawableTween extends Tween<BarGraphDrawable> {
 class BarGroupDrawable implements MergeTweenable<BarGroupDrawable> {
   const BarGroupDrawable({
     @required this.stacks,
-  }) : assert(stacks != null);
+  })
+      : assert(stacks != null);
 
   /// The group of bar stacks.
   final List<BarStackDrawable> stacks;
 
   @override
-  BarGroupDrawable get empty => new BarGroupDrawable(
-        stacks: [],
-      );
+  BarGroupDrawable get empty => new BarGroupDrawable(stacks: []);
 
   @override
   Tween<BarGroupDrawable> tweenTo(BarGroupDrawable other) {
@@ -114,7 +112,8 @@ class BarStackDrawable implements MergeTweenable<BarStackDrawable> {
     @required this.width,
     @required this.bars,
     this.collapsed,
-  })  : assert(x != null),
+  })
+      : assert(x != null),
         assert(bars != null),
         assert(width != null),
         assert(bars != null);
