@@ -2,7 +2,7 @@ name: fcharts
 description: >
   A composable chart library for Flutter. Create beautiful, 
   animated, responsive charts using a simple and intuitive API.
-version: 0.0.4
+version: 0.0.5
 author: Keenan Thompson <keenan@keenant.com>
 homepage: https://github.com/thekeenant/fcharts
 
