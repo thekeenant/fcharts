@@ -10,7 +10,8 @@ class BarGraphTouch implements ChartTouch {}
 
 /// A drawable bar graph.
 @immutable
-class BarGraphDrawable implements ChartDrawable<BarGraphDrawable, BarGraphTouch> {
+class BarGraphDrawable
+    implements ChartDrawable<BarGraphDrawable, BarGraphTouch> {
   const BarGraphDrawable({
     @required this.groups,
   });
@@ -42,7 +43,8 @@ class BarGraphDrawable implements ChartDrawable<BarGraphDrawable, BarGraphTouch>
   }
 
   @override
-  _BarGraphDrawableTween tweenTo(BarGraphDrawable end) => new _BarGraphDrawableTween(this, end);
+  _BarGraphDrawableTween tweenTo(BarGraphDrawable end) =>
+      new _BarGraphDrawableTween(this, end);
 }
 
 /// Lerp between two bar graphs.
@@ -146,7 +148,8 @@ class BarStackDrawable implements MergeTweenable<BarStackDrawable> {
       final stackSize = new Size(width * chartArea.width, chartArea.height);
 
       // the area of the stack
-      final stackArea = chartArea.child(new Offset(x * chartArea.width, 0.0) & stackSize);
+      final stackArea =
+          chartArea.child(new Offset(x * chartArea.width, 0.0) & stackSize);
 
       // draw the bar
       bar.draw(stackArea);
@@ -157,7 +160,8 @@ class BarStackDrawable implements MergeTweenable<BarStackDrawable> {
   /// It retains it's x value but removes all bars and shrinks to 0 width.
   ///
   /// This can be overridden on a per-barstack basis with [collapsed].
-  static BarStackDrawable collapse(BarStackDrawable stack) => new BarStackDrawable(
+  static BarStackDrawable collapse(BarStackDrawable stack) =>
+      new BarStackDrawable(
         x: stack.x,
         width: 0.0,
         bars: [],
@@ -287,8 +291,8 @@ class BarDrawable implements MergeTweenable<BarDrawable> {
     final actualHeight = stackArea.height * barHeight;
 
     // the area of the bar
-    CanvasArea barArea =
-        stackArea.child(new Rect.fromLTWH(actualXOffset, actualTop, actualWidth, actualHeight));
+    CanvasArea barArea = stackArea.child(
+        new Rect.fromLTWH(actualXOffset, actualTop, actualWidth, actualHeight));
 
     // fill in the bar area
     for (final paint in paintFor(barArea)) {

@@ -55,7 +55,8 @@ class CardinalSpline implements LineCurve {
     pts.add(points[points.length - 1]);
 
     for (var i = 1; i < pts.length - 2; i++) {
-      var t1 = new Offset(pts[i + 1].dx - pts[i - 1].dx, pts[i + 1].dy - pts[i - 1].dy);
+      var t1 = new Offset(
+          pts[i + 1].dx - pts[i - 1].dx, pts[i + 1].dy - pts[i - 1].dy);
 
       var t2 = new Offset(pts[i + 2].dx - pts[i].dx, pts[i + 2].dy - pts[i].dy);
 
@@ -143,7 +144,8 @@ class _MonotoneInterpolator {
   final List<Offset> _points;
   final List<double> _m;
 
-  factory _MonotoneInterpolator.fromPoints(List<Offset> points, {bool sort: true}) {
+  factory _MonotoneInterpolator.fromPoints(List<Offset> points,
+      {bool sort: true}) {
     assert(points.isNotEmpty);
 
     if (sort) points.sort((a, b) => a.dx.compareTo(b.dx));
@@ -156,7 +158,8 @@ class _MonotoneInterpolator {
     for (var i = 0; i < n - 1; i++) {
       final h = points[i + 1].dx - points[i].dx;
       if (h <= 0) {
-        throw new StateError("The control points must all have strictly increasing X values.");
+        throw new StateError(
+            "The control points must all have strictly increasing X values.");
       }
       d[i] = (points[i + 1].dy - points[i].dy) / h;
     }

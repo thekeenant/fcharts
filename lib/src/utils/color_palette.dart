@@ -21,7 +21,8 @@ class ColorPalette extends ColorSwatch<int> {
 
   /// Construct a color palette from specific colors.
   factory ColorPalette.fromList(List<Color> colors) {
-    final map = new Map.fromIterables(new List.generate(colors.length, (i) => i), colors);
+    final map = new Map.fromIterables(
+        new List.generate(colors.length, (i) => i), colors);
     return new ColorPalette._(map[0], map);
   }
 
@@ -40,8 +41,11 @@ class ColorPalette extends ColorSwatch<int> {
   Color random(Random random) => this[random.nextInt(length)];
 
   static Color _brighterColor(Color base, int i, int n) {
-    return new Color.fromARGB(base.alpha, _brighterComponent(base.red, i, n),
-        _brighterComponent(base.green, i, n), _brighterComponent(base.blue, i, n));
+    return new Color.fromARGB(
+        base.alpha,
+        _brighterComponent(base.red, i, n),
+        _brighterComponent(base.green, i, n),
+        _brighterComponent(base.blue, i, n));
   }
 
   static int _brighterComponent(int base, int i, int n) {

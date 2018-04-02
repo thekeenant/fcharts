@@ -73,7 +73,8 @@ class XAxis<Datum> extends AxisBase<Datum> {
   final UnaryFunction<Datum, String> label;
 
   @override
-  ChartPosition get position => opposite ? ChartPosition.top : ChartPosition.bottom;
+  ChartPosition get position =>
+      opposite ? ChartPosition.top : ChartPosition.bottom;
 }
 
 class YAxis<Datum> extends AxisBase<Datum> {
@@ -102,7 +103,8 @@ class YAxis<Datum> extends AxisBase<Datum> {
   final int tickCount;
 
   @override
-  ChartPosition get position => opposite ? ChartPosition.right : ChartPosition.left;
+  ChartPosition get position =>
+      opposite ? ChartPosition.right : ChartPosition.left;
 }
 
 class Legend {

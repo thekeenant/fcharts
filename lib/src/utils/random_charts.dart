@@ -38,7 +38,8 @@ LineChartData randomLineChart(final int pointCount) {
 
   return new LineChartData(
     points: points,
-    stroke: new PaintOptions.stroke(color: color, strokeWidth: 3.0, strokeCap: StrokeCap.round),
+    stroke: new PaintOptions.stroke(
+        color: color, strokeWidth: 3.0, strokeCap: StrokeCap.round),
     fill: new PaintOptions(color: monochrome[3].withOpacity(0.4)),
     range: new Range(0.0, 1.0),
   );

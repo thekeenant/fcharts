@@ -44,13 +44,15 @@ class ChartAxisData implements MergeTweenable<ChartAxisData> {
 
     switch (position) {
       case ChartPosition.top:
-        axisRect = new Offset(paddingLeft, offset) & new Size(chartArea.width, size ?? paddingTop);
+        axisRect = new Offset(paddingLeft, offset) &
+            new Size(chartArea.width, size ?? paddingTop);
         lineStart = axisRect.bottomLeft;
         lineEnd = axisRect.bottomRight;
         break;
       case ChartPosition.left:
         vertical = true;
-        axisRect = new Offset(offset, paddingTop) & new Size(size ?? paddingLeft, chartArea.height);
+        axisRect = new Offset(offset, paddingTop) &
+            new Size(size ?? paddingLeft, chartArea.height);
         lineStart = axisRect.bottomRight;
         lineEnd = axisRect.topRight;
         break;
@@ -86,9 +88,11 @@ class ChartAxisData implements MergeTweenable<ChartAxisData> {
       Rect tickRect;
 
       if (vertical) {
-        tickRect = new Rect.fromLTWH(0.0, tickPosition, secondary, tickAreaSize);
+        tickRect =
+            new Rect.fromLTWH(0.0, tickPosition, secondary, tickAreaSize);
       } else {
-        tickRect = new Rect.fromLTWH(tickPosition, 0.0, tickAreaSize, secondary);
+        tickRect =
+            new Rect.fromLTWH(tickPosition, 0.0, tickAreaSize, secondary);
       }
 
       tick.draw(axisArea.child(tickRect), position);
@@ -105,7 +109,8 @@ class ChartAxisData implements MergeTweenable<ChartAxisData> {
       );
 
   @override
-  Tween<ChartAxisData> tweenTo(ChartAxisData other) => new _ChartAxisDataTween(this, other);
+  Tween<ChartAxisData> tweenTo(ChartAxisData other) =>
+      new _ChartAxisDataTween(this, other);
 }
 
 /// Lerp between two [ChartAxisData]'s.

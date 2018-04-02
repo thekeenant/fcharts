@@ -85,7 +85,9 @@ class BarGraphData implements ChartData {
       final stackDrawables = group.stacks.map((stack) {
         final range = stack.range;
         final yOffset = range.min / range.span;
-        final stackX = groupX + j * stackDistance + stackDistance * (1 - stackWidthFraction) / 2;
+        final stackX = groupX +
+            j * stackDistance +
+            stackDistance * (1 - stackWidthFraction) / 2;
 
         final barDrawables = stack.bars.map((bar) {
           bool isNull = bar.base == null || bar.value == null;

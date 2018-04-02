@@ -40,16 +40,18 @@ class AxisTickData implements MergeTweenable<AxisTickData> {
   }
 
   @override
-  AxisTickData get empty =>
-      new AxisTickData(value: value, width: width, labelers: labelers, opacity: 0.0);
+  AxisTickData get empty => new AxisTickData(
+      value: value, width: width, labelers: labelers, opacity: 0.0);
 
   @override
-  Tween<AxisTickData> tweenTo(AxisTickData other) => new _AxisTickDataTween(this, other);
+  Tween<AxisTickData> tweenTo(AxisTickData other) =>
+      new _AxisTickDataTween(this, other);
 }
 
 /// Lerp between two axis ticks.
 class _AxisTickDataTween extends Tween<AxisTickData> {
-  _AxisTickDataTween(AxisTickData begin, AxisTickData end) : super(begin: begin, end: end) {
+  _AxisTickDataTween(AxisTickData begin, AxisTickData end)
+      : super(begin: begin, end: end) {
     final listsEqual = const ListEquality<TickLabeler>().equals;
     _labelersEqual = listsEqual(begin.labelers, end.labelers);
   }
@@ -163,7 +165,9 @@ class TextTickLabeler implements TickLabeler {
     // Todo: Pass in rotation all the way down here?
 
     final textOptions = new TextOptions(
-        minWidth: minWidth, textAlign: TextAlign.center, style: _styleWithOpacity(opacity));
+        minWidth: minWidth,
+        textAlign: TextAlign.center,
+        style: _styleWithOpacity(opacity));
 
     tickArea.drawText(
       tickArea.center,
@@ -205,7 +209,10 @@ class NotchTickLabeler implements TickLabeler {
 
   @override
   bool operator ==(dynamic o) {
-    return o is NotchTickLabeler && length == o.length && paint == o.paint && begin == o.begin;
+    return o is NotchTickLabeler &&
+        length == o.length &&
+        paint == o.paint &&
+        begin == o.begin;
   }
 
   @override
@@ -246,6 +253,7 @@ class NotchTickLabeler implements TickLabeler {
     }
 
     // draw the line from start to end
-    tickArea.drawLine(lineStart, lineStart.translate(lineX, lineY), _paintWithOpacity(opacity));
+    tickArea.drawLine(lineStart, lineStart.translate(lineX, lineY),
+        _paintWithOpacity(opacity));
   }
 }

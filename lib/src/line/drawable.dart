@@ -32,7 +32,8 @@ class LineChartTouch implements ChartTouch {
 /// can connect the points and an area can be filled beneath the line.
 /// Points can be illustrated by their own paint options.
 @immutable
-class LineChartDrawable implements ChartDrawable<LineChartDrawable, LineChartTouch> {
+class LineChartDrawable
+    implements ChartDrawable<LineChartDrawable, LineChartTouch> {
   const LineChartDrawable({
     @required this.points,
     this.stroke: const PaintOptions.stroke(color: Colors.black),
@@ -91,7 +92,8 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable, LineChartTou
     return new LineChartTouch(nearest, nearestHoriz);
   }
 
-  void _moveToLineTo(CanvasArea bounds, Path path, Offset point, {bool moveTo: false}) {
+  void _moveToLineTo(CanvasArea bounds, Path path, Offset point,
+      {bool moveTo: false}) {
     var bounded = bounds.boundPoint(point);
 
     // todo? remove this
@@ -189,7 +191,8 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable, LineChartTou
       }
 
       // a rectangle covering the entire area of the line
-      Rect lineRect = new Rect.fromPoints(new Offset(leftMostX, area.height), topRight);
+      Rect lineRect =
+          new Rect.fromPoints(new Offset(leftMostX, area.height), topRight);
 
       // finish off the fill area
       fillPath.lineTo(lineRect.bottomRight.dx, lineRect.bottomRight.dy);
@@ -220,7 +223,8 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable, LineChartTou
   }
 
   @override
-  _LineChartDrawableTween tweenTo(LineChartDrawable end) => new _LineChartDrawableTween(this, end);
+  _LineChartDrawableTween tweenTo(LineChartDrawable end) =>
+      new _LineChartDrawableTween(this, end);
 
   @override
   LineChartDrawable get empty => new LineChartDrawable(
