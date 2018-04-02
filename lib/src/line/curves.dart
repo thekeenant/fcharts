@@ -21,7 +21,7 @@ class LineCurves {
   static const monotone = const MonotoneCurve();
 }
 
-/// Use [Curves].none.
+/// Use [LineCurves.linear].
 /// Go straight from one point to the next. No interpolation.
 @immutable
 class Linear implements LineCurve {
@@ -85,7 +85,6 @@ class CardinalSpline implements LineCurve {
 }
 
 /// Monotone cubic spline.
-/// TODO: Improve this, seems to go beyond points often when it should not.
 @immutable
 class MonotoneCurve implements LineCurve {
   const MonotoneCurve({this.stepsPer: 15});

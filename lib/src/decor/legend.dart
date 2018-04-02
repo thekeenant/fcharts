@@ -16,7 +16,6 @@ enum LegendLayout {
   vertical
 }
 
-/// TODO
 @immutable
 class LegendData {
   const LegendData({
@@ -80,10 +79,11 @@ class LegendData {
       for (var i = 0; i < items.length; i++) {
         final curr = items[i];
         final legendItemArea = legendArea.child(new Rect.fromLTWH(
-            (legendRect.width - curr.width) / 2,
-            d,
-            legendArea.width,
-            legendRect.height / items.length));
+          (legendRect.width - curr.width) / 2,
+          d,
+          legendArea.width,
+          legendRect.height / items.length,
+        ));
         legendItemArea.drawDebugCross(color: Colors.blue);
         items[i].draw(legendItemArea);
         d += curr.height;
@@ -92,10 +92,11 @@ class LegendData {
       for (var i = 0; i < items.length; i++) {
         final curr = items[i];
         final legendItemArea = legendArea.child(new Rect.fromLTWH(
-            d,
-            (legendRect.height - curr.height) / 2,
-            legendArea.width / items.length,
-            legendRect.height));
+          d,
+          (legendRect.height - curr.height) / 2,
+          legendArea.width / items.length,
+          legendRect.height,
+        ));
         curr.draw(legendItemArea);
         d += curr.width;
       }

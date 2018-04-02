@@ -30,11 +30,12 @@ class LineChart<Datum> extends Chart<Datum> {
     Legend legend,
   })
       : super(
-            axes: axes,
-            padding: padding,
-            legend: legend,
-            animationCurve: animationCurve,
-            animationDuration: animationDuration);
+          axes: axes,
+          padding: padding,
+          legend: legend,
+          animationCurve: animationCurve,
+          animationDuration: animationDuration,
+        );
 
   final List<Line<Datum>> lines;
   final List<Datum> data;
@@ -195,9 +196,9 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
       charts: lineCharts,
       animationCurve: widget.animationCurve,
       animationDuration: widget.animationDuration,
-      onMove: (pointer, events) {
-        for (final event in events.values) {
-          int active = (event as LineChartTouchEvent).nearestHorizontally;
+      onMove: (pointer, data) {
+        for (final touch in data.values) {
+          int active = (touch as LineChartTouch).nearestHorizontally;
           if (_active[pointer] == active) return;
           setState(() {
             _active[pointer] = active;
@@ -207,9 +208,9 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
           break;
         }
       },
-      onTouch: (pointer, events) {
-        for (final event in events.values) {
-          int active = (event as LineChartTouchEvent).nearestHorizontally;
+      onTouch: (pointer, data) {
+        for (final touch in data.values) {
+          int active = (touch as LineChartTouch).nearestHorizontally;
           setState(() {
             _active[pointer] = active;
           });

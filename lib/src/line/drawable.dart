@@ -12,8 +12,8 @@ const clipPointPadding = 5.0;
 const clipStrokePadding = 3.0;
 
 @immutable
-class LineChartTouchEvent implements ChartTouchEvent {
-  const LineChartTouchEvent(this.nearest, this.nearestHorizontally);
+class LineChartTouch implements ChartTouch {
+  const LineChartTouch(this.nearest, this.nearestHorizontally);
 
   /// The index of the line point which was nearest to the touch.
   final int nearest;
@@ -24,7 +24,7 @@ class LineChartTouchEvent implements ChartTouchEvent {
 
   @override
   String toString() {
-    return 'LineChartTouchEvent($nearest, $nearestHorizontally)';
+    return 'LineChartTouch($nearest, $nearestHorizontally)';
   }
 }
 
@@ -32,7 +32,7 @@ class LineChartTouchEvent implements ChartTouchEvent {
 /// can connect the points and an area can be filled beneath the line.
 /// Points can be illustrated by their own paint options.
 @immutable
-class LineChartDrawable implements ChartDrawable<LineChartDrawable, LineChartTouchEvent> {
+class LineChartDrawable implements ChartDrawable<LineChartDrawable, LineChartTouch> {
   const LineChartDrawable({
     @required this.points,
     this.stroke: const PaintOptions.stroke(color: Colors.black),
@@ -53,7 +53,7 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable, LineChartTou
   final PaintOptions fill;
 
   /// The method in which to interpolate the line in between points.
-  /// See [Curves] for some default choices.
+  /// See [LineCurves] for some default choices.
   final LineCurve curve;
 
   /// When true, the line is a continuous, single segment even if nulls
@@ -63,7 +63,7 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable, LineChartTou
   final bool bridgeNulls;
 
   @override
-  LineChartTouchEvent resolveTouch(Size area, Offset touch) {
+  LineChartTouch resolveTouch(Size area, Offset touch) {
     final scaledPoints = points.map((p) => p._locationWithin(area)).toList();
 
     int nearest;
@@ -88,7 +88,7 @@ class LineChartDrawable implements ChartDrawable<LineChartDrawable, LineChartTou
       }
     }
 
-    return new LineChartTouchEvent(nearest, nearestHoriz);
+    return new LineChartTouch(nearest, nearestHoriz);
   }
 
   void _moveToLineTo(CanvasArea bounds, Path path, Offset point, {bool moveTo: false}) {

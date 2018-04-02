@@ -7,7 +7,13 @@ import 'package:fcharts/src/utils/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-typedef void ChartTouchListener(int pointer, Map<int, ChartTouchEvent> events);
+/// Used as a callback for touch/move pointer events. For each touch/move/release, a unique
+/// [pointer] id is generated. The [data] parameter maps the chart index to the chart touch
+/// data that the chart resolved to.
+typedef void ChartTouchListener(int pointer, Map<int, ChartTouch> data);
+
+/// Used as a callback for pointer release events. The [pointer] is the same unique id
+/// used in the [ChartTouchListener] callback.
 typedef void ChartTouchCallback(int pointer);
 
 /// The rotation of a chart.
@@ -224,7 +230,7 @@ class _ChartPainter extends CustomPainter {
   })
       : super(repaint: repaint);
 
-  Map<int, ChartTouchEvent> resolveTouch(Offset touch, Size boxSize) {
+  Map<int, ChartTouch> resolveTouch(Offset touch, Size boxSize) {
     final size = _size ?? boxSize;
     final touchChart = touch.translate(-chartPadding.left, -chartPadding.top);
 
@@ -234,7 +240,7 @@ class _ChartPainter extends CustomPainter {
     if (touchChart.dx < 0 || touchChart.dy < 0) return null;
     if (touchChart.dx > width || touchChart.dy > height) return null;
 
-    final events = <int, ChartTouchEvent>{};
+    final events = <int, ChartTouch>{};
 
     for (var i = 0; i < charts.length; i++) {
       final chart = charts[i];

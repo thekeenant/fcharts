@@ -6,11 +6,11 @@ import 'package:fcharts/src/utils/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-class BarGraphTouchEvent implements ChartTouchEvent {}
+class BarGraphTouch implements ChartTouch {}
 
 /// A drawable bar graph.
 @immutable
-class BarGraphDrawable implements ChartDrawable<BarGraphDrawable, BarGraphTouchEvent> {
+class BarGraphDrawable implements ChartDrawable<BarGraphDrawable, BarGraphTouch> {
   const BarGraphDrawable({
     @required this.groups,
   });
@@ -36,7 +36,7 @@ class BarGraphDrawable implements ChartDrawable<BarGraphDrawable, BarGraphTouchE
       );
 
   @override
-  BarGraphTouchEvent resolveTouch(Size area, Offset touch) {
+  BarGraphTouch resolveTouch(Size area, Offset touch) {
     // todo
     return null;
   }
