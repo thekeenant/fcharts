@@ -1,4 +1,4 @@
-# fcharts
+# fcharts [![Build Status](https://travis-ci.org/thekeenant/fcharts.svg?branch=master)](https://travis-ci.org/thekeenant/fcharts)
 
 A work-in-progress chart library for [Flutter](https://flutter.io).
 
