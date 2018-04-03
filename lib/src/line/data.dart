@@ -14,8 +14,7 @@ class LineChartData implements ChartData {
     this.stroke: const PaintOptions.stroke(),
     this.fill,
     this.curve: const MonotoneCurve(),
-  })
-      : assert(points != null),
+  })  : assert(points != null),
         assert(range != null),
         assert(curve != null);
 
@@ -84,8 +83,7 @@ class LinePointData {
     @required this.value,
     this.paint: const [],
     this.radius: 1.0,
-  })
-      : assert(x != null && x >= 0 && x <= 1.0),
+  })  : assert(x != null && x >= 0 && x <= 1.0),
         assert(paint != null),
         assert(radius != null);
 

@@ -14,8 +14,7 @@ class ChartDecor {
   const ChartDecor({
     this.axes: const [],
     this.legend,
-  })
-      : assert(axes != null);
+  }) : assert(axes != null);
 
   /// List of axes to draw around the chart. If two axes have the same
   /// [ChartPosition], they are drawn from the center of the chart outward in

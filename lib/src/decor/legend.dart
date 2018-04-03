@@ -23,8 +23,7 @@ class LegendData {
     this.layout: LegendLayout.vertical,
     this.position: ChartPosition.right,
     this.offset: const Offset(0.0, 0.0),
-  })
-      : assert(items != null),
+  })  : assert(items != null),
         assert(layout != null),
         assert(position != null);
 

@@ -39,8 +39,7 @@ class CardinalSpline implements LineCurve {
   const CardinalSpline({
     this.tension: 0.5,
     this.segmentCount: 10,
-  })
-      : assert(tension != null && tension >= 0.0 && tension <= 1.0),
+  })  : assert(tension != null && tension >= 0.0 && tension <= 1.0),
         assert(segmentCount != null && segmentCount > 0);
 
   final double tension;

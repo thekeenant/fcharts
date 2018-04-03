@@ -28,8 +28,7 @@ class LineChart<Datum> extends Chart<Datum> {
     Curve animationCurve: Curves.fastOutSlowIn,
     Duration animationDuration: const Duration(milliseconds: 500),
     Legend legend,
-  })
-      : super(
+  }) : super(
           axes: axes,
           padding: padding,
           legend: legend,

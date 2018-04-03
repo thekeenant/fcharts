@@ -14,8 +14,7 @@ abstract class Chart<Datum> extends StatefulWidget {
     @required this.legend,
     @required this.animationCurve,
     @required this.animationDuration,
-  })
-      : assert(axes != null),
+  })  : assert(axes != null),
         assert(padding != null);
 
   final List<AxisBase<Datum>> axes;
@@ -60,8 +59,7 @@ class XAxis<Datum> extends AxisBase<Datum> {
     bool opposite: false,
     double size,
     double offset: 0.0,
-  })
-      : super(
+  }) : super(
           id: id,
           stroke: stroke,
           labelStyle: labelStyle,
@@ -88,8 +86,7 @@ class YAxis<Datum> extends AxisBase<Datum> {
     bool opposite: false,
     double size,
     double offset: 0.0,
-  })
-      : super(
+  }) : super(
           id: id,
           stroke: stroke,
           labelStyle: labelStyle,

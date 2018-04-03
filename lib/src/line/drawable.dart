@@ -40,8 +40,7 @@ class LineChartDrawable
     this.fill,
     this.curve: LineCurves.linear,
     this.bridgeNulls: false,
-  })
-      : assert(bridgeNulls != null);
+  }) : assert(bridgeNulls != null);
 
   /// The list of points (ascending x value).
   final List<LinePointDrawable> points;

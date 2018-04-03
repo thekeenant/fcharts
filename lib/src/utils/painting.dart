@@ -211,8 +211,7 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
     this.strokeWidth: 1.0,
     this.strokeCap: StrokeCap.square,
     this.gradient,
-  })
-      : this.style = PaintingStyle.stroke;
+  }) : this.style = PaintingStyle.stroke;
 
   /// The color of the paint.
   final Color color;

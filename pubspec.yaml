@@ -12,6 +12,10 @@ dependencies:
   meta: "^1.1.2"
   collection: "^1.14.5"
 
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
 environment:
   sdk: ">=2.0.0-dev.28.0 <3.0.0"
   flutter: ">=0.1.4 <2.0.0"
