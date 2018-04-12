@@ -17,7 +17,7 @@ class Range {
   final double max;
 
   /// the distance between min and max
-  double get span => (max - min).abs();
+  double get span => max - min;
 
   /// Linearly interpolate between two range values and a given time.
   static Range lerp(Range begin, Range end, double t) {

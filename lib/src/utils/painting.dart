@@ -187,6 +187,15 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
     this.style: PaintingStyle.fill,
   });
 
+  /// Construct paint options automatically with stroke, instead
+  /// of the default fill painting style.
+  const PaintOptions.stroke({
+    this.color: Colors.black,
+    this.strokeWidth: 1.0,
+    this.strokeCap: StrokeCap.square,
+    this.gradient,
+  }) : this.style = PaintingStyle.stroke;
+
   bool operator ==(dynamic o) {
     if (o is PaintOptions) {
       return color == o.color &&
@@ -203,15 +212,6 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
     // TODO
     throw new UnimplementedError();
   }
-
-  /// Construct paint options automatically with stroke, instead
-  /// of the default fill painting style.
-  const PaintOptions.stroke({
-    this.color: Colors.black,
-    this.strokeWidth: 1.0,
-    this.strokeCap: StrokeCap.square,
-    this.gradient,
-  }) : this.style = PaintingStyle.stroke;
 
   /// The color of the paint.
   final Color color;
@@ -363,7 +363,7 @@ class TextOptions {
       maxWidth = minWidth + 1;
 
     span.layout(
-      maxWidth: maxWidth ?? double.INFINITY,
+      maxWidth: maxWidth ?? double.infinity,
       minWidth: minWidth ?? 0.0,
     );
 
