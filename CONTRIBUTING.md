@@ -3,7 +3,7 @@
 
 # Contributing
 
-1. Make sure you format the code "properly". Use `dartfmt -w -l 100 .` in the root of the repository to do this automatically.
+1. Make sure you format the code with `dartfmt` before committing.
 2. ~~Write tests for any new features added/changes you make.~~ Not neessary quite yet, unless you want to.
 3. Document new features both with doc and code comments.
 4. Use pull requests to contribute changes and be sure to justify/explain the changes you made. Pull requests will be merged
