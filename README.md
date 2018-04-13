@@ -1,6 +1,7 @@
 # fcharts [![Build Status](https://travis-ci.org/thekeenant/fcharts.svg?branch=master)](https://travis-ci.org/thekeenant/fcharts)
 
-A work-in-progress chart library for [Flutter](https://flutter.io).
+A **work-in-progress** chart library for [Flutter](https://flutter.io). Until version `1.0.0` the API is subject to change
+drastically. Needless to say, fcharts is _not_ production ready.
 
 The goal of this project is to allow for creating beautiful, responsive charts using a simple 
 and intuitive API.
