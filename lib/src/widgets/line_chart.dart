@@ -82,7 +82,7 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
 
         return new LinePointData(
           x: x,
-          value: value,
+          value: yAxis.scale.apply(value),
           paint: line.pointPaint == null ? [] : line.pointPaint(datum),
           radius: line.pointRadius == null ? 3.0 : line.pointRadius(datum),
         );
@@ -92,7 +92,7 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
 
       return new LineChartData(
         points: linePoints,
-        range: yAxis.range ?? autoRange,
+        range: (yAxis.range ?? autoRange).mapToScale(yAxis.scale),
         curve: line.curve,
         fill: line.fill,
         stroke: line.stroke,
@@ -117,7 +117,7 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
             offset: axis.offset,
             ticks: new List.generate(data.length, (j) {
               final datum = data[j];
-              final text = axis.label(datum);
+              final text = axis.labelFn(datum);
 
               final value = j / (data.length - 1);
               final width = 1 / data.length;
@@ -137,7 +137,7 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
               );
             }));
       } else if (axis is YAxis<Datum>) {
-        final range = axis.range ?? autoRanges[axis];
+        final range = (axis.range ?? autoRanges[axis]).mapToScale(axis.scale);
 
         return new ChartAxisData(
           position: axis.position,
@@ -147,14 +147,14 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
           ticks: new List.generate(range == null ? 0 : axis.tickCount, (j) {
             final value = j / (axis.tickCount - 1);
             final width = 1 / axis.tickCount;
-            final rangedValue = value * range.span + range.min;
+            final rangedValue = axis.scale.invert(value * range.span + range.min);
 
             return new AxisTickData(
               value: value,
               width: width,
               labelers: [
                 new TextTickLabeler(
-                  text: axis.label(rangedValue),
+                  text: axis.labelFn(rangedValue),
                   style: axis.labelStyle,
                 ),
                 new NotchTickLabeler(

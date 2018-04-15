@@ -1,5 +1,6 @@
 import 'dart:ui' show lerpDouble;
 
+import 'package:fcharts/src/utils/scale.dart';
 import 'package:meta/meta.dart';
 
 /// A range from a low value to a high value.
@@ -18,6 +19,13 @@ class Range {
 
   /// the distance between min and max
   double get span => max - min;
+
+  Range mapToScale(Scale scale) {
+    return new Range(
+      scale.apply(min),
+      scale.apply(max),
+    );
+  }
 
   /// Linearly interpolate between two range values and a given time.
   static Range lerp(Range begin, Range end, double t) {
