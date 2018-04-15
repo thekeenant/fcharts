@@ -30,10 +30,10 @@ class _MyAppState extends State<MyApp> {
     new Day("Day 1", 10000, 7),
     new Day("Day 2", 1000, 7),
     new Day("Day 3", 100, 6),
-    new Day("Day 4", 10, 4),
+    new Day("Day 4", null, 4),
     new Day("Day 5", 10, 4),
-    new Day("Day 6", 1, 2),
-    new Day("Day 7", 100, 1),
+    new Day("Day 6", 10, 2),
+    new Day("Day 7", 100, 2 ),
   ];
 
   Day _active;
@@ -93,31 +93,29 @@ class _MyAppState extends State<MyApp> {
                     size: 30.0,
                   ),
                   new YAxis(
-                    labelFn: (val) => val.toInt().toString(),
-                    tickCount: 5,
-                    range: new Range(0.0, 10000.0),
+                    labelFn: (val) => val.toStringAsFixed(0),
                     stroke: new PaintOptions.stroke(
                       color: Colors.green,
                       strokeWidth: 2.0,
                     ),
                     scale: Scales.log10,
+                    tickCount: 4,
                   ),
                   new YAxis(
                     id: 'brownies',
                     labelFn: (val) => val.toDouble().toStringAsFixed(1),
-                    tickCount: 11,
-                    range: new Range(0.0, 8.0),
                     stroke: new PaintOptions.stroke(
                       color: Colors.blue,
                       strokeWidth: 2.0,
                     ),
                     opposite: true,
+                    tickCount: 20
                   ),
                 ],
                 lines: [
                   new Line(
                     name: 'Cookies',
-                    value: (stat) => stat.cookies.toDouble(),
+                    value: (stat) => stat.cookies == null ? null : stat.cookies.toDouble(),
                     stroke: new PaintOptions.stroke(
                       color: Colors.green,
                       strokeWidth: 2.0,
@@ -131,7 +129,7 @@ class _MyAppState extends State<MyApp> {
                   ),
                   new Line(
                     name: 'Brownies',
-                    value: (stat) => stat.brownies.toDouble(),
+                    value: (stat) => stat.brownies == null ? null : stat.brownies.toDouble(),
                     yAxisId: 'brownies',
                     stroke: new PaintOptions.stroke(
                       color: Colors.blue,

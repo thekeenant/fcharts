@@ -70,15 +70,19 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
         throw new StateError('Multiple y-axis with same id: ${line.yAxisId}');
 
       final yAxis = matches.first;
-      var autoRange = new Range(0.0, 0.0);
+      var autoRange = new Range(double.maxFinite, -double.maxFinite);
 
       final linePoints = new List.generate(data.length, (j) {
         final datum = data[j];
         final x = j / (data.length - 1);
         final value = line.value(datum);
 
-        if (value < autoRange.min) autoRange = new Range(value, autoRange.max);
-        if (value > autoRange.max) autoRange = new Range(autoRange.min, value);
+        if (value != null) {
+          if (value < autoRange.min)
+            autoRange = new Range(value, autoRange.max);
+          if (value > autoRange.max)
+            autoRange = new Range(autoRange.min, value);
+        }
 
         return new LinePointData(
           x: x,

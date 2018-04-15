@@ -8,8 +8,7 @@ import 'package:meta/meta.dart';
 class Range {
   const Range(this.min, this.max)
       : assert(min != null),
-        assert(max != null),
-        assert(min <= max);
+        assert(max != null);
 
   /// The low/min value.
   final double min;
@@ -26,6 +25,8 @@ class Range {
       scale.apply(max),
     );
   }
+
+  String toString() => "Range($min → $max)";
 
   /// Linearly interpolate between two range values and a given time.
   static Range lerp(Range begin, Range end, double t) {
