@@ -151,7 +151,8 @@ class _LineChartState<Datum> extends State<LineChart<Datum>> {
           ticks: new List.generate(range == null ? 0 : axis.tickCount, (j) {
             final value = j / (axis.tickCount - 1);
             final width = 1 / axis.tickCount;
-            final rangedValue = axis.scale.invert(value * range.span + range.min);
+            final rangedValue =
+                axis.scale.invert(value * range.span + range.min);
 
             return new AxisTickData(
               value: value,

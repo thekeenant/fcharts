@@ -56,7 +56,8 @@ class LineChartData implements ChartData {
 
     final pointDrawables = points.map((point) {
       final x = point.x;
-      final scaledValue = point.value == null ? null : point.value / range.span - yOffset;
+      final scaledValue =
+          point.value == null ? null : point.value / range.span - yOffset;
 
       return new LinePointDrawable(
         x: x,

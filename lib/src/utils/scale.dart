@@ -16,7 +16,6 @@ class Scales {
   static const LogScale log10 = const LogScale(10.0);
 }
 
-
 /// Maps values to a visual encoding of the value.
 @immutable
 abstract class Scale {
@@ -46,9 +45,11 @@ class LogScale implements Scale {
 
   /// Applies log of base to the value.
   @override
-  double apply(double value) => value == null ? null : math.log(value) / math.log(base);
+  double apply(double value) =>
+      value == null ? null : math.log(value) / math.log(base);
 
   /// Takes base to the power of value.
   @override
-  double invert(double value) => value == null ? null : math.pow(base, value).toDouble();
+  double invert(double value) =>
+      value == null ? null : math.pow(base, value).toDouble();
 }
