@@ -7,6 +7,7 @@ export 'package:fcharts/src/decor/decor.dart';
 export 'package:fcharts/src/decor/tick.dart';
 export 'package:fcharts/src/line/curves.dart';
 export 'package:fcharts/src/line/data.dart';
+export 'package:fcharts/src/utils/scale.dart';
 export 'package:fcharts/src/utils/chart_position.dart';
 export 'package:fcharts/src/utils/painting.dart';
 export 'package:fcharts/src/utils/random_charts.dart';

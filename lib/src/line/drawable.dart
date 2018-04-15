@@ -13,10 +13,7 @@ const clipStrokePadding = 3.0;
 
 @immutable
 class LineChartTouch implements ChartTouch {
-  const LineChartTouch(this.nearest, this.nearestHorizontally);
-
-  /// The index of the line point which was nearest to the touch.
-  final int nearest;
+  const LineChartTouch(this.nearestHorizontally);
 
   /// The index of the line point which was nearest to the touch
   /// horizontally. Vertical distance is not taken into account.
@@ -24,7 +21,7 @@ class LineChartTouch implements ChartTouch {
 
   @override
   String toString() {
-    return 'LineChartTouch($nearest, $nearestHorizontally)';
+    return 'LineChartTouch($nearestHorizontally)';
   }
 }
 
@@ -66,29 +63,20 @@ class LineChartDrawable
   LineChartTouch resolveTouch(Size area, Offset touch) {
     final scaledPoints = points.map((p) => p._locationWithin(area)).toList();
 
-    int nearest;
     int nearestHoriz;
-    double nearestDist = double.infinity;
-    double nearestHorizDist = double.infinity;
+    var nearestHorizDist = double.infinity;
 
     for (var i = 0; i < scaledPoints.length; i++) {
       final point = scaledPoints[i];
-      final offset = point - touch;
+      final dx = point.dx - touch.dx;
 
-      final d = (point - touch).distanceSquared;
-
-      if (d < nearestDist) {
-        nearest = i;
-        nearestDist = d;
-      }
-
-      if (offset.dx.abs() < nearestHorizDist) {
+      if (dx.abs() < nearestHorizDist) {
         nearestHoriz = i;
-        nearestHorizDist = offset.dx.abs();
+        nearestHorizDist = dx.abs();
       }
     }
 
-    return new LineChartTouch(nearest, nearestHoriz);
+    return new LineChartTouch(nearestHoriz);
   }
 
   void _moveToLineTo(CanvasArea bounds, Path path, Offset point,
@@ -309,7 +297,7 @@ class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
     final height = size.height;
 
     final actualX = x * width;
-    final actualY = (1 - value) * height;
+    final actualY = value == null ? null : (1 - value) * height;
 
     return new Offset(actualX, actualY);
   }

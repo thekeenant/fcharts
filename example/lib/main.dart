@@ -27,13 +27,13 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final days = [
-    new Day("Day 1", 14, 7),
-    new Day("Day 2", 13, 7),
-    new Day("Day 3", 9, 6),
-    new Day("Day 4", 9, 4),
-    new Day("Day 5", 8, 4),
-    new Day("Day 6", 6, 2),
-    new Day("Day 7", 3, 1),
+    new Day("Day 1", 10000, 7),
+    new Day("Day 2", 1000, 7),
+    new Day("Day 3", 100, 6),
+    new Day("Day 4", null, 4),
+    new Day("Day 5", 10, 4),
+    new Day("Day 6", 10, 2),
+    new Day("Day 7", 100, 2 ),
   ];
 
   Day _active;
@@ -44,8 +44,7 @@ class _MyAppState extends State<MyApp> {
     var ms = 200;
     if (_active == null) {
       final now = new DateTime.now();
-      if (now.difference(_releasedAt) > new Duration(milliseconds: 50))
-        ms = 1000;
+      if (now.difference(_releasedAt) > new Duration(milliseconds: 50)) ms = 1000;
     }
 
     return new MaterialApp(
@@ -59,20 +58,14 @@ class _MyAppState extends State<MyApp> {
               child: new Column(
                 children: [
                   new Text("Selected: ${_active?.name}"),
-                  new Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        new Text("Cookies: ",
-                            style: new TextStyle(fontWeight: FontWeight.bold)),
-                        new Text(_active?.cookies.toString()),
-                      ]),
-                  new Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        new Text("Brownies: ",
-                            style: new TextStyle(fontWeight: FontWeight.bold)),
-                        new Text(_active?.brownies.toString()),
-                      ]),
+                  new Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    new Text("Cookies: ", style: new TextStyle(fontWeight: FontWeight.bold)),
+                    new Text(_active?.cookies.toString()),
+                  ]),
+                  new Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    new Text("Brownies: ", style: new TextStyle(fontWeight: FontWeight.bold)),
+                    new Text(_active?.brownies.toString()),
+                  ]),
                 ],
               ),
               padding: new EdgeInsets.all(50.0),
@@ -93,33 +86,40 @@ class _MyAppState extends State<MyApp> {
                 animationDuration: new Duration(
                   milliseconds: ms,
                 ),
-                padding: new EdgeInsets.only(
-                    left: 40.0, bottom: 50.0, right: 40.0, top: 15.0),
+                padding: new EdgeInsets.only(left: 40.0, bottom: 50.0, right: 40.0, top: 15.0),
                 axes: [
-                  new XAxis(label: (stat) => stat.name, size: 30.0),
+                  new XAxis(
+                    labelFn: (stat) => stat.name,
+                    size: 30.0,
+                  ),
                   new YAxis(
-                    label: (val) => val.toInt().toString(),
-                    tickCount: 5,
-                    range: new Range(0.0, 16.0),
+                    labelFn: (val) => val.toStringAsFixed(0),
                     stroke: new PaintOptions.stroke(
-                        color: Colors.green, strokeWidth: 2.0),
+                      color: Colors.green,
+                      strokeWidth: 2.0,
+                    ),
+                    scale: Scales.log10,
+                    tickCount: 4,
                   ),
                   new YAxis(
                     id: 'brownies',
-                    label: (val) => val.toDouble().toStringAsFixed(1),
-                    tickCount: 11,
-                    range: new Range(0.0, 8.0),
+                    labelFn: (val) => val.toDouble().toStringAsFixed(1),
                     stroke: new PaintOptions.stroke(
-                        color: Colors.blue, strokeWidth: 2.0),
+                      color: Colors.blue,
+                      strokeWidth: 2.0,
+                    ),
                     opposite: true,
+                    tickCount: 20
                   ),
                 ],
                 lines: [
                   new Line(
                     name: 'Cookies',
-                    value: (stat) => stat.cookies.toDouble(),
+                    value: (stat) => stat.cookies == null ? null : stat.cookies.toDouble(),
                     stroke: new PaintOptions.stroke(
-                        color: Colors.green, strokeWidth: 2.0),
+                      color: Colors.green,
+                      strokeWidth: 2.0,
+                    ),
                     pointPaint: (day) => [
                           new PaintOptions(
                             color: Colors.green,
@@ -129,10 +129,12 @@ class _MyAppState extends State<MyApp> {
                   ),
                   new Line(
                     name: 'Brownies',
-                    value: (stat) => stat.brownies.toDouble(),
+                    value: (stat) => stat.brownies == null ? null : stat.brownies.toDouble(),
                     yAxisId: 'brownies',
                     stroke: new PaintOptions.stroke(
-                        color: Colors.blue, strokeWidth: 2.0),
+                      color: Colors.blue,
+                      strokeWidth: 2.0,
+                    ),
                     pointPaint: (day) => [
                           new PaintOptions(
                             color: Colors.blue,
