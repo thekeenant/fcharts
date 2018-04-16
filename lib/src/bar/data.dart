@@ -1,7 +1,7 @@
 import 'package:fcharts/src/bar/drawable.dart';
 import 'package:fcharts/src/chart_data.dart';
 import 'package:fcharts/src/utils/painting.dart';
-import 'package:fcharts/src/utils/range.dart';
+import 'package:fcharts/src/utils/span.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -19,7 +19,7 @@ class BarGraphData implements ChartData {
   /// Create a bar graph from histogram bins and a range for those bins.
   factory BarGraphData.fromHistogram({
     @required List<BinData> bins,
-    @required Range range,
+    @required Span range,
   }) {
     final groups = new List.generate(bins.length, (i) {
       final bin = bins[i];
@@ -84,16 +84,16 @@ class BarGraphData implements ChartData {
       var j = 0;
       final stackDrawables = group.stacks.map((stack) {
         final range = stack.range;
-        final yOffset = range.min / range.span;
+        final yOffset = range.min / range.length;
         final stackX = groupX +
             j * stackDistance +
             stackDistance * (1 - stackWidthFraction) / 2;
 
         final barDrawables = stack.bars.map((bar) {
-          bool isNull = bar.base == null || bar.value == null;
+          final isNull = bar.base == null || bar.value == null;
 
-          final scaledBase = isNull ? null : bar.base / range.span - yOffset;
-          final scaledValue = isNull ? null : bar.value / range.span - yOffset;
+          final scaledBase = isNull ? null : bar.base / range.length - yOffset;
+          final scaledValue = isNull ? null : bar.value / range.length - yOffset;
 
           return new BarDrawable(
             base: scaledBase,
@@ -192,7 +192,7 @@ class BarStackData {
 
   /// The range of this bar stack. Values for each bar are calculated
   /// relative to this range.
-  final Range range;
+  final Span range;
 
   /// The "base" value of this stack. It is typically 0 since many bar charts
   /// start at 0, however, some bar charts are based around a different
@@ -201,7 +201,7 @@ class BarStackData {
 
   BarStackData copyWith({
     List<BarData> bars,
-    Range range,
+    Span range,
     double base,
   }) {
     return new BarStackData(

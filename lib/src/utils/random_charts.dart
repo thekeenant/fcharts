@@ -6,7 +6,7 @@ import 'package:fcharts/src/bar/data.dart';
 import 'package:fcharts/src/line/data.dart';
 import 'package:fcharts/src/utils/color_palette.dart';
 import 'package:fcharts/src/utils/painting.dart';
-import 'package:fcharts/src/utils/range.dart';
+import 'package:fcharts/src/utils/span.dart';
 import 'package:flutter/material.dart';
 
 final _random = new math.Random();
@@ -31,7 +31,7 @@ LineChartData randomLineChart(final int pointCount) {
 
     return new LinePointData(
       x: x,
-      value: (value).clamp(0.0, 1.0).toDouble(),
+      y: (value).clamp(0.0, 1.0).toDouble(),
       paint: [new PaintOptions(color: color)],
     );
   });
@@ -41,13 +41,13 @@ LineChartData randomLineChart(final int pointCount) {
     stroke: new PaintOptions.stroke(
         color: color, strokeWidth: 3.0, strokeCap: StrokeCap.round),
     fill: new PaintOptions(color: monochrome[3].withOpacity(0.4)),
-    range: new Range(0.0, 1.0),
+    range: new Span(0.0, 1.0),
   );
 }
 
 /// Create a random histogram.
 BarGraphData randomHistogram(int binCount) {
-  final range = new Range(0.0, _random.nextDouble() * 100);
+  final range = new Span(0.0, _random.nextDouble() * 100);
 
   final baseColor = ColorPalette.primary.random(_random);
   final palette = new ColorPalette.monochrome(baseColor, 3);
@@ -107,7 +107,7 @@ BarGraphData randomBarChart() {
 
       return new BarStackData(
         bars: bars,
-        range: new Range(0.0, 50.0),
+        range: new Span(0.0, 50.0),
         base: bars.map((b) => b.base).reduce(math.min),
       );
     });

@@ -11,7 +11,5 @@ export 'package:fcharts/src/utils/scale.dart';
 export 'package:fcharts/src/utils/chart_position.dart';
 export 'package:fcharts/src/utils/painting.dart';
 export 'package:fcharts/src/utils/random_charts.dart';
-export 'package:fcharts/src/utils/range.dart';
-export 'package:fcharts/src/widgets/base.dart';
+export 'package:fcharts/src/utils/span.dart';
 export 'package:fcharts/src/widgets/chart_data_view.dart';
-export 'package:fcharts/src/widgets/line_chart.dart';

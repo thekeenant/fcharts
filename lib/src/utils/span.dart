@@ -5,8 +5,8 @@ import 'package:meta/meta.dart';
 
 /// A range from a low value to a high value.
 @immutable
-class Range {
-  const Range(this.min, this.max)
+class Span {
+  const Span(this.min, this.max)
       : assert(min != null),
         assert(max != null);
 
@@ -17,20 +17,20 @@ class Range {
   final double max;
 
   /// the distance between min and max
-  double get span => max - min;
+  double get length => max - min;
 
-  Range mapToScale(Scale scale) {
-    return new Range(
+  Span mapToScale(Scale scale) {
+    return new Span(
       scale.apply(min),
       scale.apply(max),
     );
   }
 
-  String toString() => "Range($min → $max)";
+  String toString() => "Span($min → $max)";
 
   /// Linearly interpolate between two range values and a given time.
-  static Range lerp(Range begin, Range end, double t) {
-    return new Range(
-        lerpDouble(begin.min, end.min, t), lerpDouble(begin.max, end.max, t));
+  static Span lerp(Span begin, Span end, double t) {
+    return new Span(
+        lerpDouble(begin.min, end.min, t), lerpDouble(begin.max, end.max, t),);
   }
 }
