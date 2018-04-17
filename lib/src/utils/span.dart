@@ -31,6 +31,8 @@ class Span {
   /// Linearly interpolate between two range values and a given time.
   static Span lerp(Span begin, Span end, double t) {
     return new Span(
-        lerpDouble(begin.min, end.min, t), lerpDouble(begin.max, end.max, t),);
+      lerpDouble(begin.min, end.min, t),
+      lerpDouble(begin.max, end.max, t),
+    );
   }
 }

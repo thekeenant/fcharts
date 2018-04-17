@@ -43,18 +43,73 @@ class _MyAppState extends State<MyApp> {
         appBar: new AppBar(
           title: new Text('Cookies & Brownies Consumption'),
         ),
-        body: new ChartDataView(
-          charts: [
-            new LineChartData(
-              range: new Span(0.0, 20.0),
-              points: [
-                new LinePointData(
-                  x: 10.0,
-                  y: 10.0,
-                ),
-              ],
-            ),
-          ],
+        body: new AspectRatio(
+          aspectRatio: 4.0 / 3.0,
+          child: new ChartDataView(
+            charts: [
+              new LineChartData(
+                domain: new Span(0.0, 1.0),
+                range: new Span(0.0, 20.0),
+                stroke: new PaintOptions.stroke(
+                    color: Colors.blue, strokeWidth: 4.0),
+                fill: new PaintOptions(color: Colors.blue.withOpacity(0.5)),
+                points: [
+                  new LinePointData(
+                    x: 0.0,
+                    y: 2.0,
+                    shape: MarkerShapes.x,
+                    paint: [
+                      new PaintOptions.stroke(
+                        color: Colors.blue[700],
+                        strokeCap: StrokeCap.butt,
+                        strokeWidth: 3.0,
+                      ),
+                    ],
+                    size: 6.0,
+                  ),
+                  new LinePointData(
+                    x: 0.2,
+                    y: 19.0,
+                    shape: MarkerShapes.x,
+                    paint: [
+                      new PaintOptions.stroke(
+                        color: Colors.blue[700],
+                        strokeCap: StrokeCap.butt,
+                        strokeWidth: 3.0,
+                      ),
+                    ],
+                    size: 6.0,
+                  ),
+                  new LinePointData(
+                    x: 0.5,
+                    y: 12.0,
+                    shape: MarkerShapes.triangle,
+                    paint: [
+                      new PaintOptions(
+                        color: Colors.green[700],
+                        strokeCap: StrokeCap.butt,
+                        strokeWidth: 3.0,
+                      ),
+                    ],
+                    size: 50.0,
+                  ),
+                  new LinePointData(
+                    x: 1.0,
+                    y: 15.0,
+                    shape: MarkerShapes.circle,
+                    paint: [
+                      new PaintOptions(
+                        color: Colors.blue[700],
+                        strokeCap: StrokeCap.butt,
+                        strokeWidth: 3.0,
+                      ),
+                    ],
+                    size: 6.0,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
         floatingActionButton: new FloatingActionButton(
           onPressed: () {

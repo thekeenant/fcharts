@@ -93,7 +93,8 @@ class BarGraphData implements ChartData {
           final isNull = bar.base == null || bar.value == null;
 
           final scaledBase = isNull ? null : bar.base / range.length - yOffset;
-          final scaledValue = isNull ? null : bar.value / range.length - yOffset;
+          final scaledValue =
+              isNull ? null : bar.value / range.length - yOffset;
 
           return new BarDrawable(
             base: scaledBase,

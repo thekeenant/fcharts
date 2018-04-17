@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui' show lerpDouble;
 
 import 'package:fcharts/src/utils/merge_tween.dart';
@@ -32,6 +33,8 @@ class CanvasArea {
 
   /// the size of the paint area (the width and height)
   Size get size => rect.size;
+
+  Rect get full => Offset.zero & size;
 
   /// Contract this canvas area inwards by a given [delta].
   CanvasArea contract(EdgeInsets delta) {
@@ -82,16 +85,20 @@ class CanvasArea {
   }
 
   /// Force a point into this area's bounds.
-  Offset boundPoint(Offset p) => new Offset(
-      p.dx.clamp(0.0, width).toDouble(), p.dy.clamp(0.0, height).toDouble());
+  Offset boundPoint(Offset p) =>
+      new Offset(p.dx.clamp(0.0, width).toDouble(), p.dy.clamp(0.0, height).toDouble());
 
   /// Force a rectangle into this area's bounds.
-  Rect boundRect(Rect rect) => new Rect.fromPoints(
-      boundPoint(rect.topLeft), boundPoint(rect.bottomRight));
+  Rect boundRect(Rect rect) =>
+      new Rect.fromPoints(boundPoint(rect.topLeft), boundPoint(rect.bottomRight));
 
   /// Draw an arc within a rectangle.
   void drawArc(
-      Rect arcArea, double startAngle, double sweepAngle, PaintOptions paint) {
+    Rect arcArea,
+    double startAngle,
+    double sweepAngle,
+    PaintOptions paint,
+  ) {
     performDraw(() {
       canvas.drawArc(
         arcArea,
@@ -121,6 +128,44 @@ class CanvasArea {
   /// Draw a line.
   void drawLine(Offset p1, Offset p2, PaintOptions paint) {
     performDraw(() => canvas.drawLine(p1, p2, paint.build()));
+  }
+
+  void drawStar(
+    Offset center,
+    PaintOptions paint,
+    int spikes,
+    double outerRadius,
+    double innerRadius,
+  ) {
+    var rot = pi / 2.0 * 3.0;
+    var step = pi / spikes;
+
+    var cx = center.dx;
+    var cy = center.dy;
+    var x = cx;
+    var y = cy;
+
+    final path = new Path();
+    path.moveTo(cx, cy - outerRadius);
+
+    for (var i = 0; i < spikes; i++) {
+      // go out
+      x = cx + cos(rot) * outerRadius;
+      y = cy + sin(rot) * outerRadius;
+      path.lineTo(x, y);
+      rot += step;
+
+      // go back in
+      x = cx + cos(rot) * innerRadius;
+      y = cy + sin(rot) * innerRadius;
+      path.lineTo(x, y);
+      rot += step;
+    }
+
+    path.lineTo(cx, cy - outerRadius);
+    path.close();
+
+    drawPath(path, paint);
   }
 
   /// Draw text.
@@ -166,8 +211,8 @@ class CanvasArea {
 
   /// Draw an X pattern (for debugging).
   void drawDebugCross({Color color: Colors.red}) {
-    drawLine(Offset.zero, new Offset(size.width, size.height),
-        new PaintOptions.stroke(color: color));
+    drawLine(
+        Offset.zero, new Offset(size.width, size.height), new PaintOptions.stroke(color: color));
     drawLine(new Offset(0.0, size.height), new Offset(size.width, 0.0),
         new PaintOptions.stroke(color: color));
   }
@@ -192,7 +237,7 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
   const PaintOptions.stroke({
     this.color: Colors.black,
     this.strokeWidth: 1.0,
-    this.strokeCap: StrokeCap.square,
+    this.strokeCap: StrokeCap.butt,
     this.gradient,
   }) : this.style = PaintingStyle.stroke;
 
@@ -239,8 +284,7 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
     if (style != null) paint.style = style;
 
     // gradient used for rectangles
-    if (gradient != null && rect != null)
-      paint.shader = gradient.createShader(rect);
+    if (gradient != null && rect != null) paint.shader = gradient.createShader(rect);
 
     return paint;
   }
@@ -296,14 +340,12 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
   }
 
   @override
-  Tween<PaintOptions> tweenTo(PaintOptions other) =>
-      new _PaintOptionsTween(this, other);
+  Tween<PaintOptions> tweenTo(PaintOptions other) => new _PaintOptionsTween(this, other);
 }
 
 /// Lerp between tow paint options.
 class _PaintOptionsTween extends Tween<PaintOptions> {
-  _PaintOptionsTween(PaintOptions begin, PaintOptions end)
-      : super(begin: begin, end: end);
+  _PaintOptionsTween(PaintOptions begin, PaintOptions end) : super(begin: begin, end: end);
 
   @override
   PaintOptions lerp(double t) => PaintOptions.lerp(begin, end, t);
@@ -359,8 +401,7 @@ class TextOptions {
 
     // prevent layout from crashing
     var maxWidth = this.maxWidth;
-    if (maxWidth != null && minWidth != null && maxWidth - minWidth < 0)
-      maxWidth = minWidth + 1;
+    if (maxWidth != null && minWidth != null && maxWidth - minWidth < 0) maxWidth = minWidth + 1;
 
     span.layout(
       maxWidth: maxWidth ?? double.infinity,
