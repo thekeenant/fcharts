@@ -4,6 +4,7 @@ export 'package:fcharts/src/bar/data.dart';
 export 'package:fcharts/src/chart_data.dart';
 export 'package:fcharts/src/decor/axis.dart';
 export 'package:fcharts/src/decor/decor.dart';
+export 'package:fcharts/src/decor/legend.dart';
 export 'package:fcharts/src/decor/tick.dart';
 export 'package:fcharts/src/line/curves.dart';
 export 'package:fcharts/src/line/data.dart';

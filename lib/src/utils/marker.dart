@@ -20,11 +20,20 @@ class MarkerShapes {
 
   static const MarkerShape star12 = const StarMarkerShape(spikes: 12);
 
-  static const MarkerShape triangle = const StarMarkerShape(spikes: 3, inset: 1/2);
+  static const MarkerShape triangle = const StarMarkerShape(
+    spikes: 3,
+    inset: 1 / 2,
+  );
 
-  static const MarkerShape pentagon = const StarMarkerShape(spikes: 5, inset: 1/5);
+  static const MarkerShape pentagon = const StarMarkerShape(
+    spikes: 5,
+    inset: 1 / 5,
+  );
 
-  static const MarkerShape hexagon = const StarMarkerShape(spikes: 6, inset: 1/6);
+  static const MarkerShape hexagon = const StarMarkerShape(
+    spikes: 6,
+    inset: 1 / 6,
+  );
 
   static const MarkerShape horizontalLine = const LineMarkerShape();
 
@@ -111,7 +120,6 @@ class LineMarkerShape implements MarkerShape {
     }
   }
 }
-
 
 class StarMarkerShape implements MarkerShape {
   const StarMarkerShape({
