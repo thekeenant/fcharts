@@ -13,6 +13,7 @@ class LineChartData implements ChartData {
     @required this.points,
     @required this.range,
     @required this.domain,
+    this.vertical: false,
     this.stroke: const PaintOptions.stroke(),
     this.fill,
     this.curve: LineCurves.linear,
@@ -29,6 +30,9 @@ class LineChartData implements ChartData {
 
   /// The domain for this chart.
   final Span domain;
+
+  /// The orientation of the line.
+  final bool vertical;
 
   /// The paint to use for the line.
   final PaintOptions stroke;
@@ -93,7 +97,7 @@ class LinePointData {
     @required this.y,
     this.shape: MarkerShapes.circle,
     this.paint: const [],
-    this.size: 1.0,
+    this.size: 4.0,
   })  : assert(x != null),
         assert(shape != null),
         assert(paint != null),

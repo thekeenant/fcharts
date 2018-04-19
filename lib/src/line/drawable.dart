@@ -34,6 +34,7 @@ class LineChartDrawable
     implements ChartDrawable<LineChartDrawable, LineChartTouch> {
   const LineChartDrawable({
     @required this.points,
+    this.vertical: false,
     this.stroke: const PaintOptions.stroke(color: Colors.black),
     this.fill,
     this.curve: LineCurves.linear,
@@ -42,6 +43,9 @@ class LineChartDrawable
 
   /// The list of points (ascending x value).
   final List<LinePointDrawable> points;
+
+  /// The orientation of the line.
+  final bool vertical;
 
   /// Paint to use to draw the line. Be sure to use [PaintingStyle.stroke].
   /// You can do this easily with [PaintOptions.stroke].

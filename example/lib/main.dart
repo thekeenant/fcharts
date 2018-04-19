@@ -46,18 +46,36 @@ class _MyAppState extends State<MyApp> {
         body: new AspectRatio(
           aspectRatio: 4.0 / 3.0,
           child: new ChartDataView(
+            rotation: ChartRotation.clockwise,
+            chartPadding: new EdgeInsets.all(80.0),
+            decor: new ChartDecor(
+              axes: [
+                new ChartAxisData(
+                  position: ChartPosition.left,
+                  ticks: [],
+                  offset: 0.0,
+                ),
+                new ChartAxisData(
+                  position: ChartPosition.bottom,
+                  ticks: [],
+                  offset: 0.0,
+                ),
+              ],
+            ),
             charts: [
               new LineChartData(
                 domain: new Span(0.0, 1.0),
                 range: new Span(0.0, 20.0),
                 stroke: new PaintOptions.stroke(
-                    color: Colors.blue, strokeWidth: 4.0),
+                  color: Colors.blue,
+                  strokeWidth: 4.0,
+                ),
                 fill: new PaintOptions(color: Colors.blue.withOpacity(0.5)),
                 points: [
                   new LinePointData(
                     x: 0.0,
                     y: 2.0,
-                    shape: MarkerShapes.x,
+                    shape: MarkerShapes.horizontalLine,
                     paint: [
                       new PaintOptions.stroke(
                         color: Colors.blue[700],
@@ -65,7 +83,6 @@ class _MyAppState extends State<MyApp> {
                         strokeWidth: 3.0,
                       ),
                     ],
-                    size: 6.0,
                   ),
                   new LinePointData(
                     x: 0.2,
@@ -78,12 +95,11 @@ class _MyAppState extends State<MyApp> {
                         strokeWidth: 3.0,
                       ),
                     ],
-                    size: 6.0,
                   ),
                   new LinePointData(
                     x: 0.5,
                     y: 12.0,
-                    shape: MarkerShapes.triangle,
+                    shape: MarkerShapes.circle,
                     paint: [
                       new PaintOptions(
                         color: Colors.green[700],
@@ -91,12 +107,11 @@ class _MyAppState extends State<MyApp> {
                         strokeWidth: 3.0,
                       ),
                     ],
-                    size: 50.0,
                   ),
                   new LinePointData(
                     x: 1.0,
                     y: 15.0,
-                    shape: MarkerShapes.circle,
+                    shape: MarkerShapes.pentagon,
                     paint: [
                       new PaintOptions(
                         color: Colors.blue[700],
@@ -104,7 +119,6 @@ class _MyAppState extends State<MyApp> {
                         strokeWidth: 3.0,
                       ),
                     ],
-                    size: 6.0,
                   ),
                 ],
               ),

@@ -266,43 +266,48 @@ class _ChartPainter extends CustomPainter {
     canvas.clipRect(Offset.zero & size);
     canvas.save();
 
-    Size canvasSize;
+
+    var canvasArea = new CanvasArea.fromCanvas(canvas, size);
+    var chartArea = canvasArea.contract(chartPadding);
+
+    if (decor != null) {
+      decor.value.draw(canvasArea, chartArea);
+    }
+
+    Size rotatedCanvasSize;
 
     // rotate and translate canvas as necessary based on rotation
     canvas.rotate(rotation.theta);
     switch (rotation) {
       case ChartRotation.none:
-        canvasSize = size;
+        rotatedCanvasSize = size;
         break;
       case ChartRotation.upsideDown:
-        canvasSize = size;
-        canvas.translate(-canvasSize.width, -canvasSize.height);
+        rotatedCanvasSize = size;
+        canvas.translate(-rotatedCanvasSize.width, -rotatedCanvasSize.height);
         break;
       case ChartRotation.clockwise:
-        canvasSize = size.flipped;
-        canvas.translate(0.0, -canvasSize.height);
+        rotatedCanvasSize = size.flipped;
+        canvas.translate(0.0, -rotatedCanvasSize.height);
         break;
       case ChartRotation.counterClockwise:
-        canvasSize = size.flipped;
-        canvas.translate(-canvasSize.width, 0.0);
+        rotatedCanvasSize = size.flipped;
+        canvas.translate(-rotatedCanvasSize.width, 0.0);
         break;
     }
 
-    var canvasArea = new CanvasArea.fromCanvas(canvas, canvasSize);
-    var chartArea = canvasArea;
-
-    if (decor != null) {
-      chartArea = chartArea.contract(chartPadding);
-      decor.value.draw(canvasArea, chartArea);
-    }
+    var rotatedCanvasArea = new CanvasArea.fromCanvas(canvas, rotatedCanvasSize);
+    var rotatedChartArea = rotatedCanvasArea.contract(chartPadding);
 
     for (final animation in charts) {
       final chart = animation.value;
-      chart.draw(chartArea);
+      chart.draw(rotatedChartArea);
     }
 
     // restore to before clip (see start of method)
     canvas.restore();
+
+
   }
 
   @override

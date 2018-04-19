@@ -35,8 +35,10 @@ class MarkerShapes {
     inset: 1 / 6,
   );
 
+  /// A horizontal line with respect to the chart direction.
   static const MarkerShape horizontalLine = const LineMarkerShape();
 
+  /// A vertical line with respect to the chart direction.
   static const MarkerShape verticalLine = const LineMarkerShape(vertical: true);
 }
 
