@@ -1,7 +1,7 @@
 import 'package:fcharts/src/bar/drawable.dart';
 import 'package:fcharts/src/chart_data.dart';
 import 'package:fcharts/src/utils/painting.dart';
-import 'package:fcharts/src/utils/range.dart';
+import 'package:fcharts/src/utils/span.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -84,16 +84,17 @@ class BarGraphData implements ChartData {
       var j = 0;
       final stackDrawables = group.stacks.map((stack) {
         final range = stack.range;
-        final yOffset = range.min / range.span;
+        final yOffset = range.min / range.length;
         final stackX = groupX +
             j * stackDistance +
             stackDistance * (1 - stackWidthFraction) / 2;
 
         final barDrawables = stack.bars.map((bar) {
-          bool isNull = bar.base == null || bar.value == null;
+          final isNull = bar.base == null || bar.value == null;
 
-          final scaledBase = isNull ? null : bar.base / range.span - yOffset;
-          final scaledValue = isNull ? null : bar.value / range.span - yOffset;
+          final scaledBase = isNull ? null : bar.base / range.length - yOffset;
+          final scaledValue =
+              isNull ? null : bar.value / range.length - yOffset;
 
           return new BarDrawable(
             base: scaledBase,
@@ -121,14 +122,6 @@ class BarGraphData implements ChartData {
     return new BarGraphDrawable(
       groups: groupDrawables.toList(),
     );
-  }
-
-  List<double> xValues() {
-    final groupDistance = 1 / groups.length;
-
-    return new List.generate(groups.length, (i) {
-      return groupDistance * i + groupDistance / 2;
-    });
   }
 }
 

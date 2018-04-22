@@ -1,8 +1,9 @@
 import 'package:fcharts/src/chart_data.dart';
 import 'package:fcharts/src/line/curves.dart';
 import 'package:fcharts/src/line/drawable.dart';
+import 'package:fcharts/src/utils/marker.dart';
 import 'package:fcharts/src/utils/painting.dart';
-import 'package:fcharts/src/utils/range.dart';
+import 'package:fcharts/src/utils/span.dart';
 import 'package:meta/meta.dart';
 
 /// A type of chart where a group of points are connected by a line.
@@ -11,11 +12,13 @@ class LineChartData implements ChartData {
   const LineChartData({
     @required this.points,
     @required this.range,
+    @required this.domain,
     this.stroke: const PaintOptions.stroke(),
     this.fill,
-    this.curve: const MonotoneCurve(),
+    this.curve: LineCurves.linear,
   })  : assert(points != null),
         assert(range != null),
+        assert(domain != null),
         assert(curve != null);
 
   /// The points for the line chart, in ascending x value.
@@ -23,6 +26,9 @@ class LineChartData implements ChartData {
 
   /// The range for this chart.
   final Range range;
+
+  /// The domain for this chart.
+  final Range domain;
 
   /// The paint to use for the line.
   final PaintOptions stroke;
@@ -37,6 +43,7 @@ class LineChartData implements ChartData {
   LineChartData copyWith({
     List<LinePointData> points,
     Range range,
+    Range domain,
     PaintOptions stroke,
     PaintOptions fill,
     LineCurve curve,
@@ -44,6 +51,7 @@ class LineChartData implements ChartData {
     return new LineChartData(
       points: points ?? this.points,
       range: range ?? this.range,
+      domain: domain ?? this.domain,
       stroke: stroke ?? this.stroke,
       fill: fill ?? this.fill,
       curve: curve ?? this.curve,
@@ -52,18 +60,19 @@ class LineChartData implements ChartData {
 
   @override
   LineChartDrawable createDrawable() {
-    final yOffset = range.min / range.span;
+    final xOffset = domain.min / domain.length;
+    final yOffset = range.min / range.length;
 
     final pointDrawables = points.map((point) {
-      final x = point.x;
-      final scaledValue =
-          point.value == null ? null : point.value / range.span - yOffset;
+      final scaledX = point.x / domain.length - xOffset;
+      final scaledY = point.y == null ? null : point.y / range.length - yOffset;
 
       return new LinePointDrawable(
-        x: x,
-        value: scaledValue,
+        x: scaledX,
+        value: scaledY,
         paint: point.paint,
-        radius: point.radius,
+        shape: point.shape,
+        size: point.size,
       );
     });
 
@@ -81,19 +90,26 @@ class LineChartData implements ChartData {
 class LinePointData {
   const LinePointData({
     @required this.x,
-    @required this.value,
+    @required this.y,
+    this.shape: MarkerShapes.circle,
     this.paint: const [],
-    this.radius: 1.0,
-  })  : assert(x != null && x >= 0 && x <= 1.0),
+    this.size: 4.0,
+  })  : assert(x != null),
+        assert(shape != null),
         assert(paint != null),
-        assert(radius != null);
+        assert(size != null);
 
-  /// The x position of this point. Should be 0..1 inclusive.
+  /// The x position of this point, relative to the chart's domain.
   final double x;
 
-  /// The value of this point, relative to the chart's range. It can be
+  /// The y position of this point, relative to the chart's range. It can be
   /// null to indicate no value present.
-  final double value;
+  final double y;
+
+  final MarkerShape shape;
+
+  /// Paint to use on the point circle.
   final List<PaintOptions> paint;
-  final double radius;
+
+  final double size;
 }

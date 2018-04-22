@@ -6,7 +6,7 @@ import 'package:fcharts/src/bar/data.dart';
 import 'package:fcharts/src/line/data.dart';
 import 'package:fcharts/src/utils/color_palette.dart';
 import 'package:fcharts/src/utils/painting.dart';
-import 'package:fcharts/src/utils/range.dart';
+import 'package:fcharts/src/utils/span.dart';
 import 'package:flutter/material.dart';
 
 final _random = new math.Random();
@@ -31,7 +31,7 @@ LineChartData randomLineChart(final int pointCount) {
 
     return new LinePointData(
       x: x,
-      value: (value).clamp(0.0, 1.0).toDouble(),
+      y: (value).clamp(0.0, 1.0).toDouble(),
       paint: [new PaintOptions(color: color)],
     );
   });

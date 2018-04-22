@@ -1,124 +1,99 @@
-import 'package:fcharts/src/decor/legend.dart';
-import 'package:fcharts/src/utils/chart_position.dart';
-import 'package:fcharts/src/utils/painting.dart';
-import 'package:fcharts/src/utils/range.dart';
-import 'package:fcharts/src/utils/scale.dart';
+import 'package:fcharts/src/decor/tick.dart';
+import 'package:fcharts/src/utils/span.dart';
 import 'package:fcharts/src/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-@immutable
-abstract class Chart<Datum> extends StatefulWidget {
-  const Chart({
-    @required this.axes,
-    @required this.padding,
-    @required this.legend,
-    @required this.animationCurve,
-    @required this.animationDuration,
-  })  : assert(axes != null),
-        assert(padding != null);
-
-  final List<AxisBase<Datum>> axes;
-  final EdgeInsets padding;
-  final Legend legend;
-  final Curve animationCurve;
-  final Duration animationDuration;
-
-  Iterable<XAxis<Datum>> get xAxes =>
-      axes.where((a) => a is XAxis<Datum>).map((a) => a as XAxis<Datum>);
-
-  Iterable<YAxis<Datum>> get yAxes =>
-      axes.where((a) => a is YAxis<Datum>).map((a) => a as YAxis<Datum>);
+abstract class Chart extends StatefulWidget {
+  const Chart({Key key}) : super(key: key);
 }
 
-@immutable
-abstract class AxisBase<T> {
+abstract class AxisBase<Datum, Range, Value> {
   AxisBase({
-    @required this.id,
-    @required this.stroke,
-    @required this.labelStyle,
-    @required this.opposite,
-    @required this.size,
-    @required this.offset,
+    @required this.range,
+    @required this.tickLabelFn,
+    this.opposite,
   });
 
-  final String id;
-  final PaintOptions stroke;
-  final TextStyle labelStyle;
-  final bool opposite;
-  final double size;
-  final double offset;
+  final UnaryFunction<Value, String> tickLabelFn;
 
-  ChartPosition get position;
-}
-
-@immutable
-class XAxis<Datum> extends AxisBase<Datum> {
-  XAxis({
-    @required this.labelFn,
-    String id,
-    PaintOptions stroke: const PaintOptions.stroke(),
-    TextStyle labelStyle: const TextStyle(color: Colors.black),
-    bool opposite: false,
-    double size,
-    double offset: 0.0,
-  }) : super(
-          id: id,
-          stroke: stroke,
-          labelStyle: labelStyle,
-          opposite: opposite,
-          size: size,
-          offset: offset,
-        );
-
-  final UnaryFunction<Datum, String> labelFn;
-
-  @override
-  ChartPosition get position =>
-      opposite ? ChartPosition.top : ChartPosition.bottom;
-}
-
-@immutable
-class YAxis<Datum> extends AxisBase<Datum> {
-  YAxis({
-    @required this.labelFn,
-    this.range,
-    this.tickCount: 5,
-    this.scale: Scales.linear,
-    String id,
-    PaintOptions stroke: const PaintOptions.stroke(),
-    TextStyle labelStyle: const TextStyle(color: Colors.black),
-    bool opposite: false,
-    double size,
-    double offset: 0.0,
-  }) : super(
-          id: id,
-          stroke: stroke,
-          labelStyle: labelStyle,
-          opposite: opposite,
-          size: size,
-          offset: offset,
-        );
-
-  final UnaryFunction<double, String> labelFn;
   final Range range;
-  final int tickCount;
-  final Scale scale;
 
-  @override
-  ChartPosition get position =>
-      opposite ? ChartPosition.right : ChartPosition.left;
+  final bool opposite;
+
+  double position(Value value, Range range);
+
+  List<Value> generateTicks(Range range);
+
+  List<AxisTickData> generateAxisTicks(Range range) {
+    final ticks = generateTicks(range);
+
+    return new List.generate(ticks.length, (i) {
+      final tick = ticks[i];
+      final pos = position(tick, range);
+      final label = tickLabelFn(tick);
+
+      return new AxisTickData(
+        value: pos,
+        width: 1 / ticks.length,
+        labelers: [
+          new NotchTickLabeler(),
+          new TextTickLabeler(text: label),
+        ],
+      );
+    });
+  }
 }
 
-@immutable
-class Legend {
-  Legend({
-    this.position: ChartPosition.top,
-    this.layout: LegendLayout.horizontal,
-    this.offset: Offset.zero,
-  });
+/// An axis which maps data points to continuous values.
+///
+/// Time, amounts, and percentages are examples of continuous values.
+class ContinuousAxis<Datum, Value>
+    extends AxisBase<Datum, SpanBase<Value>, Value> {
+  ContinuousAxis({
+    @required UnaryFunction<Value, String> tickLabelFn,
+    SpanBase<Value> span,
+    this.ticks,
+  }) : super(
+          range: span,
+          tickLabelFn: tickLabelFn,
+        );
 
-  final ChartPosition position;
-  final LegendLayout layout;
-  final Offset offset;
+  List<Value> ticks;
+
+  @override
+  double position(Value value, SpanBase<Value> range) {
+    return range.toDouble(value);
+  }
+
+  @override
+  List<Value> generateTicks(SpanBase<Value> range) {
+    return ticks;
+  }
+}
+
+/// An axis which categorizes data points into discrete values.
+///
+/// For example, someone's first name is either "John" or not "John". There is no in-between
+/// "John" and "Adam".
+class CategoricalAxis<Datum, Category>
+    extends AxisBase<Datum, List<Category>, Category> {
+  CategoricalAxis({
+    UnaryFunction<Category, String> tickLabelFn,
+    List<Category> categories,
+  }) : super(
+          range: categories,
+          tickLabelFn: tickLabelFn,
+        );
+
+  @override
+  double position(Category value, List<Category> categories) {
+    final index = categories.indexOf(value);
+    return generateCategoricalTicks(categories.length)[index];
+  }
+
+  @override
+  List<Category> generateTicks(List<Category> range) {
+    return range;
+  }
 }

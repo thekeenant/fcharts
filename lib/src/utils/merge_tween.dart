@@ -15,7 +15,7 @@ abstract class MergeTweenable<T> {
   Tween<T> tweenTo(T other);
 }
 
-/// Intelligently lerps two lists of tweenable objects.
+/// Tween between two lists of tweenable objects.
 class MergeTween<T extends MergeTweenable<T>> extends Tween<List<T>> {
   MergeTween(List<T> begin, List<T> end) : super(begin: begin, end: end) {
     final bMax = begin.length;

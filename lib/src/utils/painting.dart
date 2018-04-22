@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui' show lerpDouble;
 
 import 'package:fcharts/src/utils/merge_tween.dart';
@@ -32,6 +33,8 @@ class CanvasArea {
 
   /// the size of the paint area (the width and height)
   Size get size => rect.size;
+
+  Rect get full => Offset.zero & size;
 
   /// Contract this canvas area inwards by a given [delta].
   CanvasArea contract(EdgeInsets delta) {
@@ -91,7 +94,11 @@ class CanvasArea {
 
   /// Draw an arc within a rectangle.
   void drawArc(
-      Rect arcArea, double startAngle, double sweepAngle, PaintOptions paint) {
+    Rect arcArea,
+    double startAngle,
+    double sweepAngle,
+    PaintOptions paint,
+  ) {
     performDraw(() {
       canvas.drawArc(
         arcArea,
@@ -121,6 +128,44 @@ class CanvasArea {
   /// Draw a line.
   void drawLine(Offset p1, Offset p2, PaintOptions paint) {
     performDraw(() => canvas.drawLine(p1, p2, paint.build()));
+  }
+
+  void drawStar(
+    Offset center,
+    PaintOptions paint,
+    int spikes,
+    double outerRadius,
+    double innerRadius,
+  ) {
+    var rot = pi / 2.0 * 3.0;
+    var step = pi / spikes;
+
+    var cx = center.dx;
+    var cy = center.dy;
+    var x = cx;
+    var y = cy;
+
+    final path = new Path();
+    path.moveTo(cx, cy - outerRadius);
+
+    for (var i = 0; i < spikes; i++) {
+      // go out
+      x = cx + cos(rot) * outerRadius;
+      y = cy + sin(rot) * outerRadius;
+      path.lineTo(x, y);
+      rot += step;
+
+      // go back in
+      x = cx + cos(rot) * innerRadius;
+      y = cy + sin(rot) * innerRadius;
+      path.lineTo(x, y);
+      rot += step;
+    }
+
+    path.lineTo(cx, cy - outerRadius);
+    path.close();
+
+    drawPath(path, paint);
   }
 
   /// Draw text.
@@ -192,7 +237,7 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
   const PaintOptions.stroke({
     this.color: Colors.black,
     this.strokeWidth: 1.0,
-    this.strokeCap: StrokeCap.square,
+    this.strokeCap: StrokeCap.butt,
     this.gradient,
   }) : this.style = PaintingStyle.stroke;
 
