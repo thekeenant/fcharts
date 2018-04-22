@@ -87,7 +87,8 @@ class ChartDataView extends StatefulWidget {
   _ChartDataViewState createState() => new _ChartDataViewState();
 }
 
-class _ChartDataViewState extends State<ChartDataView> with TickerProviderStateMixin {
+class _ChartDataViewState extends State<ChartDataView>
+    with TickerProviderStateMixin {
   final GlobalKey _paintKey = new GlobalKey();
 
   AnimationController _controller;
@@ -106,7 +107,9 @@ class _ChartDataViewState extends State<ChartDataView> with TickerProviderStateM
 
     if (_painter == null) {
       fromDecor = ChartDecor.none;
-      fromCharts = widget.charts.map((c) => c.createDrawable().empty as ChartDrawable).toList();
+      fromCharts = widget.charts
+          .map((c) => c.createDrawable().empty as ChartDrawable)
+          .toList();
     } else {
       fromDecor = _painter.decor.value;
       fromCharts = _painter.charts.map((c) => c.value).toList();
@@ -121,7 +124,8 @@ class _ChartDataViewState extends State<ChartDataView> with TickerProviderStateM
       final drawable = chart.createDrawable();
 
       // find a chart which be tween to the new chart
-      final matches = fromCharts.where((c) => c.runtimeType == drawable.runtimeType);
+      final matches =
+          fromCharts.where((c) => c.runtimeType == drawable.runtimeType);
 
       ChartDrawable prevDrawable;
 
@@ -245,7 +249,8 @@ class _ChartPainter extends CustomPainter {
     for (var i = 0; i < charts.length; i++) {
       final chart = charts[i];
 
-      final event = chart.value.resolveTouch(new Size(width, height), touchChart);
+      final event =
+          chart.value.resolveTouch(new Size(width, height), touchChart);
       events[i] = event;
     }
 
@@ -292,7 +297,8 @@ class _ChartPainter extends CustomPainter {
         break;
     }
 
-    var rotatedCanvasArea = new CanvasArea.fromCanvas(canvas, rotatedCanvasSize);
+    var rotatedCanvasArea =
+        new CanvasArea.fromCanvas(canvas, rotatedCanvasSize);
     var rotatedChartArea = rotatedCanvasArea.contract(chartPadding);
 
     for (final animation in charts) {

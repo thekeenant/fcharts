@@ -48,7 +48,8 @@ abstract class AxisBase<Datum, Range, Value> {
 /// An axis which maps data points to continuous values.
 ///
 /// Time, amounts, and percentages are examples of continuous values.
-class ContinuousAxis<Datum, Value> extends AxisBase<Datum, SpanBase<Value>, Value> {
+class ContinuousAxis<Datum, Value>
+    extends AxisBase<Datum, SpanBase<Value>, Value> {
   ContinuousAxis({
     @required UnaryFunction<Value, String> tickLabelFn,
     SpanBase<Value> span,
@@ -75,7 +76,8 @@ class ContinuousAxis<Datum, Value> extends AxisBase<Datum, SpanBase<Value>, Valu
 ///
 /// For example, someone's first name is either "John" or not "John". There is no in-between
 /// "John" and "Adam".
-class CategoricalAxis<Datum, Category> extends AxisBase<Datum, List<Category>, Category> {
+class CategoricalAxis<Datum, Category>
+    extends AxisBase<Datum, List<Category>, Category> {
   CategoricalAxis({
     UnaryFunction<Category, String> tickLabelFn,
     List<Category> categories,

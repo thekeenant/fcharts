@@ -55,7 +55,8 @@ class CardinalSpline implements LineCurve {
     pts.add(points[points.length - 1]);
 
     for (var i = 1; i < pts.length - 2; i++) {
-      var t1 = new Offset(pts[i + 1].dx - pts[i - 1].dx, pts[i + 1].dy - pts[i - 1].dy);
+      var t1 = new Offset(
+          pts[i + 1].dx - pts[i - 1].dx, pts[i + 1].dy - pts[i - 1].dy);
 
       var t2 = new Offset(pts[i + 2].dx - pts[i].dx, pts[i + 2].dy - pts[i].dy);
 

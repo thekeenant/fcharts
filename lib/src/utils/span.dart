@@ -3,7 +3,6 @@ import 'dart:ui' show lerpDouble;
 import 'package:fcharts/src/utils/scale.dart';
 import 'package:meta/meta.dart';
 
-
 abstract class SpanBase<T> {
   T get min;
 

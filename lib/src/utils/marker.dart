@@ -4,6 +4,23 @@ import 'dart:ui';
 import 'package:fcharts/src/utils/painting.dart';
 
 class MarkerShapes {
+  /// All the available default marker shapes.
+  static const List<MarkerShape> all = const [
+    circle,
+    square,
+    plus,
+    x,
+    star,
+    star6,
+    star8,
+    star12,
+    triangle,
+    pentagon,
+    hexagon,
+    horizontalLine,
+    verticalLine,
+  ];
+
   static const MarkerShape circle = const CircleMarkerShape();
 
   static const MarkerShape square = const SquareMarkerShape();

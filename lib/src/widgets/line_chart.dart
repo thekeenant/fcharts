@@ -143,7 +143,8 @@ class _LineChartState extends State<LineChart> {
     for (final axis in axes) {
       final tickData = axis.generateAxisTicks(axis.range);
 
-      final position = xAxes.contains(axis) ? ChartPosition.bottom : ChartPosition.left;
+      final position =
+          xAxes.contains(axis) ? ChartPosition.bottom : ChartPosition.left;
 
       axesData.add(new ChartAxisData(
         ticks: tickData,

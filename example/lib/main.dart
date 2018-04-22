@@ -22,7 +22,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
   @override
   Widget build(BuildContext context) {
     final data = [
@@ -51,11 +50,7 @@ class _MyAppState extends State<MyApp> {
 
     final axis2 = new ContinuousAxis<Datum, int>(
       span: new NumSpan(0, 100),
-      ticks: [
-        0,
-        50,
-        100
-      ],
+      ticks: [0, 50, 100],
       tickLabelFn: (num) => num.toString(),
     );
 
@@ -69,7 +64,7 @@ class _MyAppState extends State<MyApp> {
             color: Colors.white,
           ),
           child: new AspectRatio(
-            aspectRatio: 4.0/3.0,
+            aspectRatio: 4.0 / 3.0,
             child: new LineChart(
               vertical: true,
               lines: [
@@ -79,13 +74,14 @@ class _MyAppState extends State<MyApp> {
                   yFn: (day) => day.cookies,
                   xAxis: axis1,
                   yAxis: axis2,
-                  stroke: new PaintOptions.stroke(color: Colors.green, strokeWidth: 2.0),
-                  fill: new PaintOptions(color: Colors.green[200].withOpacity(0.8)),
+                  stroke: new PaintOptions.stroke(
+                      color: Colors.green, strokeWidth: 2.0),
+                  fill: new PaintOptions(
+                      color: Colors.green[200].withOpacity(0.8)),
                   marker: new MarkerOptions(
-                    paint: [
-                      new PaintOptions(color: Colors.green[700])
-                    ],
-                    size: 4.0
+                    paint: [new PaintOptions(color: Colors.green[700])],
+                    size: 4.0,
+                    shape: MarkerShapes.square,
                   ),
                   curve: LineCurves.monotone,
                 ),

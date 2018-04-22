@@ -93,6 +93,9 @@ class MonotoneInterpolator {
 
     // Interpolate
     var diff = x - points[i].dx, diffSq = diff * diff;
-    return points[i].dy + _c1s[i] * diff + _c2s[i] * diffSq + _c3s[i] * diff * diffSq;
+    return points[i].dy +
+        _c1s[i] * diff +
+        _c2s[i] * diffSq +
+        _c3s[i] * diff * diffSq;
   }
 }
