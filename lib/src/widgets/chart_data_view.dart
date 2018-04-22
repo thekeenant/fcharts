@@ -40,6 +40,7 @@ class ChartRotation {
 /// A widget for displaying chart data.
 class ChartDataView extends StatefulWidget {
   ChartDataView({
+    Key key,
     @required this.charts,
     this.decor,
     this.rotation: ChartRotation.none,
@@ -52,7 +53,8 @@ class ChartDataView extends StatefulWidget {
   })  : assert(charts != null),
         assert(rotation != null),
         assert(chartPadding != null),
-        assert(animationCurve != null);
+        assert(animationCurve != null),
+        super(key: key);
 
   /// The charts to draw within the view. The order of the list is the
   /// order that they are drawn (later means they are on top).
@@ -85,8 +87,7 @@ class ChartDataView extends StatefulWidget {
   _ChartDataViewState createState() => new _ChartDataViewState();
 }
 
-class _ChartDataViewState extends State<ChartDataView>
-    with TickerProviderStateMixin {
+class _ChartDataViewState extends State<ChartDataView> with TickerProviderStateMixin {
   final GlobalKey _paintKey = new GlobalKey();
 
   AnimationController _controller;
@@ -105,9 +106,7 @@ class _ChartDataViewState extends State<ChartDataView>
 
     if (_painter == null) {
       fromDecor = ChartDecor.none;
-      fromCharts = widget.charts
-          .map((c) => c.createDrawable().empty as ChartDrawable)
-          .toList();
+      fromCharts = widget.charts.map((c) => c.createDrawable().empty as ChartDrawable).toList();
     } else {
       fromDecor = _painter.decor.value;
       fromCharts = _painter.charts.map((c) => c.value).toList();
@@ -122,8 +121,7 @@ class _ChartDataViewState extends State<ChartDataView>
       final drawable = chart.createDrawable();
 
       // find a chart which be tween to the new chart
-      final matches =
-          fromCharts.where((c) => c.runtimeType == drawable.runtimeType);
+      final matches = fromCharts.where((c) => c.runtimeType == drawable.runtimeType);
 
       ChartDrawable prevDrawable;
 
@@ -209,7 +207,7 @@ class _ChartDataViewState extends State<ChartDataView>
       child: new CustomPaint(
         key: _paintKey,
         painter: _painter,
-        child: new AspectRatio(aspectRatio: 1.0),
+        child: new Container(),
       ),
     );
   }
@@ -247,8 +245,7 @@ class _ChartPainter extends CustomPainter {
     for (var i = 0; i < charts.length; i++) {
       final chart = charts[i];
 
-      final event =
-          chart.value.resolveTouch(new Size(width, height), touchChart);
+      final event = chart.value.resolveTouch(new Size(width, height), touchChart);
       events[i] = event;
     }
 
@@ -265,7 +262,6 @@ class _ChartPainter extends CustomPainter {
     // canvas
     canvas.clipRect(Offset.zero & size);
     canvas.save();
-
 
     var canvasArea = new CanvasArea.fromCanvas(canvas, size);
     var chartArea = canvasArea.contract(chartPadding);
@@ -306,8 +302,6 @@ class _ChartPainter extends CustomPainter {
 
     // restore to before clip (see start of method)
     canvas.restore();
-
-
   }
 
   @override

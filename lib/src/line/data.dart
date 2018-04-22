@@ -26,10 +26,10 @@ class LineChartData implements ChartData {
   final List<LinePointData> points;
 
   /// The range for this chart.
-  final Span range;
+  final Range range;
 
   /// The domain for this chart.
-  final Span domain;
+  final Range domain;
 
   /// The orientation of the line.
   final bool vertical;
@@ -46,8 +46,8 @@ class LineChartData implements ChartData {
 
   LineChartData copyWith({
     List<LinePointData> points,
-    Span range,
-    Span domain,
+    Range range,
+    Range domain,
     PaintOptions stroke,
     PaintOptions fill,
     LineCurve curve,

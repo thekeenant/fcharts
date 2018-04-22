@@ -29,16 +29,18 @@ class ChartDecor {
   final LegendData legend;
 
   void draw(CanvasArea fullArea, CanvasArea chartArea) {
-    // organize axes by their position
-    final axesByPos = <ChartPosition, List<ChartAxisData>>{};
-    for (final axis in axes) {
-      axesByPos.putIfAbsent(axis.position, () => []);
-      axesByPos[axis.position].add(axis);
-    }
+    if (axes != null) {
+      // organize axes by their position
+      final axesByPos = <ChartPosition, List<ChartAxisData>>{};
+      for (final axis in axes) {
+        axesByPos.putIfAbsent(axis.position, () => []);
+        axesByPos[axis.position].add(axis);
+      }
 
-    for (final axisGroup in axesByPos.values) {
-      for (var i = 0; i < axisGroup.length; i++) {
-        axisGroup[i].draw(fullArea, chartArea);
+      for (final axisGroup in axesByPos.values) {
+        for (var i = 0; i < axisGroup.length; i++) {
+          axisGroup[i].draw(fullArea, chartArea);
+        }
       }
     }
 

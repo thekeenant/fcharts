@@ -1,47 +1,40 @@
 import 'package:fcharts/src/utils/span.dart';
 import 'package:fcharts/src/utils/utils.dart';
+import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
-import 'dart:math' as math;
+
+abstract class Chart extends StatefulWidget {
+  const Chart({Key key}) : super(key: key);
+}
 
 abstract class AxisBase<Datum, Range, Value> {
   AxisBase({
     @required this.range,
-    @required this.valueFn,
     @required this.tickLabelFn,
   });
 
-  final Range range;
-
-  final UnaryFunction<Datum, Value> valueFn;
-
   final UnaryFunction<Value, String> tickLabelFn;
 
-  Range autoRange(List<Datum> data);
+  final Range range;
+
+  double position(Value value, Range range);
 }
 
 /// An axis which maps data points to continuous values.
 ///
 /// Time, amounts, and percentages are examples of continuous values.
-class ContinuousAxis<Datum> extends AxisBase<Datum, Span, double> {
+class ContinuousAxis<Datum, Value> extends AxisBase<Datum, SpanBase<Value>, Value> {
   ContinuousAxis({
-    @required Span span,
-    @required UnaryFunction<Datum, double> valueFn,
-    @required UnaryFunction<double, String> tickLabelFn,
+    UnaryFunction<Value, String> tickLabelFn,
+    SpanBase<Value> span,
   }) : super(
           range: span,
-          valueFn: valueFn,
           tickLabelFn: tickLabelFn,
         );
 
-  Span autoRange(List<Datum> data) {
-    var min = double.maxFinite;
-    var max = -double.maxFinite;
-    for (final datum in data) {
-      final value = valueFn(datum);
-      min = math.min(min, value);
-      max = math.max(max, value);
-    }
-    return new Span(min, max);
+  @override
+  double position(Value value, SpanBase<Value> range) {
+    return range.toDouble(value);
   }
 }
 
@@ -49,22 +42,18 @@ class ContinuousAxis<Datum> extends AxisBase<Datum, Span, double> {
 ///
 /// For example, someone's first name is either "John" or not "John". There is no in-between
 /// "John" and "Adam".
-class CategoricalAxis<Datum, Category>
-    extends AxisBase<Datum, List<Category>, Category> {
+class CategoricalAxis<Datum, Category> extends AxisBase<Datum, List<Category>, Category> {
   CategoricalAxis({
-    @required List<Category> categories,
-    @required UnaryFunction<Datum, Category> categoryFn,
-    @required UnaryFunction<Category, String> tickLabelFn,
+    UnaryFunction<Category, String> tickLabelFn,
+    List<Category> categories,
   }) : super(
           range: categories,
-          valueFn: categoryFn,
           tickLabelFn: tickLabelFn,
         );
 
   @override
-  List<Category> autoRange(List<Datum> data) {
-    final result = new Set<Category>();
-    for (final datum in data) result.add(valueFn(datum));
-    return result.toList();
+  double position(Category value, List<Category> categories) {
+    final index = categories.indexOf(value);
+    return generateCategoricalTicks(categories.length)[index];
   }
 }
