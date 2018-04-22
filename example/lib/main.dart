@@ -26,25 +26,37 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final data = [
-      new Datum(new DateTime(2018, 1), 100, 7),
-      new Datum(new DateTime(2018, 2), 30, 7),
-      new Datum(new DateTime(2018, 3), 42, 6),
-      new Datum(new DateTime(2018, 4), 2, 4),
-      new Datum(new DateTime(2018, 5), 10, 4),
-      new Datum(new DateTime(2018, 6), 5, 2),
-      new Datum(new DateTime(2018, 7), 8, 1),
+      new Datum(new DateTime(2018, 1), 0, 7),
+      new Datum(new DateTime(2018, 2), 10, 7),
+      new Datum(new DateTime(2018, 3), 20, 6),
+      new Datum(new DateTime(2018, 4), 30, 4),
+      new Datum(new DateTime(2018, 5), 80, 4),
+      new Datum(new DateTime(2018, 6), 50, 2),
+      new Datum(new DateTime(2018, 7), 100, 1),
     ];
 
-    final xAxis = new ContinuousAxis<Datum, DateTime>(
+    final axis1 = new ContinuousAxis<Datum, DateTime>(
       span: new TimeSpan(new DateTime(2018, 1), new DateTime(2018, 7)),
+      ticks: [
+        new DateTime(2018, 1),
+        new DateTime(2018, 2),
+        new DateTime(2018, 3),
+        new DateTime(2018, 4),
+        new DateTime(2018, 5),
+        new DateTime(2018, 6),
+        new DateTime(2018, 7),
+      ],
+      tickLabelFn: (date) => date.month.toString(),
     );
 
-    final yAxis1 = new ContinuousAxis<Datum, int>(
+    final axis2 = new ContinuousAxis<Datum, int>(
       span: new NumSpan(0, 100),
-    );
-
-    final yAxis2 = new ContinuousAxis<Datum, int>(
-      span: new NumSpan(0, 50),
+      ticks: [
+        0,
+        50,
+        100
+      ],
+      tickLabelFn: (num) => num.toString(),
     );
 
     return new MaterialApp(
@@ -59,24 +71,23 @@ class _MyAppState extends State<MyApp> {
           child: new AspectRatio(
             aspectRatio: 4.0/3.0,
             child: new LineChart(
+              vertical: true,
               lines: [
                 new Line<Datum, DateTime, int>(
                   data: data,
                   xFn: (day) => day.time,
                   yFn: (day) => day.cookies,
-                  xAxis: xAxis,
-                  yAxis: yAxis1,
+                  xAxis: axis1,
+                  yAxis: axis2,
                   stroke: new PaintOptions.stroke(color: Colors.green, strokeWidth: 2.0),
                   fill: new PaintOptions(color: Colors.green[200].withOpacity(0.8)),
-                ),
-                new Line<Datum, DateTime, int>(
-                  data: data,
-                  xFn: (day) => day.time,
-                  yFn: (day) => day.brownies,
-                  xAxis: xAxis,
-                  yAxis: yAxis2,
-                  stroke: new PaintOptions.stroke(color: Colors.blue, strokeWidth: 2.0),
-                  fill: new PaintOptions(color: Colors.blue[200].withOpacity(0.8)),
+                  marker: new MarkerOptions(
+                    paint: [
+                      new PaintOptions(color: Colors.green[700])
+                    ],
+                    size: 4.0
+                  ),
+                  curve: LineCurves.monotone,
                 ),
               ],
             ),

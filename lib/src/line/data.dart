@@ -13,7 +13,6 @@ class LineChartData implements ChartData {
     @required this.points,
     @required this.range,
     @required this.domain,
-    this.vertical: false,
     this.stroke: const PaintOptions.stroke(),
     this.fill,
     this.curve: LineCurves.linear,
@@ -30,9 +29,6 @@ class LineChartData implements ChartData {
 
   /// The domain for this chart.
   final Range domain;
-
-  /// The orientation of the line.
-  final bool vertical;
 
   /// The paint to use for the line.
   final PaintOptions stroke;

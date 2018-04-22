@@ -13,7 +13,7 @@ class ChartAxisData implements MergeTweenable<ChartAxisData> {
     this.ticks: const [],
     this.paint: const PaintOptions.stroke(),
     this.size,
-    this.offset,
+    this.offset: 0.0,
   });
 
   /// All the ticks which will be drawn along this axis.
