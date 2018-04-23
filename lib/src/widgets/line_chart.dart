@@ -43,9 +43,9 @@ class Line<Datum, X, Y> {
 
   List<Datum> data;
 
-  AxisBase<Datum, X> xAxis;
+  AxisBase<X> xAxis;
 
-  AxisBase<Datum, Y> yAxis;
+  AxisBase<Y> yAxis;
 
   UnaryFunction<Datum, X> xFn;
 

@@ -27,38 +27,14 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     final data = [
-      new Datum(new DateTime(2018, 1), 0, 0),
-      new Datum(new DateTime(2018, 2), 10, 7),
-      new Datum(new DateTime(2018, 3), 20, 6),
-      new Datum(new DateTime(2018, 4), 30, 4),
-      new Datum(new DateTime(2018, 5), 80, 4),
-      new Datum(new DateTime(2018, 6), 50, 2),
-      new Datum(new DateTime(2018, 7), 0, 1),
+      new Datum(new DateTime(2018, 1, 1), 0, 0),
+      new Datum(new DateTime(2018, 1, 2), 10, 7),
+      new Datum(new DateTime(2018, 1, 3), 20, 6),
+      new Datum(new DateTime(2018, 1, 4), 30, 4),
+      new Datum(new DateTime(2018, 1, 5), 80, 4),
+      new Datum(new DateTime(2018, 1, 6), 50, 2),
+      new Datum(new DateTime(2018, 1, 7), 0, 1),
     ];
-
-    final axis1 = new CategoricalAxis<Datum, String>(
-      measure: new CategoricalMeasure<String>(
-        list: [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-          "7",
-          "8",
-        ],
-      ),
-      tickLabelFn: (date) => date.toString(),
-    );
-
-    final axis2 = new ContinuousAxis<Datum, int>(
-      measure: new NumMeasure<int>(
-        span: new IntSpan(0, 100),
-      ),
-      tickLabelFn: (num) => num.toString(),
-      opposite: false,
-    );
 
     return new MaterialApp(
       home: new Scaffold(
@@ -73,12 +49,27 @@ class _MyAppState extends State<MyApp> {
             aspectRatio: 4.0 / 3.0,
             child: new LineChart(
               lines: [
-                new Line<Datum, String, int>(
+                new Line<Datum, DateTime, int>(
                   data: data,
-                  xFn: (day) => day.name,
+                  xFn: (day) => day.time,
                   yFn: (day) => day.cookies,
-                  xAxis: axis1,
-                  yAxis: axis2,
+                  xAxis: new ContinuousAxis<DateTime>(
+                    measure: new ContinuousMeasure<DateTime>(
+                      span: new TimeSpan(data.first.time, data.last.time),
+                      tickGenerator: IntervalTickGenerator.byDuration(
+                        const Duration(
+                          hours: 24,
+                        ),
+                      ),
+                    ),
+                    tickLabelFn: (time) => time.day.toString(),
+                  ),
+                  yAxis: new ContinuousAxis<int>(
+                    measure: new ContinuousMeasure(
+                      span: new IntSpan(0, 100),
+                    ),
+                    paint: new PaintOptions.stroke(color: Colors.green),
+                  ),
                   stroke: new PaintOptions.stroke(
                     color: Colors.green,
                     strokeWidth: 2.0,

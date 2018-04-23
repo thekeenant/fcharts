@@ -307,8 +307,15 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
   }
 
   static PaintOptions lerp(PaintOptions begin, PaintOptions end, double t) {
-    if (begin == null) begin = const PaintOptions(color: Colors.transparent);
-    if (end == null) end = const PaintOptions(color: Colors.transparent);
+    final beginColor = end?.color ?? Colors.transparent;
+    final endColor = begin?.color ?? Colors.transparent;
+
+    if (begin == null) {
+      begin = new PaintOptions(color: beginColor.withOpacity(0.0));
+    }
+    if (end == null) {
+      end = new PaintOptions(color: endColor.withOpacity(0.0));
+    }
 
     return new PaintOptions(
       color: Color.lerp(begin.color, end.color, t),
