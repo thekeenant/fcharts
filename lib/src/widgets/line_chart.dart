@@ -1,6 +1,5 @@
 import 'dart:collection';
 
-import 'package:fcharts/src/decor/axis.dart';
 import 'package:fcharts/src/decor/decor.dart';
 import 'package:fcharts/src/line/curves.dart';
 import 'package:fcharts/src/line/data.dart';
@@ -44,9 +43,9 @@ class Line<Datum, X, Y> {
 
   List<Datum> data;
 
-  AxisBase<Datum, dynamic, X> xAxis;
+  AxisBase<Datum, X> xAxis;
 
-  AxisBase<Datum, dynamic, Y> yAxis;
+  AxisBase<Datum, Y> yAxis;
 
   UnaryFunction<Datum, X> xFn;
 
@@ -70,8 +69,8 @@ class Line<Datum, X, Y> {
   LineChartData generateChartData() {
     return new LineChartData(
       points: _generatePoints(),
-      range: new Range(0.0, 1.0),
-      domain: new Range(0.0, 1.0),
+      range: new DoubleSpan(0.0, 1.0),
+      domain: new DoubleSpan(0.0, 1.0),
       stroke: stroke,
       fill: fill,
       curve: curve,
@@ -79,6 +78,9 @@ class Line<Datum, X, Y> {
   }
 
   List<LinePointData> _generatePoints() {
+    final xMeasure = xAxis.measure;
+    final yMeasure = yAxis.measure;
+
     return new List.generate(data.length, (j) {
       final datum = data[j];
       final X x = xFn(datum);
@@ -87,8 +89,8 @@ class Line<Datum, X, Y> {
       // todo?
       if (x == null) throw new Error();
 
-      final xPos = xAxis.position(x, xAxis.range);
-      final yPos = y == null ? null : yAxis.position(y, yAxis.range);
+      final xPos = xMeasure.position(x);
+      final yPos = y == null ? null : yMeasure.position(y);
 
       final marker = markerOptions(datum);
 
@@ -131,26 +133,33 @@ class _LineChartState extends State<LineChart> {
     final xAxes = new LinkedHashSet<AxisBase>();
     final yAxes = new LinkedHashSet<AxisBase>();
 
+    final data = <AxisBase, List>{};
+
     lines.forEach((line) {
       xAxes.add(vertical ? line.yAxis : line.xAxis);
       yAxes.add(vertical ? line.xAxis : line.yAxis);
+
+      data.putIfAbsent(line.xAxis, () => <dynamic>[]);
+      data.putIfAbsent(line.yAxis, () => <dynamic>[]);
+
+      data[line.xAxis].addAll(line.data);
+      data[line.yAxis].addAll(line.data);
     });
 
     final axes = xAxes.toSet()..addAll(yAxes);
 
-    final axesData = <ChartAxisData>[];
-
-    for (final axis in axes) {
-      final tickData = axis.generateAxisTicks(axis.range);
-
-      final position =
+    final axesData = axes.map((axis) {
+      var position =
           xAxes.contains(axis) ? ChartPosition.bottom : ChartPosition.left;
 
-      axesData.add(new ChartAxisData(
-        ticks: tickData,
-        position: position,
-      ));
-    }
+      if (axis.opposite) {
+        position = position == ChartPosition.bottom
+            ? ChartPosition.top
+            : ChartPosition.right;
+      }
+
+      return axis.generateAxisData(position);
+    }).toList();
 
     return new ChartDecor(
       axes: axesData,

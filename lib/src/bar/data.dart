@@ -19,7 +19,7 @@ class BarGraphData implements ChartData {
   /// Create a bar graph from histogram bins and a range for those bins.
   factory BarGraphData.fromHistogram({
     @required List<BinData> bins,
-    @required Range range,
+    @required DoubleSpan range,
   }) {
     final groups = new List.generate(bins.length, (i) {
       final bin = bins[i];
@@ -185,7 +185,7 @@ class BarStackData {
 
   /// The range of this bar stack. Values for each bar are calculated
   /// relative to this range.
-  final Range range;
+  final DoubleSpan range;
 
   /// The "base" value of this stack. It is typically 0 since many bar charts
   /// start at 0, however, some bar charts are based around a different
@@ -194,7 +194,7 @@ class BarStackData {
 
   BarStackData copyWith({
     List<BarData> bars,
-    Range range,
+    DoubleSpan range,
     double base,
   }) {
     return new BarStackData(

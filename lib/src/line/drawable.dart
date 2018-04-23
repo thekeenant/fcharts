@@ -80,8 +80,12 @@ class LineChartDrawable
     return new LineChartTouch(nearestHoriz);
   }
 
-  void _moveToLineTo(CanvasArea bounds, Path path, Offset point,
-      {bool moveTo: false}) {
+  void _moveToLineTo(
+    CanvasArea bounds,
+    Path path,
+    Offset point, {
+    bool moveTo: false,
+  }) {
     var bounded = bounds.boundPoint(point);
 
     // todo? remove this
