@@ -224,7 +224,7 @@ typedef List<PaintOptions> PaintGenerator(CanvasArea area);
 /// Options for conveniently building a [Paint].
 @immutable
 class PaintOptions implements MergeTweenable<PaintOptions> {
-  const PaintOptions({
+  const PaintOptions._({
     this.color: Colors.black,
     this.strokeWidth: 1.0,
     this.strokeCap: StrokeCap.square,
@@ -232,8 +232,15 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
     this.style: PaintingStyle.fill,
   });
 
-  /// Construct paint options automatically with stroke, instead
-  /// of the default fill painting style.
+  /// Construct paint options with fill style.
+  const PaintOptions.fill({
+    this.color: Colors.black,
+    this.strokeWidth: 1.0,
+    this.strokeCap: StrokeCap.butt,
+    this.gradient,
+  }) : this.style = PaintingStyle.fill;
+
+  /// Construct paint options with stroke style.
   const PaintOptions.stroke({
     this.color: Colors.black,
     this.strokeWidth: 1.0,
@@ -297,7 +304,7 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
     Gradient gradient,
     PaintingStyle style,
   }) {
-    return new PaintOptions(
+    return new PaintOptions._(
       color: color ?? this.color,
       strokeWidth: strokeWidth ?? this.strokeWidth,
       strokeCap: strokeCap ?? this.strokeCap,
@@ -307,17 +314,25 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
   }
 
   static PaintOptions lerp(PaintOptions begin, PaintOptions end, double t) {
-    final beginColor = end?.color ?? Colors.transparent;
-    final endColor = begin?.color ?? Colors.transparent;
+    final beginColor = begin?.color ?? Colors.transparent;
+    final beginStyle = begin?.style ?? begin?.style;
+    final endColor = end?.color ?? Colors.transparent;
+    final endStyle = end?.style ?? end?.style;
 
     if (begin == null) {
-      begin = new PaintOptions(color: beginColor.withOpacity(0.0));
+      begin = new PaintOptions._(
+        color: endColor.withOpacity(0.0),
+        style: endStyle,
+      );
     }
     if (end == null) {
-      end = new PaintOptions(color: endColor.withOpacity(0.0));
+      end = new PaintOptions._(
+        color: beginColor.withOpacity(0.0),
+        style: beginStyle,
+      );
     }
 
-    return new PaintOptions(
+    return new PaintOptions._(
       color: Color.lerp(begin.color, end.color, t),
       strokeWidth: lerpDouble(begin.strokeWidth, end.strokeWidth, t),
       strokeCap: t < 0.5 ? begin.strokeCap : end.strokeCap,

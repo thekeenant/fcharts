@@ -190,7 +190,7 @@ class BarDrawable implements MergeTweenable<BarDrawable> {
     @required this.value,
     @required this.base,
     @required this.stackBase,
-    this.paint: const [const PaintOptions()],
+    this.paint: const [const PaintOptions.fill()],
     this.paintGenerator,
     this.widthFactor: 1.0,
     this.xOffset: 0.0,

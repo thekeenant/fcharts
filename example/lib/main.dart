@@ -1,4 +1,4 @@
-import 'package:fcharts_example/line/city_coolness.dart';
+import 'package:fcharts_example/line/cities.dart';
 import 'package:fcharts_example/line/simple.dart';
 import 'package:flutter/material.dart';
 
@@ -23,9 +23,9 @@ final charts = [
     'Strings on the X-Axis and their index in the list on the Y-Axis.',
   ),
   new ChartExample(
-    'City Coolness',
-    new CityCoolnessChart(),
-    'Cities on the X-Axis and coolness on the Y-Axis with a painted line.',
+    'City Coolness & Size',
+    new CityLineChart(),
+    'Cities on the X-Axis with coolness & size on the Y-Axis with painted lines.',
   ),
 ];
 

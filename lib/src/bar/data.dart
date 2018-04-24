@@ -132,7 +132,7 @@ class BarGraphData implements ChartData {
 class BinData {
   const BinData({
     @required this.value,
-    this.paint: const [const PaintOptions(color: Colors.black)],
+    this.paint: const [const PaintOptions.fill(color: Colors.black)],
     this.paintGenerator,
   });
 
@@ -216,7 +216,7 @@ class BarData {
   const BarData({
     @required this.value,
     @required this.base,
-    this.paint: const [const PaintOptions(color: Colors.black)],
+    this.paint: const [const PaintOptions.fill(color: Colors.black)],
     this.paintGenerator,
   });
 
