@@ -1,7 +1,7 @@
+import 'package:fcharts/fcharts.dart';
 import 'package:fcharts_example/data.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
-import 'package:fcharts/fcharts.dart';
 
 /// A city in the world.
 @immutable
@@ -36,9 +36,8 @@ class CityCoolnessChart extends StatelessWidget {
           tickLabelFn: (coolness) =>
               coolness.toString().replaceFirst("Level\.", ""),
         ),
-        marker: const MarkerOptions(
-          paint: const PaintOptions(color: Colors.blue)
-        ),
+        marker:
+            const MarkerOptions(paint: const PaintOptions(color: Colors.blue)),
         stroke: const PaintOptions.stroke(color: Colors.blue),
       ),
     );
