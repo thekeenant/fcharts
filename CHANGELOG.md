@@ -1,3 +1,8 @@
+# 0.0.8
+
+* Added more examples
+* Wrapped up automatic span calculation
+
 # 0.0.7
 
 * New API for creating a line chart widget

@@ -4,10 +4,10 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^0.1.0
+  fcharts:
+    path: ../
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  fcharts:
-    path: ../
 flutter:
   uses-material-design: true
