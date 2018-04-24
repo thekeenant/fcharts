@@ -93,6 +93,12 @@ class _ChartViewState extends State<ChartView> with TickerProviderStateMixin {
   Animation<double> _curve;
   _ChartPainter _painter;
 
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   _ChartPainter _createPainter() {
     final charts = widget.charts;
     final decor = widget.decor == null ? ChartDecor.none : widget.decor;
