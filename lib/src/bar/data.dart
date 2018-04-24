@@ -10,6 +10,7 @@ import 'package:meta/meta.dart';
 /// those bars. It can be in the form of a bar chart (for categorical/
 /// discrete data), or a histogram (continuous data).
 @immutable
+@deprecated
 class BarGraphData implements ChartData {
   BarGraphData({
     @required this.groups,
@@ -127,6 +128,7 @@ class BarGraphData implements ChartData {
 
 /// A bar in a histogram.
 @immutable
+@deprecated
 class BinData {
   const BinData({
     @required this.value,
@@ -147,6 +149,7 @@ class BinData {
 
 /// A group of bar stacks in a bar chart.
 @immutable
+@deprecated
 class BarGroupData {
   const BarGroupData({
     @required this.stacks,
@@ -173,6 +176,7 @@ class BarGroupData {
 
 /// A vertical group of bars in a bar chart.
 @immutable
+@deprecated
 class BarStackData {
   const BarStackData({
     @required this.bars,
@@ -207,6 +211,7 @@ class BarStackData {
 
 /// A single continuous bar in a bar chart.
 @immutable
+@deprecated
 class BarData {
   const BarData({
     @required this.value,

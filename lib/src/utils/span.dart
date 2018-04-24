@@ -1,6 +1,7 @@
 import 'dart:ui' show lerpDouble;
 
 import 'package:fcharts/src/utils/scale.dart';
+import 'package:fcharts/src/utils/utils.dart';
 import 'package:meta/meta.dart';
 
 /// A generic typedef for a function that takes two types and returns another.
@@ -15,8 +16,27 @@ abstract class SpanBase<T> {
   /// When value is [min], returns 0.0
   /// When value is [max], returns 1.0
   double toDouble(T value);
+}
 
-  T fromDouble(double value);
+class ListSpan<T> implements SpanBase<T> {
+  ListSpan(this.list, [this.categorical = true]);
+
+  final List<T> list;
+
+  final bool categorical;
+
+  @override
+  T get min => list.first;
+
+  @override
+  T get max => list.last;
+
+  @override
+  double toDouble(T value) {
+    final ticks = generateCategoricalTicks(list.length);
+    final index = list.indexOf(value);
+    return ticks[index];
+  }
 }
 
 class TimeSpan implements SpanBase<DateTime> {
@@ -32,12 +52,6 @@ class TimeSpan implements SpanBase<DateTime> {
   double toDouble(DateTime value) {
     final durationSinceMin = value.difference(min);
     return durationSinceMin.inMilliseconds / length.inMilliseconds;
-  }
-
-  @override
-  DateTime fromDouble(double value) {
-    final ms = (value * length.inMilliseconds).floor();
-    return min.add(new Duration(milliseconds: ms));
   }
 }
 
@@ -66,24 +80,12 @@ abstract class NumSpan<T extends num> implements SpanBase<T> {
 
 class IntSpan extends NumSpan<int> {
   IntSpan(int min, int max) : super(min, max);
-
-  @override
-  int fromDouble(double value) {
-    final relative = value * length;
-    return (min + relative).floor();
-  }
 }
 
 /// A range from a low value to a high value.
 @immutable
 class DoubleSpan extends NumSpan<double> {
   DoubleSpan(double min, double max) : super(min, max);
-
-  @override
-  double fromDouble(double value) {
-    final relative = value * length;
-    return min + relative;
-  }
 
   /// Linearly interpolate between two range values and a given time.
   static DoubleSpan lerp(DoubleSpan begin, DoubleSpan end, double t) {

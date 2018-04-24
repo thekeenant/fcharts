@@ -8,10 +8,10 @@ import 'package:fcharts/src/utils/painting.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
-/// A tick located on a [ChartAxisData].
+/// A tick located on a [ChartAxisDrawable].
 @immutable
-class AxisTickData implements MergeTweenable<AxisTickData> {
-  const AxisTickData({
+class AxisTickDrawable implements MergeTweenable<AxisTickDrawable> {
+  const AxisTickDrawable({
     @required this.value,
     @required this.width,
     this.labelers: const [const NotchTickLabeler()],
@@ -40,17 +40,17 @@ class AxisTickData implements MergeTweenable<AxisTickData> {
   }
 
   @override
-  AxisTickData get empty => new AxisTickData(
+  AxisTickDrawable get empty => new AxisTickDrawable(
       value: value, width: width, labelers: labelers, opacity: 0.0);
 
   @override
-  Tween<AxisTickData> tweenTo(AxisTickData other) =>
+  Tween<AxisTickDrawable> tweenTo(AxisTickDrawable other) =>
       new _AxisTickDataTween(this, other);
 }
 
 /// Lerp between two axis ticks.
-class _AxisTickDataTween extends Tween<AxisTickData> {
-  _AxisTickDataTween(AxisTickData begin, AxisTickData end)
+class _AxisTickDataTween extends Tween<AxisTickDrawable> {
+  _AxisTickDataTween(AxisTickDrawable begin, AxisTickDrawable end)
       : super(begin: begin, end: end) {
     final listsEqual = const ListEquality<TickLabeler>().equals;
     _labelersEqual = listsEqual(begin.labelers, end.labelers);
@@ -59,7 +59,7 @@ class _AxisTickDataTween extends Tween<AxisTickData> {
   bool _labelersEqual;
 
   @override
-  AxisTickData lerp(double t) {
+  AxisTickDrawable lerp(double t) {
     double opacity = 1.0;
 
     if (!_labelersEqual) {
@@ -70,7 +70,7 @@ class _AxisTickDataTween extends Tween<AxisTickData> {
         opacity = lerpDouble(0.0, end.opacity, (t - 0.5) * 2);
     }
 
-    return new AxisTickData(
+    return new AxisTickDrawable(
         value: lerpDouble(begin.value, end.value, t),
         width: lerpDouble(begin.width, end.width, t),
         labelers: t < 0.5 ? begin.labelers : end.labelers,

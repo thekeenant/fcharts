@@ -119,7 +119,7 @@ class LineChartDrawable
     if (points.isEmpty) return result;
     var current = <LinePointDrawable>[];
     points.forEach((point) {
-      final value = point.value;
+      final value = point.y;
       if (value == null) {
         if (!bridgeNulls) {
           result.add(current);
@@ -250,7 +250,7 @@ class _LineChartDrawableTween extends Tween<LineChartDrawable> {
 class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
   const LinePointDrawable({
     @required this.x,
-    @required this.value,
+    @required this.y,
     this.size: 3.0,
     this.shape: MarkerShapes.circle,
     this.paint: const [],
@@ -261,7 +261,7 @@ class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
   final double x;
 
   /// The relative y value of this point. Should be 0..1 inclusive.
-  final double value;
+  final double y;
 
   /// Points can be displayed by a graphic on the graph where it lies. This indicates
   /// the size of the area that the point is drawn. Be sure to provide the point with [paint].
@@ -286,7 +286,7 @@ class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
   }) {
     return new LinePointDrawable(
       x: x ?? this.x,
-      value: value ?? this.value,
+      y: value ?? this.y,
       size: size ?? this.size,
       paint: paint ?? this.paint,
       collapsed: collapsed ?? this.collapsed,
@@ -304,7 +304,7 @@ class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
     final height = size.height;
 
     final actualX = x * width;
-    final actualY = value == null ? null : (1 - value) * height;
+    final actualY = y == null ? null : (1 - y) * height;
 
     return new Offset(actualX, actualY);
   }
@@ -322,7 +322,7 @@ class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
   }
 
   static LinePointDrawable collapse(LinePointDrawable point) {
-    return new LinePointDrawable(x: 1.0, value: point.value);
+    return new LinePointDrawable(x: 1.0, y: point.y);
   }
 }
 
@@ -337,7 +337,7 @@ class _LinePointDrawableTween extends Tween<LinePointDrawable> {
   @override
   LinePointDrawable lerp(double t) => new LinePointDrawable(
         x: lerpDouble(begin.x, end.x, t),
-        value: lerpDouble(begin.value, end.value, t),
+        y: lerpDouble(begin.y, end.y, t),
         paint: _paintsTween.lerp(t),
         shape: t < 0.5 ? begin.shape : end.shape,
         size: lerpDouble(begin.size, end.size, t),

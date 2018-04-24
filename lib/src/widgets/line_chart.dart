@@ -2,25 +2,28 @@ import 'dart:collection';
 
 import 'package:fcharts/src/decor/decor.dart';
 import 'package:fcharts/src/line/curves.dart';
-import 'package:fcharts/src/line/data.dart';
+import 'package:fcharts/src/line/drawable.dart';
 import 'package:fcharts/src/utils/chart_position.dart';
 import 'package:fcharts/src/utils/marker.dart';
 import 'package:fcharts/src/utils/painting.dart';
 import 'package:fcharts/src/utils/span.dart';
 import 'package:fcharts/src/utils/utils.dart';
 import 'package:fcharts/src/widgets/base.dart';
-import 'package:fcharts/src/widgets/chart_data_view.dart';
+import 'package:fcharts/src/widgets/chart_view.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 class MarkerOptions {
   const MarkerOptions({
-    this.paint: const [],
+    this.paint,
     this.shape: MarkerShapes.circle,
     this.size: 3.0,
   });
 
-  final List<PaintOptions> paint;
+  final PaintOptions paint;
+
+  // TODO: list of paint vs single paint
+  List<PaintOptions> get paintList => paint == null ? [] : [paint];
 
   final MarkerShape shape;
 
@@ -30,26 +33,27 @@ class MarkerOptions {
 class Line<Datum, X, Y> {
   Line({
     @required this.data,
-    @required this.xAxis,
-    @required this.yAxis,
     @required this.xFn,
     @required this.yFn,
+    ChartAxis<X> xAxis,
+    ChartAxis<Y> yAxis,
     this.stroke: const PaintOptions.stroke(color: Colors.black),
     this.fill,
-    this.curve: LineCurves.linear,
+    this.curve: LineCurves.monotone,
     this.marker: const MarkerOptions(),
     this.markerFn,
-  });
+  })  : this.xAxis = xAxis ?? new ChartAxis<X>(),
+        this.yAxis = yAxis ?? new ChartAxis<Y>();
 
   List<Datum> data;
-
-  AxisBase<X> xAxis;
-
-  AxisBase<Y> yAxis;
 
   UnaryFunction<Datum, X> xFn;
 
   UnaryFunction<Datum, Y> yFn;
+
+  ChartAxis<X> xAxis;
+
+  ChartAxis<Y> yAxis;
 
   PaintOptions stroke;
 
@@ -61,43 +65,46 @@ class Line<Datum, X, Y> {
 
   UnaryFunction<Datum, MarkerOptions> markerFn;
 
-  MarkerOptions markerOptions(Datum datum) {
+  MarkerOptions markerFor(Datum datum) {
     if (markerFn != null) return markerFn(datum);
     return marker;
   }
 
-  LineChartData generateChartData() {
-    return new LineChartData(
-      points: _generatePoints(),
-      range: new DoubleSpan(0.0, 1.0),
-      domain: new DoubleSpan(0.0, 1.0),
+  Iterable<X> get xs => data.map(xFn);
+
+  Iterable<Y> get ys => data.map(yFn);
+
+  LineChartDrawable generateChartData(List xValues, List yValues) {
+    final xValuesCasted = xValues.map((dynamic x) => x as X).toList();
+    final yValuesCasted = yValues.map((dynamic y) => y as Y).toList();
+
+    final xSpan = xAxis.span ?? xAxis.spanFn(xValuesCasted);
+    final ySpan = yAxis.span ?? yAxis.spanFn(yValuesCasted);
+
+    return new LineChartDrawable(
+      points: _generatePoints(xSpan, ySpan),
       stroke: stroke,
       fill: fill,
       curve: curve,
     );
   }
 
-  List<LinePointData> _generatePoints() {
-    final xMeasure = xAxis.measure;
-    final yMeasure = yAxis.measure;
-
+  List<LinePointDrawable> _generatePoints(
+      SpanBase<X> xSpan, SpanBase<Y> ySpan) {
     return new List.generate(data.length, (j) {
       final datum = data[j];
       final X x = xFn(datum);
       final Y y = yFn(datum);
 
-      // todo?
-      if (x == null) throw new Error();
+      final xPos = xSpan.toDouble(x);
+      final yPos = y == null ? null : ySpan.toDouble(y);
 
-      final xPos = xMeasure.position(x);
-      final yPos = y == null ? null : yMeasure.position(y);
+      final marker = markerFor(datum);
 
-      final marker = markerOptions(datum);
-
-      return new LinePointData(
+      return new LinePointDrawable(
         x: xPos,
         y: yPos,
-        paint: marker.paint,
+        paint: marker.paintList,
         shape: marker.shape,
         size: marker.size,
       );
@@ -110,40 +117,55 @@ class LineChart extends Chart {
     Key key,
     @required this.lines,
     this.vertical: false,
+    this.chartPadding: const EdgeInsets.all(20.0),
   }) : super(key: key);
+
+  factory LineChart.single({
+    Key key,
+    @required Line line,
+    bool vertical: false,
+    EdgeInsets chartPadding: const EdgeInsets.all(20.0),
+  }) {
+    return new LineChart(
+      key: key,
+      lines: [line],
+      vertical: vertical,
+      chartPadding: chartPadding,
+    );
+  }
 
   final List<Line> lines;
 
   final bool vertical;
+
+  final EdgeInsets chartPadding;
 
   @override
   _LineChartState createState() => new _LineChartState();
 }
 
 class _LineChartState extends State<LineChart> {
-  List<LineChartData> buildCharts() {
-    return widget.lines.map((line) => line.generateChartData()).toList();
-  }
-
-  ChartDecor buildDecor() {
+  Widget build(BuildContext context) {
     final lines = widget.lines;
     final vertical = widget.vertical;
 
     // TODO: Deal with axes
-    final xAxes = new LinkedHashSet<AxisBase>();
-    final yAxes = new LinkedHashSet<AxisBase>();
+    final xAxes = new LinkedHashSet<ChartAxis>();
+    final yAxes = new LinkedHashSet<ChartAxis>();
 
-    final data = <AxisBase, List>{};
+    final axisData = <ChartAxis, List<dynamic>>{};
 
     lines.forEach((line) {
       xAxes.add(vertical ? line.yAxis : line.xAxis);
       yAxes.add(vertical ? line.xAxis : line.yAxis);
 
-      data.putIfAbsent(line.xAxis, () => <dynamic>[]);
-      data.putIfAbsent(line.yAxis, () => <dynamic>[]);
+      final xs = line.xs;
+      final ys = line.ys;
 
-      data[line.xAxis].addAll(line.data);
-      data[line.yAxis].addAll(line.data);
+      axisData.putIfAbsent(line.xAxis, () => <dynamic>[]);
+      axisData.putIfAbsent(line.yAxis, () => <dynamic>[]);
+      axisData[line.xAxis].addAll(xs);
+      axisData[line.yAxis].addAll(ys);
     });
 
     final axes = xAxes.toSet()..addAll(yAxes);
@@ -158,20 +180,22 @@ class _LineChartState extends State<LineChart> {
             : ChartPosition.right;
       }
 
-      return axis.generateAxisData(position);
+      return axis.generateAxisData(position, axisData[axis]);
     }).toList();
 
-    return new ChartDecor(
-      axes: axesData,
-    );
-  }
+    final lineCharts = widget.lines.map((line) {
+      final xValues = axisData[line.xAxis];
+      final yValues = axisData[line.yAxis];
 
-  @override
-  Widget build(BuildContext context) {
-    return new ChartDataView(
-      charts: buildCharts(),
-      decor: buildDecor(),
-      chartPadding: new EdgeInsets.all(40.0),
+      return line.generateChartData(xValues, yValues);
+    }).toList();
+
+    return new ChartView(
+      charts: lineCharts,
+      decor: new ChartDecor(
+        axes: axesData,
+      ),
+      chartPadding: widget.chartPadding,
       rotation: widget.vertical ? ChartRotation.clockwise : ChartRotation.none,
     );
   }

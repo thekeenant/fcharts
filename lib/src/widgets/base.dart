@@ -11,154 +11,105 @@ abstract class Chart extends StatefulWidget {
   const Chart({Key key}) : super(key: key);
 }
 
-abstract class ContinuousTickGenerator<T> {
-  List<T> generate(SpanBase<T> span);
+abstract class TickGenerator<T> {
+  List<T> generate(List<T> values, SpanBase<T> span);
 }
 
-abstract class CategoricalTickGenerator<T> {
-  List<T> generate(List<T> categories);
-}
-
-class IntervalTickGenerator<T> implements ContinuousTickGenerator<T> {
-  const IntervalTickGenerator({
+@immutable
+class IntervalTickGenerator<T> implements TickGenerator<T> {
+  IntervalTickGenerator({
     @required this.increment,
     @required this.comparator,
+    this.includeMax: true,
   });
-
-  static IntervalTickGenerator<T> byN<T extends num>(T n) {
-    return new IntervalTickGenerator<T>(
-      increment: (a) => a + n,
-      comparator: (a, b) => a.compareTo(b),
-    );
-  }
-
-  static IntervalTickGenerator<DateTime> byDuration(Duration interval) {
-    return new IntervalTickGenerator<DateTime>(
-      increment: (a) => a.add(interval),
-      comparator: (a, b) => a.compareTo(b),
-    );
-  }
 
   final UnaryFunction<T, T> increment;
 
   final Comparator<T> comparator;
 
-  @override
-  List<T> generate(SpanBase<T> span) {
-    final result = <T>[];
-    var curr = span.min;
+  final bool includeMax;
 
-    while (comparator(curr, span.max) <= 0) {
+  static IntervalTickGenerator<T> byN<T extends num>(
+    T n, [
+    bool includeMax = true,
+  ]) {
+    return new IntervalTickGenerator<T>(
+      increment: (num) => num + n,
+      comparator: (a, b) => a.compareTo(b),
+      includeMax: includeMax,
+    );
+  }
+
+  static IntervalTickGenerator<DateTime> byDuration(
+    Duration n, [
+    bool includeMax = true,
+  ]) {
+    return new IntervalTickGenerator<DateTime>(
+      increment: (date) => date.add(n),
+      comparator: (a, b) => a.compareTo(b),
+      includeMax: includeMax,
+    );
+  }
+
+  @override
+  List<T> generate(List<T> values, SpanBase<T> span) {
+    final min = span.min;
+    final max = span.max;
+
+    final result = <T>[];
+    var curr = min;
+    while (comparator(curr, max) <= 0) {
       result.add(curr);
       curr = increment(curr);
     }
+
+    if (includeMax && !result.contains(max)) result.add(max);
 
     return result;
   }
 }
 
-class AutoContinuousTickGenerator<T> implements ContinuousTickGenerator<T> {
-  const AutoContinuousTickGenerator({
-    @required this.tickCount,
+@immutable
+class AutoTickGenerator<T> implements TickGenerator<T> {
+  const AutoTickGenerator();
+
+  @override
+  List<T> generate(List<T> values, SpanBase<T> span) => values;
+}
+
+class FixedTickGenerator<T> implements TickGenerator<T> {
+  const FixedTickGenerator({
+    this.ticks,
   });
 
-  final int tickCount;
+  final List<T> ticks;
 
   @override
-  List<T> generate(SpanBase<T> span) {
-    return new List.generate(tickCount, (i) {
-      final percent = i / (tickCount - 1);
-      return span.fromDouble(percent);
-    });
-  }
+  List<T> generate(List<T> values, SpanBase<T> span) => this.ticks;
 }
 
-class AutoCategoricalTickGenerator<T> implements CategoricalTickGenerator<T> {
-  const AutoCategoricalTickGenerator();
-
-  @override
-  List<T> generate(List<T> categories) => categories;
-}
-
-class FixedContinuousTickGenerator<T> implements ContinuousTickGenerator<T> {
-  FixedContinuousTickGenerator(this.list);
-
-  final List<T> list;
-
-  @override
-  List<T> generate(SpanBase<T> span) => list;
-}
-
-class FixedCategoricalTickGenerator<T> implements CategoricalTickGenerator<T> {
-  FixedCategoricalTickGenerator(this.list);
-
-  final List<T> list;
-
-  @override
-  List<T> generate(List<T> categories) => list;
-}
-
-abstract class Measure<T> {
-  List<T> generateTicks();
-
-  double position(T value);
-}
-
-class ContinuousMeasure<T> implements Measure<T> {
-  ContinuousMeasure(
-      {@required this.span, ContinuousTickGenerator<T> tickGenerator})
-      : this.tickGenerator =
-            tickGenerator ?? new AutoContinuousTickGenerator<T>(tickCount: 5);
-
-  final SpanBase<T> span;
-
-  final ContinuousTickGenerator<T> tickGenerator;
-
-  @override
-  double position(T value) => span.toDouble(value);
-
-  @override
-  List<T> generateTicks() {
-    return tickGenerator.generate(span);
-  }
-}
-
-class CategoricalMeasure<T> implements Measure<T> {
-  CategoricalMeasure({
-    @required this.categories,
-    CategoricalTickGenerator<T> tickGenerator,
-  }) : this.tickGenerator =
-            tickGenerator ?? new AutoCategoricalTickGenerator<T>();
-
-  final List<T> categories;
-
-  final CategoricalTickGenerator<T> tickGenerator;
-
-  @override
-  double position(T value) {
-    final ticks = generateCategoricalTicks(categories.length);
-    return ticks[categories.indexOf(value)];
-  }
-
-  @override
-  List<T> generateTicks() {
-    return tickGenerator.generate(categories);
-  }
-}
-
-abstract class AxisBase<Value> {
+@immutable
+class ChartAxis<Value> {
   static String defaultTickLabelFn<V>(V value) => value.toString();
 
-  AxisBase({
-    @required this.measure,
-    @required this.tickLabelFn,
-    @required this.opposite,
-    @required this.size,
-    @required this.offset,
-    @required this.paint,
-  });
+  ChartAxis({
+    this.span,
+    UnaryFunction<List<Value>, SpanBase<Value>> spanFn,
+    TickGenerator<Value> tickGenerator,
+    this.tickLabelFn,
+    this.opposite: false,
+    this.size,
+    this.offset: 0.0,
+    this.paint: const PaintOptions.stroke(),
+  })  : this.spanFn = spanFn ??
+            ((values) => new ListSpan<Value>(values.toSet().toList())),
+        this.tickGenerator = tickGenerator ?? new AutoTickGenerator<Value>();
 
-  final Measure<Value> measure;
+  final SpanBase<Value> span;
+
+  final UnaryFunction<List<Value>, SpanBase<Value>> spanFn;
+
+  final TickGenerator<Value> tickGenerator;
 
   final UnaryFunction<Value, String> tickLabelFn;
 
@@ -170,10 +121,14 @@ abstract class AxisBase<Value> {
 
   final PaintOptions paint;
 
-  ChartAxisData generateAxisData(ChartPosition position) {
-    final tickData = generateAxisTicks();
+  ChartAxisDrawable generateAxisData(
+      ChartPosition position, List<dynamic> values) {
+    final castedValues = values.map((dynamic value) => value as Value).toList();
+    final axisSpan = span ?? spanFn(castedValues);
 
-    return new ChartAxisData(
+    final tickData = generateAxisTicks(axisSpan, castedValues);
+
+    return new ChartAxisDrawable(
       ticks: tickData,
       position: position,
       size: size,
@@ -182,16 +137,17 @@ abstract class AxisBase<Value> {
     );
   }
 
-  List<AxisTickData> generateAxisTicks() {
-    final ticks = measure.generateTicks();
+  List<AxisTickDrawable> generateAxisTicks(
+      SpanBase<Value> span, List<Value> values) {
+    final ticks = tickGenerator.generate(values, span);
 
     return new List.generate(ticks.length, (i) {
       final tick = ticks[i];
-      final pos = measure.position(tick);
+      final pos = span.toDouble(tick);
 
       final label = (tickLabelFn ?? defaultTickLabelFn)(tick);
 
-      return new AxisTickData(
+      return new AxisTickDrawable(
         value: pos,
         width: 1 / ticks.length,
         labelers: [
@@ -203,47 +159,4 @@ abstract class AxisBase<Value> {
       );
     });
   }
-}
-
-/// An axis which maps data points to continuous values.
-///
-/// Time, amounts, and percentages are examples of continuous values.
-class ContinuousAxis<Value> extends AxisBase<Value> {
-  ContinuousAxis({
-    ContinuousMeasure<Value> measure,
-    UnaryFunction<Value, String> tickLabelFn,
-    bool opposite: false,
-    double size: null,
-    double offset: 0.0,
-    PaintOptions paint: const PaintOptions.stroke(color: Colors.black),
-  }) : super(
-          measure: measure,
-          tickLabelFn: tickLabelFn,
-          opposite: opposite,
-          size: size,
-          offset: offset,
-          paint: paint,
-        );
-}
-
-/// An axis which categorizes data points into discrete values.
-///
-/// For example, someone's first name is either "John" or not "John". There is no in-between
-/// "John" and "Adam".
-class CategoricalAxis<Category> extends AxisBase<Category> {
-  CategoricalAxis({
-    CategoricalMeasure<Category> measure,
-    UnaryFunction<Category, String> tickLabelFn,
-    bool opposite: false,
-    double size: null,
-    double offset: 0.0,
-    PaintOptions paint: const PaintOptions.stroke(color: Colors.black),
-  }) : super(
-          measure: measure,
-          tickLabelFn: tickLabelFn,
-          opposite: opposite,
-          size: size,
-          offset: offset,
-          paint: paint,
-        );
 }
