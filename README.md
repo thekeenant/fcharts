@@ -16,3 +16,36 @@ library) you will find the high level API to be somewhat familiar.
 ## Demo
 
 ![Bar chart demo](https://i.imgur.com/D1Rd7jk.gif) ![Touch demo](https://i.imgur.com/pvHhenr.gif)
+
+## Example Usage
+
+
+
+```dart
+class SimpleLineChart extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // X value -> Y value
+    final data = [
+      ["A", "✔"],
+      ["B", "❓"],
+      ["C", "✖"],
+      ["D", "❓"],
+      ["E", "✖"],
+      ["F", "✖"],
+      ["G", "✔"],
+    ];
+
+    return new LineChart(
+      lines: [
+        new Line<List<String>, String, String>(
+          data: data,
+          xFn: (datum) => datum[0],
+          yFn: (datum) => datum[1],
+        ),
+      ],
+      chartPadding: new EdgeInsets.fromLTRB(30.0, 10.0, 10.0, 30.0),
+    );
+  }
+}
+```

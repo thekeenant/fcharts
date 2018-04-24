@@ -15,7 +15,7 @@ import 'package:meta/meta.dart';
 
 class MarkerOptions {
   const MarkerOptions({
-    this.paint,
+    this.paint: const PaintOptions(),
     this.shape: MarkerShapes.circle,
     this.size: 3.0,
   });
