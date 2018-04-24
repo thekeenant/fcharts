@@ -19,6 +19,8 @@ abstract class CategoricalTickGenerator<T> {
   List<T> generate(List<T> categories);
 }
 
+/// Generates ticks for a continuous measure based on a given interval.
+@immutable
 class IntervalTickGenerator<T> implements ContinuousTickGenerator<T> {
   const IntervalTickGenerator({
     @required this.increment,
@@ -39,8 +41,12 @@ class IntervalTickGenerator<T> implements ContinuousTickGenerator<T> {
     );
   }
 
+  /// The increment function. For each interval this will be called on the
+  /// current value.
   final UnaryFunction<T, T> increment;
 
+  /// The method used to compare with the maximum value to ensure we are
+  /// within the range of the values.
   final Comparator<T> comparator;
 
   @override
@@ -57,15 +63,25 @@ class IntervalTickGenerator<T> implements ContinuousTickGenerator<T> {
   }
 }
 
+/// Generates a fixed number of ticks including the minimum and maximum
+/// if possible.
+@immutable
 class AutoContinuousTickGenerator<T> implements ContinuousTickGenerator<T> {
   const AutoContinuousTickGenerator({
     @required this.tickCount,
   });
 
+  /// The number of ticks.
   final int tickCount;
 
   @override
   List<T> generate(SpanBase<T> span) {
+    // return nothing
+    if (tickCount == 0) return const [];
+
+    // just return the middle value
+    if (tickCount == 1) return [span.fromDouble(0.5)];
+
     return new List.generate(tickCount, (i) {
       final percent = i / (tickCount - 1);
       return span.fromDouble(percent);
@@ -73,6 +89,8 @@ class AutoContinuousTickGenerator<T> implements ContinuousTickGenerator<T> {
   }
 }
 
+/// Generates ticks based on all the categories present in the data provided.
+@immutable
 class AutoCategoricalTickGenerator<T> implements CategoricalTickGenerator<T> {
   const AutoCategoricalTickGenerator();
 
@@ -80,34 +98,42 @@ class AutoCategoricalTickGenerator<T> implements CategoricalTickGenerator<T> {
   List<T> generate(List<T> categories) => categories;
 }
 
+/// Generates ticks based on the ones provided.
+@immutable
 class FixedContinuousTickGenerator<T> implements ContinuousTickGenerator<T> {
-  FixedContinuousTickGenerator(this.list);
+  FixedContinuousTickGenerator(this.ticks);
 
-  final List<T> list;
+  final List<T> ticks;
 
   @override
-  List<T> generate(SpanBase<T> span) => list;
+  List<T> generate(SpanBase<T> span) => ticks;
 }
 
+/// Generates ticks based on the ones provided.
+@immutable
 class FixedCategoricalTickGenerator<T> implements CategoricalTickGenerator<T> {
-  FixedCategoricalTickGenerator(this.list);
+  FixedCategoricalTickGenerator(this.ticks);
 
-  final List<T> list;
+  final List<T> ticks;
 
   @override
-  List<T> generate(List<T> categories) => list;
+  List<T> generate(List<T> categories) => ticks;
 }
 
+/// Places a type of object on a scale from 0 to 1.
 abstract class Measure<T> {
   List<T> generateTicks();
 
+  /// Get the position within 0 to 1 of a value.
   double position(T value);
 }
 
+@immutable
 class ContinuousMeasure<T> implements Measure<T> {
-  ContinuousMeasure(
-      {@required this.span, ContinuousTickGenerator<T> tickGenerator})
-      : this.tickGenerator =
+  ContinuousMeasure({
+    @required this.span,
+    ContinuousTickGenerator<T> tickGenerator,
+  }) : this.tickGenerator =
             tickGenerator ?? new AutoContinuousTickGenerator<T>(tickCount: 5);
 
   final SpanBase<T> span;
@@ -123,6 +149,7 @@ class ContinuousMeasure<T> implements Measure<T> {
   }
 }
 
+@immutable
 class CategoricalMeasure<T> implements Measure<T> {
   CategoricalMeasure({
     @required this.categories,
@@ -146,10 +173,11 @@ class CategoricalMeasure<T> implements Measure<T> {
   }
 }
 
-abstract class AxisBase<Value> {
+@immutable
+abstract class AxisBase<Value, M extends Measure<Value>> {
   static String defaultTickLabelFn<V>(V value) => value.toString();
 
-  AxisBase({
+  const AxisBase({
     @required this.measure,
     @required this.tickLabelFn,
     @required this.opposite,
@@ -158,7 +186,7 @@ abstract class AxisBase<Value> {
     @required this.paint,
   });
 
-  final Measure<Value> measure;
+  final M measure;
 
   final UnaryFunction<Value, String> tickLabelFn;
 
@@ -208,7 +236,8 @@ abstract class AxisBase<Value> {
 /// An axis which maps data points to continuous values.
 ///
 /// Time, amounts, and percentages are examples of continuous values.
-class ContinuousAxis<Value> extends AxisBase<Value> {
+@immutable
+class ContinuousAxis<Value> extends AxisBase<Value, ContinuousMeasure<Value>> {
   ContinuousAxis({
     ContinuousMeasure<Value> measure,
     UnaryFunction<Value, String> tickLabelFn,
@@ -230,7 +259,9 @@ class ContinuousAxis<Value> extends AxisBase<Value> {
 ///
 /// For example, someone's first name is either "John" or not "John". There is no in-between
 /// "John" and "Adam".
-class CategoricalAxis<Category> extends AxisBase<Category> {
+@immutable
+class CategoricalAxis<Category>
+    extends AxisBase<Category, CategoricalMeasure<Category>> {
   CategoricalAxis({
     CategoricalMeasure<Category> measure,
     UnaryFunction<Category, String> tickLabelFn,

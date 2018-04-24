@@ -2,14 +2,13 @@ import 'dart:collection';
 
 import 'package:fcharts/src/decor/decor.dart';
 import 'package:fcharts/src/line/curves.dart';
-import 'package:fcharts/src/line/data.dart';
+import 'package:fcharts/src/line/drawable.dart';
 import 'package:fcharts/src/utils/chart_position.dart';
 import 'package:fcharts/src/utils/marker.dart';
 import 'package:fcharts/src/utils/painting.dart';
-import 'package:fcharts/src/utils/span.dart';
 import 'package:fcharts/src/utils/utils.dart';
 import 'package:fcharts/src/widgets/base.dart';
-import 'package:fcharts/src/widgets/chart_data_view.dart';
+import 'package:fcharts/src/widgets/chart_view.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
@@ -43,9 +42,9 @@ class Line<Datum, X, Y> {
 
   List<Datum> data;
 
-  AxisBase<X> xAxis;
+  AxisBase<X, Measure<X>> xAxis;
 
-  AxisBase<Y> yAxis;
+  AxisBase<Y, Measure<Y>> yAxis;
 
   UnaryFunction<Datum, X> xFn;
 
@@ -61,23 +60,21 @@ class Line<Datum, X, Y> {
 
   UnaryFunction<Datum, MarkerOptions> markerFn;
 
-  MarkerOptions markerOptions(Datum datum) {
+  MarkerOptions markerFor(Datum datum) {
     if (markerFn != null) return markerFn(datum);
     return marker;
   }
 
-  LineChartData generateChartData() {
-    return new LineChartData(
+  LineChartDrawable generateChartData() {
+    return new LineChartDrawable(
       points: _generatePoints(),
-      range: new DoubleSpan(0.0, 1.0),
-      domain: new DoubleSpan(0.0, 1.0),
       stroke: stroke,
       fill: fill,
       curve: curve,
     );
   }
 
-  List<LinePointData> _generatePoints() {
+  List<LinePointDrawable> _generatePoints() {
     final xMeasure = xAxis.measure;
     final yMeasure = yAxis.measure;
 
@@ -86,15 +83,12 @@ class Line<Datum, X, Y> {
       final X x = xFn(datum);
       final Y y = yFn(datum);
 
-      // todo?
-      if (x == null) throw new Error();
-
       final xPos = xMeasure.position(x);
       final yPos = y == null ? null : yMeasure.position(y);
 
-      final marker = markerOptions(datum);
+      final marker = markerFor(datum);
 
-      return new LinePointData(
+      return new LinePointDrawable(
         x: xPos,
         y: yPos,
         paint: marker.paint,
@@ -121,7 +115,7 @@ class LineChart extends Chart {
 }
 
 class _LineChartState extends State<LineChart> {
-  List<LineChartData> buildCharts() {
+  List<LineChartDrawable> buildCharts() {
     return widget.lines.map((line) => line.generateChartData()).toList();
   }
 
@@ -168,7 +162,7 @@ class _LineChartState extends State<LineChart> {
 
   @override
   Widget build(BuildContext context) {
-    return new ChartDataView(
+    return new ChartView(
       charts: buildCharts(),
       decor: buildDecor(),
       chartPadding: new EdgeInsets.all(40.0),

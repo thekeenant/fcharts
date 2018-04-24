@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:fcharts/src/chart_data.dart';
 import 'package:fcharts/src/chart_drawable.dart';
 import 'package:fcharts/src/decor/decor.dart';
 import 'package:fcharts/src/utils/painting.dart';
@@ -37,9 +36,9 @@ class ChartRotation {
   final double theta;
 }
 
-/// A widget for displaying chart data.
-class ChartDataView extends StatefulWidget {
-  ChartDataView({
+/// A widget for displaying raw charts.
+class ChartView extends StatefulWidget {
+  ChartView({
     Key key,
     @required this.charts,
     this.decor,
@@ -58,7 +57,7 @@ class ChartDataView extends StatefulWidget {
 
   /// The charts to draw within the view. The order of the list is the
   /// order that they are drawn (later means they are on top).
-  final List<ChartData> charts;
+  final List<ChartDrawable> charts;
 
   /// The chart decoration to use.
   final ChartDecor decor;
@@ -84,11 +83,10 @@ class ChartDataView extends StatefulWidget {
   final ChartTouchCallback onRelease;
 
   @override
-  _ChartDataViewState createState() => new _ChartDataViewState();
+  _ChartViewState createState() => new _ChartViewState();
 }
 
-class _ChartDataViewState extends State<ChartDataView>
-    with TickerProviderStateMixin {
+class _ChartViewState extends State<ChartView> with TickerProviderStateMixin {
   final GlobalKey _paintKey = new GlobalKey();
 
   AnimationController _controller;
@@ -107,9 +105,7 @@ class _ChartDataViewState extends State<ChartDataView>
 
     if (_painter == null) {
       fromDecor = ChartDecor.none;
-      fromCharts = widget.charts
-          .map((c) => c.createDrawable().empty as ChartDrawable)
-          .toList();
+      fromCharts = widget.charts.map((c) => c.empty as ChartDrawable).toList();
     } else {
       fromDecor = _painter.decor.value;
       fromCharts = _painter.charts.map((c) => c.value).toList();
@@ -120,8 +116,7 @@ class _ChartDataViewState extends State<ChartDataView>
     final toCharts = <Animation<ChartDrawable>>[];
 
     for (var i = 0; i < charts.length; i++) {
-      final chart = charts[i];
-      final drawable = chart.createDrawable();
+      final drawable = charts[i];
 
       // find a chart which be tween to the new chart
       final matches =
@@ -172,7 +167,7 @@ class _ChartDataViewState extends State<ChartDataView>
   }
 
   @override
-  void didUpdateWidget(ChartDataView oldWidget) {
+  void didUpdateWidget(ChartView oldWidget) {
     super.didUpdateWidget(oldWidget);
     _updatePainter();
   }
