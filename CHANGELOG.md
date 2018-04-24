@@ -1,3 +1,7 @@
+# 0.0.7
+
+* New API for creating a line chart widget
+
 # 0.0.5 - 0.0.6
 
 * Begin adding tests

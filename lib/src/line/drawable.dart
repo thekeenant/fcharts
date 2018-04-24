@@ -164,8 +164,8 @@ class LineChartDrawable
       var isFirst = true;
 
       // bounding box of fill area
-      var leftMostX = double.INFINITY;
-      var topRight = new Offset(-double.INFINITY, double.INFINITY);
+      var leftMostX = double.infinity;
+      var topRight = new Offset(-double.infinity, double.infinity);
 
       for (final loc in curvedPoints) {
         // if the first line, we move the fill path to the bottom left
