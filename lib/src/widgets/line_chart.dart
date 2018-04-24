@@ -42,9 +42,9 @@ class Line<Datum, X, Y> {
 
   List<Datum> data;
 
-  AxisBase<X, Measure<X>> xAxis;
+  ChartAxis<X> xAxis;
 
-  AxisBase<Y, Measure<Y>> yAxis;
+  ChartAxis<Y> yAxis;
 
   UnaryFunction<Datum, X> xFn;
 
@@ -65,6 +65,10 @@ class Line<Datum, X, Y> {
     return marker;
   }
 
+  Iterable<X> get xs => data.map(xFn);
+
+  Iterable<Y> get ys => data.map(yFn);
+
   LineChartDrawable generateChartData() {
     return new LineChartDrawable(
       points: _generatePoints(),
@@ -75,16 +79,16 @@ class Line<Datum, X, Y> {
   }
 
   List<LinePointDrawable> _generatePoints() {
-    final xMeasure = xAxis.measure;
-    final yMeasure = yAxis.measure;
+    final xSpan = xAxis.span;
+    final ySpan = yAxis.span;
 
     return new List.generate(data.length, (j) {
       final datum = data[j];
       final X x = xFn(datum);
       final Y y = yFn(datum);
 
-      final xPos = xMeasure.position(x);
-      final yPos = y == null ? null : yMeasure.position(y);
+      final xPos = xSpan.toDouble(x);
+      final yPos = y == null ? null : ySpan.toDouble(y);
 
       final marker = markerFor(datum);
 
@@ -124,20 +128,22 @@ class _LineChartState extends State<LineChart> {
     final vertical = widget.vertical;
 
     // TODO: Deal with axes
-    final xAxes = new LinkedHashSet<AxisBase>();
-    final yAxes = new LinkedHashSet<AxisBase>();
+    final xAxes = new LinkedHashSet<ChartAxis>();
+    final yAxes = new LinkedHashSet<ChartAxis>();
 
-    final data = <AxisBase, List>{};
+    final axisData = <ChartAxis, List<dynamic>>{};
 
     lines.forEach((line) {
       xAxes.add(vertical ? line.yAxis : line.xAxis);
       yAxes.add(vertical ? line.xAxis : line.yAxis);
 
-      data.putIfAbsent(line.xAxis, () => <dynamic>[]);
-      data.putIfAbsent(line.yAxis, () => <dynamic>[]);
+      final xs = line.xs;
+      final ys = line.ys;
 
-      data[line.xAxis].addAll(line.data);
-      data[line.yAxis].addAll(line.data);
+      axisData.putIfAbsent(line.xAxis, () => <dynamic>[]);
+      axisData.putIfAbsent(line.yAxis, () => <dynamic>[]);
+      axisData[line.xAxis].addAll(xs);
+      axisData[line.yAxis].addAll(ys);
     });
 
     final axes = xAxes.toSet()..addAll(yAxes);
@@ -152,7 +158,7 @@ class _LineChartState extends State<LineChart> {
             : ChartPosition.right;
       }
 
-      return axis.generateAxisData(position);
+      return axis.generateAxisData(position, axisData[axis]);
     }).toList();
 
     return new ChartDecor(

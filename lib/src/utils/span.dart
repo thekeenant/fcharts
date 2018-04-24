@@ -19,6 +19,30 @@ abstract class SpanBase<T> {
   T fromDouble(double value);
 }
 
+class ListSpan<T> implements SpanBase<T> {
+  ListSpan(this.list);
+
+  final List<T> list;
+
+  @override
+  T get min => list.first;
+
+  @override
+  T get max => list.last;
+
+  @override
+  double toDouble(T value) {
+    final index = list.indexOf(value);
+    return index / (list.length - 1);
+  }
+
+  @override
+  T fromDouble(double value) {
+    final index = (value * (list.length - 1)).round();
+    return list[index];
+  }
+}
+
 class TimeSpan implements SpanBase<DateTime> {
   const TimeSpan(this.min, this.max);
 
