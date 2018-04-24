@@ -23,15 +23,15 @@ class ChartDecor {
   /// For example, if axes is A,B,C and all are on the left side, A will be
   /// drawn to the right of B, B will be to the right of C. C will be the
   /// furthest left, and away from the graph. A gets priority!
-  final List<ChartAxisData> axes;
+  final List<ChartAxisDrawable> axes;
 
   /// A legend for the chart.
-  final LegendData legend;
+  final LegendDarawable legend;
 
   void draw(CanvasArea fullArea, CanvasArea chartArea) {
     if (axes != null) {
       // organize axes by their position
-      final axesByPos = <ChartPosition, List<ChartAxisData>>{};
+      final axesByPos = <ChartPosition, List<ChartAxisDrawable>>{};
       for (final axis in axes) {
         axesByPos.putIfAbsent(axis.position, () => []);
         axesByPos[axis.position].add(axis);
@@ -56,7 +56,7 @@ class ChartDecorTween extends Tween<ChartDecor> {
       : _axesTween = new MergeTween(begin.axes, end.axes),
         super(begin: begin, end: end);
 
-  final MergeTween<ChartAxisData> _axesTween;
+  final MergeTween<ChartAxisDrawable> _axesTween;
 
   @override
   ChartDecor lerp(double t) {

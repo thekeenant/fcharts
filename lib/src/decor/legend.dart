@@ -17,8 +17,8 @@ enum LegendLayout {
 }
 
 @immutable
-class LegendData {
-  const LegendData({
+class LegendDarawable {
+  const LegendDarawable({
     this.items,
     this.layout: LegendLayout.vertical,
     this.position: ChartPosition.right,
@@ -27,7 +27,7 @@ class LegendData {
         assert(layout != null),
         assert(position != null);
 
-  final List<LegendItemData> items;
+  final List<LegendItemDrawable> items;
 
   final LegendLayout layout;
 
@@ -104,8 +104,8 @@ class LegendData {
 }
 
 @immutable
-class LegendItemData {
-  const LegendItemData({
+class LegendItemDrawable {
+  const LegendItemDrawable({
     this.symbol,
     this.text: '',
     this.textStyle: const TextStyle(color: Colors.black),

@@ -6,6 +6,7 @@ import 'package:fcharts/src/line/drawable.dart';
 import 'package:fcharts/src/utils/chart_position.dart';
 import 'package:fcharts/src/utils/marker.dart';
 import 'package:fcharts/src/utils/painting.dart';
+import 'package:fcharts/src/utils/span.dart';
 import 'package:fcharts/src/utils/utils.dart';
 import 'package:fcharts/src/widgets/base.dart';
 import 'package:fcharts/src/widgets/chart_view.dart';
@@ -69,19 +70,24 @@ class Line<Datum, X, Y> {
 
   Iterable<Y> get ys => data.map(yFn);
 
-  LineChartDrawable generateChartData() {
+  LineChartDrawable generateChartData(List xValues, List yValues) {
+    final xValuesCasted = xValues.map((dynamic x) => x as X).toList();
+    final yValuesCasted = yValues.map((dynamic y) => y as Y).toList();
+
+    print(xValuesCasted);
+
+    final xSpan = xAxis.span ?? xAxis.spanFn(xValuesCasted);
+    final ySpan = yAxis.span ?? yAxis.spanFn(yValuesCasted);
+
     return new LineChartDrawable(
-      points: _generatePoints(),
+      points: _generatePoints(xSpan, ySpan),
       stroke: stroke,
       fill: fill,
       curve: curve,
     );
   }
 
-  List<LinePointDrawable> _generatePoints() {
-    final xSpan = xAxis.span;
-    final ySpan = yAxis.span;
-
+  List<LinePointDrawable> _generatePoints(SpanBase<X> xSpan, SpanBase<Y> ySpan) {
     return new List.generate(data.length, (j) {
       final datum = data[j];
       final X x = xFn(datum);
@@ -119,11 +125,7 @@ class LineChart extends Chart {
 }
 
 class _LineChartState extends State<LineChart> {
-  List<LineChartDrawable> buildCharts() {
-    return widget.lines.map((line) => line.generateChartData()).toList();
-  }
-
-  ChartDecor buildDecor() {
+  Widget build(BuildContext context) {
     final lines = widget.lines;
     final vertical = widget.vertical;
 
@@ -161,16 +163,18 @@ class _LineChartState extends State<LineChart> {
       return axis.generateAxisData(position, axisData[axis]);
     }).toList();
 
-    return new ChartDecor(
-      axes: axesData,
-    );
-  }
+    final lineCharts = widget.lines.map((line) {
+      final xValues = axisData[line.xAxis];
+      final yValues = axisData[line.yAxis];
 
-  @override
-  Widget build(BuildContext context) {
+      return line.generateChartData(xValues, yValues);
+    }).toList();
+
     return new ChartView(
-      charts: buildCharts(),
-      decor: buildDecor(),
+      charts: lineCharts,
+      decor: new ChartDecor(
+        axes: axesData,
+      ),
       chartPadding: new EdgeInsets.all(40.0),
       rotation: widget.vertical ? ChartRotation.clockwise : ChartRotation.none,
     );

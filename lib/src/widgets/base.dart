@@ -11,25 +11,82 @@ abstract class Chart extends StatefulWidget {
   const Chart({Key key}) : super(key: key);
 }
 
-abstract class TickGenerator<Value> {
-  List<Value> generate(List<Value> values);
+abstract class TickGenerator<T> {
+  List<T> generate(List<T> values, SpanBase<T> span);
 }
 
-class AxisSpanBuilder<Value> {
-  AxisSpanBuilder(this.axis);
+@immutable
+class IntervalTickGenerator<T> implements TickGenerator<T> {
+  IntervalTickGenerator({
+    @required this.increment,
+    @required this.comparator,
+    this.includeMax: true,
+  });
 
-  final List data = <dynamic>[];
-  final ChartAxis<Value> axis;
+  final UnaryFunction<T, T> increment;
 
-  void addData(List<dynamic> data) {
-    this.data.addAll(data);
+  final Comparator<T> comparator;
+
+  final bool includeMax;
+
+  static IntervalTickGenerator<T> byN<T extends num>(
+    T n, [
+    bool includeMax = true,
+  ]) {
+    return new IntervalTickGenerator<T>(
+      increment: (num) => num + n,
+      comparator: (a, b) => a.compareTo(b),
+      includeMax: includeMax,
+    );
   }
 
-  SpanBase<Value> build() {
-    final values = <Value>[];
-    for (final value in data) values.add(value as Value);
-    return axis.span ?? axis.spanFn(values);
+  static IntervalTickGenerator<DateTime> byDuration(
+    Duration n, [
+    bool includeMax = true,
+  ]) {
+    return new IntervalTickGenerator<DateTime>(
+      increment: (date) => date.add(n),
+      comparator: (a, b) => a.compareTo(b),
+      includeMax: includeMax,
+    );
   }
+
+  @override
+  List<T> generate(List<T> values, SpanBase<T> span) {
+    final min = span.min;
+    final max = span.max;
+
+    final result = <T>[];
+    var curr = min;
+    while (comparator(curr, max) <= 0) {
+      result.add(curr);
+      curr = increment(curr);
+    }
+
+    if (includeMax && !result.contains(max))
+      result.add(max);
+
+    return result;
+  }
+}
+
+@immutable
+class AutoTickGenerator<T> implements TickGenerator<T> {
+  const AutoTickGenerator();
+
+  @override
+  List<T> generate(List<T> values, SpanBase<T> span) => values;
+}
+
+class FixedTickGenerator<T> implements TickGenerator<T> {
+  const FixedTickGenerator({
+    this.ticks,
+  });
+
+  final List<T> ticks;
+
+  @override
+  List<T> generate(List<T> values, SpanBase<T> span) => this.ticks;
 }
 
 @immutable
@@ -37,10 +94,10 @@ class ChartAxis<Value> {
   static String defaultTickLabelFn<V>(V value) => value.toString();
 
   const ChartAxis({
-    @required this.span,
+    this.span,
     this.spanFn,
-    this.tickGenerator,
-    this.tickLabelFn: defaultTickLabelFn,
+    @required this.tickGenerator,
+    this.tickLabelFn,
     this.opposite: false,
     this.size,
     this.offset: 0.0,
@@ -63,13 +120,14 @@ class ChartAxis<Value> {
 
   final PaintOptions paint;
 
-  ChartAxisData generateAxisData(ChartPosition position, List<dynamic> values) {
+  ChartAxisDrawable generateAxisData(
+      ChartPosition position, List<dynamic> values) {
     final castedValues = values.map((dynamic value) => value as Value).toList();
     final axisSpan = span ?? spanFn(castedValues);
 
     final tickData = generateAxisTicks(axisSpan, castedValues);
 
-    return new ChartAxisData(
+    return new ChartAxisDrawable(
       ticks: tickData,
       position: position,
       size: size,
@@ -78,9 +136,9 @@ class ChartAxis<Value> {
     );
   }
 
-  List<AxisTickData> generateAxisTicks(
+  List<AxisTickDrawable> generateAxisTicks(
       SpanBase<Value> span, List<Value> values) {
-    final ticks = tickGenerator.generate(values);
+    final ticks = tickGenerator.generate(values, span);
 
     return new List.generate(ticks.length, (i) {
       final tick = ticks[i];
@@ -88,7 +146,7 @@ class ChartAxis<Value> {
 
       final label = (tickLabelFn ?? defaultTickLabelFn)(tick);
 
-      return new AxisTickData(
+      return new AxisTickDrawable(
         value: pos,
         width: 1 / ticks.length,
         labelers: [

@@ -29,12 +29,25 @@ class _MyAppState extends State<MyApp> {
     final data = [
       new Datum(new DateTime(2018, 1, 1), 0, 0),
       new Datum(new DateTime(2018, 1, 2), 10, 7),
-      new Datum(new DateTime(2018, 1, 3), 20, 6),
+      new Datum(new DateTime(2018, 1, 3), 50, 6),
       new Datum(new DateTime(2018, 1, 4), 30, 4),
-      new Datum(new DateTime(2018, 1, 5), 80, 4),
+      new Datum(new DateTime(2018, 1, 5), 100, 4),
       new Datum(new DateTime(2018, 1, 6), 50, 2),
-      new Datum(new DateTime(2018, 1, 7), 0, 1),
+      new Datum(new DateTime(2018, 1, 7), 48, 1),
     ];
+
+    final xAxis = new ChartAxis<DateTime>(
+      spanFn: (values) {
+        values.sort();
+        return new TimeSpan(values.first, values.last);
+      },
+      tickLabelFn: (day) => "Day ${day.day}",
+      tickGenerator: IntervalTickGenerator.byDuration(
+        const Duration(
+          days: 1,
+        ),
+      ),
+    );
 
     return new MaterialApp(
       home: new Scaffold(
@@ -53,33 +66,50 @@ class _MyAppState extends State<MyApp> {
                   data: data,
                   xFn: (day) => day.time,
                   yFn: (day) => day.cookies,
-                  xAxis: new ContinuousAxis<DateTime>(
-                    measure: new ContinuousMeasure<DateTime>(
-                      span: new TimeSpan(data.first.time, data.last.time),
-                      tickGenerator: IntervalTickGenerator.byDuration(
-                        const Duration(
-                          hours: 24,
-                        ),
-                      ),
-                    ),
-                    tickLabelFn: (time) => time.day.toString(),
-                  ),
-                  yAxis: new ContinuousAxis<int>(
-                    measure: new ContinuousMeasure(
-                      span: new IntSpan(0, 100),
-                    ),
+                  curve: LineCurves.monotone,
+                  xAxis: xAxis,
+                  yAxis: new ChartAxis<int>(
+                    span: new IntSpan(0, 100),
                     paint: new PaintOptions.stroke(color: Colors.green),
+                    tickGenerator: IntervalTickGenerator.byN(25),
                   ),
                   stroke: new PaintOptions.stroke(
                     color: Colors.green,
                     strokeWidth: 2.0,
                   ),
-                  fill: new PaintOptions(
-                    color: Colors.green[200].withOpacity(0.5),
-                  ),
                   marker: new MarkerOptions(
                     paint: [
                       new PaintOptions(color: Colors.green[700]),
+                    ],
+                    size: 4.0,
+                    shape: MarkerShapes.circle,
+                  ),
+                ),
+                new Line<Datum, DateTime, int>(
+                  data: [
+                    new Datum(new DateTime(2018, 1, 1), 15, 1),
+                    new Datum(new DateTime(2018, 1, 2), 10, 100),
+                    new Datum(new DateTime(2018, 1, 3), 30, 00),
+                    new Datum(new DateTime(2018, 1, 4), 35, 60),
+                    new Datum(new DateTime(2018, 1, 5), 40, 20),
+                  ],
+                  xFn: (day) => day.time,
+                  yFn: (day) => day.cookies,
+                  curve: LineCurves.monotone,
+                  xAxis: xAxis,
+                  yAxis: new ChartAxis<int>(
+                    span: new IntSpan(0, 100),
+                    paint: new PaintOptions.stroke(color: Colors.blue),
+                    tickGenerator: IntervalTickGenerator.byN(10),
+                    opposite: true,
+                  ),
+                  stroke: new PaintOptions.stroke(
+                    color: Colors.blue,
+                    strokeWidth: 2.0,
+                  ),
+                  marker: new MarkerOptions(
+                    paint: [
+                      new PaintOptions(color: Colors.blue[700]),
                     ],
                     size: 4.0,
                     shape: MarkerShapes.circle,

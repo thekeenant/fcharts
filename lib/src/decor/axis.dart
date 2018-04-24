@@ -7,8 +7,8 @@ import 'package:meta/meta.dart';
 
 /// An axis of a chart.
 @immutable
-class ChartAxisData implements MergeTweenable<ChartAxisData> {
-  const ChartAxisData({
+class ChartAxisDrawable implements MergeTweenable<ChartAxisDrawable> {
+  const ChartAxisDrawable({
     @required this.position,
     this.ticks: const [],
     this.paint: const PaintOptions.stroke(),
@@ -17,7 +17,7 @@ class ChartAxisData implements MergeTweenable<ChartAxisData> {
   });
 
   /// All the ticks which will be drawn along this axis.
-  final List<AxisTickData> ticks;
+  final List<AxisTickDrawable> ticks;
 
   /// The position of the axis - which side it will be placed.
   final ChartPosition position;
@@ -100,7 +100,7 @@ class ChartAxisData implements MergeTweenable<ChartAxisData> {
   }
 
   @override
-  ChartAxisData get empty => new ChartAxisData(
+  ChartAxisDrawable get empty => new ChartAxisDrawable(
         position: position,
         ticks: ticks.map((tick) => tick.empty).toList(),
         paint: paint,
@@ -109,21 +109,21 @@ class ChartAxisData implements MergeTweenable<ChartAxisData> {
       );
 
   @override
-  Tween<ChartAxisData> tweenTo(ChartAxisData other) =>
-      new _ChartAxisDataTween(this, other);
+  Tween<ChartAxisDrawable> tweenTo(ChartAxisDrawable other) =>
+      new _ChartAxisDrawableTween(this, other);
 }
 
-/// Lerp between two [ChartAxisData]'s.
-class _ChartAxisDataTween extends Tween<ChartAxisData> {
-  _ChartAxisDataTween(ChartAxisData begin, ChartAxisData end)
+/// Lerp between two [ChartAxisDrawable]'s.
+class _ChartAxisDrawableTween extends Tween<ChartAxisDrawable> {
+  _ChartAxisDrawableTween(ChartAxisDrawable begin, ChartAxisDrawable end)
       : _ticksTween = new MergeTween(begin.ticks, end.ticks),
         super(begin: begin, end: end);
 
-  final MergeTween<AxisTickData> _ticksTween;
+  final MergeTween<AxisTickDrawable> _ticksTween;
 
   @override
-  ChartAxisData lerp(double t) {
-    return new ChartAxisData(
+  ChartAxisDrawable lerp(double t) {
+    return new ChartAxisDrawable(
       position: t < 0.5 ? begin.position : end.position,
       ticks: _ticksTween.lerp(t),
       paint: PaintOptions.lerp(begin.paint, end.paint, t),
