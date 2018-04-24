@@ -120,20 +120,6 @@ class LineChart extends Chart {
     this.chartPadding: const EdgeInsets.all(20.0),
   }) : super(key: key);
 
-  factory LineChart.single({
-    Key key,
-    @required Line line,
-    bool vertical: false,
-    EdgeInsets chartPadding: const EdgeInsets.all(20.0),
-  }) {
-    return new LineChart(
-      key: key,
-      lines: [line],
-      vertical: vertical,
-      chartPadding: chartPadding,
-    );
-  }
-
   final List<Line> lines;
 
   final bool vertical;

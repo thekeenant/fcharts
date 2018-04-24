@@ -23,23 +23,23 @@ library) you will find the high level API to be somewhat familiar.
 
 ```dart
 class SimpleLineChart extends StatelessWidget {
+  // X value -> Y value
+  static const myData = [
+    ["A", "✔"],
+    ["B", "❓"],
+    ["C", "✖"],
+    ["D", "❓"],
+    ["E", "✖"],
+    ["F", "✖"],
+    ["G", "✔"],
+  ];
+  
   @override
   Widget build(BuildContext context) {
-    // X value -> Y value
-    final data = [
-      ["A", "✔"],
-      ["B", "❓"],
-      ["C", "✖"],
-      ["D", "❓"],
-      ["E", "✖"],
-      ["F", "✖"],
-      ["G", "✔"],
-    ];
-
     return new LineChart(
       lines: [
         new Line<List<String>, String, String>(
-          data: data,
+          data: myData,
           xFn: (datum) => datum[0],
           yFn: (datum) => datum[1],
         ),
