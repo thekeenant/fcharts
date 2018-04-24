@@ -15,12 +15,15 @@ import 'package:meta/meta.dart';
 
 class MarkerOptions {
   const MarkerOptions({
-    this.paint: const [],
+    this.paint,
     this.shape: MarkerShapes.circle,
     this.size: 3.0,
   });
 
-  final List<PaintOptions> paint;
+  final PaintOptions paint;
+
+  // TODO: list of paint vs single paint
+  List<PaintOptions> get paintList => paint == null ? [] : [paint];
 
   final MarkerShape shape;
 
@@ -30,26 +33,27 @@ class MarkerOptions {
 class Line<Datum, X, Y> {
   Line({
     @required this.data,
-    @required this.xAxis,
-    @required this.yAxis,
     @required this.xFn,
     @required this.yFn,
+    ChartAxis<X> xAxis,
+    ChartAxis<Y> yAxis,
     this.stroke: const PaintOptions.stroke(color: Colors.black),
     this.fill,
-    this.curve: LineCurves.linear,
+    this.curve: LineCurves.monotone,
     this.marker: const MarkerOptions(),
     this.markerFn,
-  });
+  })  : this.xAxis = xAxis ?? new ChartAxis<X>(),
+        this.yAxis = yAxis ?? new ChartAxis<Y>();
 
   List<Datum> data;
-
-  ChartAxis<X> xAxis;
-
-  ChartAxis<Y> yAxis;
 
   UnaryFunction<Datum, X> xFn;
 
   UnaryFunction<Datum, Y> yFn;
+
+  ChartAxis<X> xAxis;
+
+  ChartAxis<Y> yAxis;
 
   PaintOptions stroke;
 
@@ -74,8 +78,6 @@ class Line<Datum, X, Y> {
     final xValuesCasted = xValues.map((dynamic x) => x as X).toList();
     final yValuesCasted = yValues.map((dynamic y) => y as Y).toList();
 
-    print(xValuesCasted);
-
     final xSpan = xAxis.span ?? xAxis.spanFn(xValuesCasted);
     final ySpan = yAxis.span ?? yAxis.spanFn(yValuesCasted);
 
@@ -87,7 +89,8 @@ class Line<Datum, X, Y> {
     );
   }
 
-  List<LinePointDrawable> _generatePoints(SpanBase<X> xSpan, SpanBase<Y> ySpan) {
+  List<LinePointDrawable> _generatePoints(
+      SpanBase<X> xSpan, SpanBase<Y> ySpan) {
     return new List.generate(data.length, (j) {
       final datum = data[j];
       final X x = xFn(datum);
@@ -101,7 +104,7 @@ class Line<Datum, X, Y> {
       return new LinePointDrawable(
         x: xPos,
         y: yPos,
-        paint: marker.paint,
+        paint: marker.paintList,
         shape: marker.shape,
         size: marker.size,
       );
@@ -114,11 +117,28 @@ class LineChart extends Chart {
     Key key,
     @required this.lines,
     this.vertical: false,
+    this.chartPadding: const EdgeInsets.all(20.0),
   }) : super(key: key);
+
+  factory LineChart.single({
+    Key key,
+    @required Line line,
+    bool vertical: false,
+    EdgeInsets chartPadding: const EdgeInsets.all(20.0),
+  }) {
+    return new LineChart(
+      key: key,
+      lines: [line],
+      vertical: vertical,
+      chartPadding: chartPadding,
+    );
+  }
 
   final List<Line> lines;
 
   final bool vertical;
+
+  final EdgeInsets chartPadding;
 
   @override
   _LineChartState createState() => new _LineChartState();
@@ -175,7 +195,7 @@ class _LineChartState extends State<LineChart> {
       decor: new ChartDecor(
         axes: axesData,
       ),
-      chartPadding: new EdgeInsets.all(40.0),
+      chartPadding: widget.chartPadding,
       rotation: widget.vertical ? ChartRotation.clockwise : ChartRotation.none,
     );
   }

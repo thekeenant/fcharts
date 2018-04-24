@@ -63,8 +63,7 @@ class IntervalTickGenerator<T> implements TickGenerator<T> {
       curr = increment(curr);
     }
 
-    if (includeMax && !result.contains(max))
-      result.add(max);
+    if (includeMax && !result.contains(max)) result.add(max);
 
     return result;
   }
@@ -93,16 +92,18 @@ class FixedTickGenerator<T> implements TickGenerator<T> {
 class ChartAxis<Value> {
   static String defaultTickLabelFn<V>(V value) => value.toString();
 
-  const ChartAxis({
+  ChartAxis({
     this.span,
-    this.spanFn,
-    @required this.tickGenerator,
+    UnaryFunction<List<Value>, SpanBase<Value>> spanFn,
+    TickGenerator<Value> tickGenerator,
     this.tickLabelFn,
     this.opposite: false,
     this.size,
     this.offset: 0.0,
     this.paint: const PaintOptions.stroke(),
-  });
+  })  : this.spanFn = spanFn ??
+            ((values) => new ListSpan<Value>(values.toSet().toList())),
+        this.tickGenerator = tickGenerator ?? new AutoTickGenerator<Value>();
 
   final SpanBase<Value> span;
 
