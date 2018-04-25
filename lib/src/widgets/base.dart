@@ -16,6 +16,14 @@ abstract class TickGenerator<T> {
 }
 
 @immutable
+class EmptyTickGenerator<T> implements TickGenerator<T> {
+  const EmptyTickGenerator();
+
+  @override
+  List<T> generate(List<T> values, SpanBase<T> span) => <T>[];
+}
+
+@immutable
 class IntervalTickGenerator<T> implements TickGenerator<T> {
   IntervalTickGenerator({
     @required this.increment,
@@ -101,6 +109,7 @@ class ChartAxis<Value> {
     this.size,
     this.offset: 0.0,
     this.paint: const PaintOptions.stroke(),
+    this.hideLine: false,
   })  : this.spanFn = spanFn ??
             ((values) => new ListSpan<Value>(values.toSet().toList())),
         this.tickGenerator = tickGenerator ?? new AutoTickGenerator<Value>();
@@ -121,12 +130,16 @@ class ChartAxis<Value> {
 
   final PaintOptions paint;
 
+  final bool hideLine;
+
   ChartAxisDrawable generateAxisData(
       ChartPosition position, List<dynamic> values) {
     final castedValues = values.map((dynamic value) => value as Value).toList();
     final axisSpan = span ?? spanFn(castedValues);
 
     final tickData = generateAxisTicks(axisSpan, castedValues);
+
+    final paint = hideLine ? null : this.paint;
 
     return new ChartAxisDrawable(
       ticks: tickData,

@@ -1,5 +1,7 @@
+import 'package:fcharts/fcharts.dart';
 import 'package:fcharts_example/line/cities.dart';
 import 'package:fcharts_example/line/simple.dart';
+import 'package:fcharts_example/line/sparkline.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(new FChartsExampleApp());
@@ -26,6 +28,11 @@ final charts = [
     'City Coolness & Size',
     new CityLineChart(),
     'Cities on the X-Axis with coolness & size on the Y-Axis with painted lines.',
+  ),
+  new ChartExample(
+    'Random Sparkline',
+    new SparklineChart(),
+    'Just a list of doubles was provided to the constructor.',
   ),
 ];
 
@@ -61,10 +68,9 @@ class _MyAppState extends State<FChartsExampleApp> {
               ),
               new Padding(
                 padding: new EdgeInsets.all(20.0),
-                child: new AspectRatio(
-                  aspectRatio: 4 / 3,
+                child: new Container(
                   child: chart.widget,
-                ),
+                )
               ),
             ],
           ),

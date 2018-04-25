@@ -66,8 +66,7 @@ class Line<Datum, X, Y> {
   UnaryFunction<Datum, MarkerOptions> markerFn;
 
   MarkerOptions markerFor(Datum datum) {
-    if (markerFn != null) return markerFn(datum);
-    return marker;
+    return marker ?? markerFn(datum);
   }
 
   Iterable<X> get xs => data.map(xFn);
@@ -90,7 +89,9 @@ class Line<Datum, X, Y> {
   }
 
   List<LinePointDrawable> _generatePoints(
-      SpanBase<X> xSpan, SpanBase<Y> ySpan) {
+    SpanBase<X> xSpan,
+    SpanBase<Y> ySpan,
+  ) {
     return new List.generate(data.length, (j) {
       final datum = data[j];
       final X x = xFn(datum);
@@ -99,21 +100,22 @@ class Line<Datum, X, Y> {
       final xPos = xSpan.toDouble(x);
       final yPos = y == null ? null : ySpan.toDouble(y);
 
+      // todo: should this be able to be null
       final marker = markerFor(datum);
 
       return new LinePointDrawable(
         x: xPos,
         y: yPos,
-        paint: marker.paintList,
-        shape: marker.shape,
-        size: marker.size,
+        paint: marker == null ? [] : marker.paintList,
+        shape: marker == null ? MarkerShapes.circle : marker.shape,
+        size: marker == null ? 4.0 : marker.size,
       );
     });
   }
 }
 
 class LineChart extends Chart {
-  const LineChart({
+  LineChart({
     Key key,
     @required this.lines,
     this.vertical: false,

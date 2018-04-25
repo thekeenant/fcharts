@@ -14,4 +14,5 @@ export 'package:fcharts/src/utils/scale.dart';
 export 'package:fcharts/src/utils/span.dart';
 export 'package:fcharts/src/widgets/base.dart';
 export 'package:fcharts/src/widgets/chart_view.dart';
+export 'package:fcharts/src/widgets/sparkline.dart';
 export 'package:fcharts/src/widgets/line_chart.dart';

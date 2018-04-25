@@ -289,8 +289,12 @@ class BarDrawable implements MergeTweenable<BarDrawable> {
     final actualHeight = stackArea.height * barHeight;
 
     // the area of the bar
-    CanvasArea barArea = stackArea.child(
-        new Rect.fromLTWH(actualXOffset, actualTop, actualWidth, actualHeight));
+    CanvasArea barArea = stackArea.child(new Rect.fromLTWH(
+      actualXOffset,
+      actualTop,
+      actualWidth,
+      actualHeight,
+    ));
 
     // fill in the bar area
     for (final paint in paintFor(barArea)) {
