@@ -1,6 +1,9 @@
 import 'dart:collection';
 
 import 'package:fcharts/src/bar/drawable.dart';
+import 'package:fcharts/src/decor/axis.dart';
+import 'package:fcharts/src/decor/decor.dart';
+import 'package:fcharts/src/utils/chart_position.dart';
 import 'package:fcharts/src/utils/painting.dart';
 import 'package:fcharts/src/utils/utils.dart';
 import 'package:fcharts/src/widgets/base.dart';
@@ -17,48 +20,62 @@ class BarGroup {
   final double widthFactor;
 }
 
-class BarStack<Datum, Y> {
+class BarStack<Y> {
   BarStack({
     this.widthFactor: 0.9,
-    this.baseFn,
+    this.base,
   });
 
   final double widthFactor;
-  final UnaryFunction<Datum, Y> baseFn;
+  final Y base;
 }
 
 class Bar<Datum, X, Y> {
   Bar({
-    this.xAxis,
-    this.yAxis,
     this.stack,
     this.xFn,
     this.valueFn,
+    this.fill: const PaintOptions.fill(),
+    this.stroke,
   });
 
-  final ChartAxis<X> xAxis;
-
-  final ChartAxis<Y> yAxis;
-
-  final BarStack<Datum, Y> stack;
-
-  final BarGroup group = null;
+  final BarStack<Y> stack;
 
   final UnaryFunction<Datum, X> xFn;
 
   final UnaryFunction<Datum, Y> valueFn;
 
-  BarStack<Datum, Y> generateStack() => new BarStack<Datum, Y>();
+  final PaintOptions fill;
+
+  final PaintOptions stroke;
+
+  List<PaintOptions> get paint {
+    final result = <PaintOptions>[];
+    if (fill != null)
+      result.add(fill);
+    if (stroke != null)
+      result.add(stroke);
+    return result;
+  }
+
+  BarStack<Y> generateStack() => new BarStack<Y>();
 }
 
 class BarChart<Datum, X, Y> extends StatefulWidget {
   BarChart({
     @required this.data,
     @required this.bars,
+    @required this.xAxis,
+    @required this.yAxis,
   });
 
   final List<Datum> data;
+
   final List<Bar<Datum, X, Y>> bars;
+
+  final ChartAxis<X> xAxis;
+
+  final ChartAxis<Y> yAxis;
 
   @override
   _BarChartState createState() => new _BarChartState<Datum, X, Y>();
@@ -68,22 +85,25 @@ class _BarChartState<Datum, X, Y> extends State<BarChart<Datum, X, Y>> {
   @override
   Widget build(BuildContext context) {
     final bars = widget.bars;
+    final xAxis = widget.xAxis;
+    final yAxis = widget.yAxis;
 
     final defaultBarGroup = new BarGroup();
 
     // group -> stacks
-    final barGroups = new LinkedHashMap<BarGroup, List<BarStack>>();
+    final barGroups = new LinkedHashMap<BarGroup, Set<BarStack<Y>>>();
 
     // stack -> bars
-    final barStacks = <BarStack<Datum, Y>, List<Bar<Datum, X, Y>>>{};
+    final barStacks = <BarStack<Y>, List<Bar<Datum, X, Y>>>{};
 
     for (final bar in bars) {
       final stack = bar.stack ?? bar.generateStack();
-      barStacks.putIfAbsent(stack, () => <Bar<Datum, X, Y>>[]);
+      barStacks.putIfAbsent(stack, () => []);
       barStacks[stack].add(bar);
 
-      final group = bar.group ?? defaultBarGroup;
-      barGroups.putIfAbsent(group, () => <BarStack>[]);
+      // todo
+      final group = defaultBarGroup;
+      barGroups.putIfAbsent(group, () => new Set());
       barGroups[group].add(stack);
     }
 
@@ -92,23 +112,21 @@ class _BarChartState<Datum, X, Y> extends State<BarChart<Datum, X, Y>> {
 
     final groupDrawables = new List.generate(widget.data.length, (i) {
       final datum = widget.data[i];
-      final stacks = barGroups[barGroupList.first];
+      final stacks = barGroups[barGroupList.first].toList();
 
-      final groupWidth = 1.0;
+      final groupWidthFactor = 0.75;
+      final groupWidth = groupWidthFactor * 1 / widget.data.length;
 
       final stackDrawables = new List.generate(stacks.length, (j) {
         final stack = stacks[j];
         final bars = barStacks[stack];
 
-        final stackWidth = 1 / (stacks.length * widget.data.length) * stack.widthFactor;
-
+        double stackBase = 0.0;
+        double base = stackBase;
         double xPos;
 
         final barDrawables = new List.generate(bars.length, (k) {
           final bar = bars[k];
-
-          final xAxis = bar.xAxis;
-          final yAxis = bar.yAxis;
 
           final x = bar.xFn(datum);
           xPos = xAxis.span.toDouble(x);
@@ -116,17 +134,20 @@ class _BarChartState<Datum, X, Y> extends State<BarChart<Datum, X, Y>> {
           final value = bar.valueFn(datum);
           final yPos = yAxis.span.toDouble(value);
 
+          final currBase = base;
+          base += yPos;
+
           return new BarDrawable(
-            base: 0.0,
-            stackBase: 0.0,
-            value: yPos,
-            paint: [
-              const PaintOptions.fill(),
-            ],
+            stackBase: stackBase,
+            base: currBase,
+            value: currBase + yPos,
+            paint: bar.paint,
           );
         });
 
-        final stackOffset = j - stacks.length / 2 + (1 - stack.widthFactor) / 2;
+        var stackWidth = 1 / stacks.length * groupWidth;
+        var groupOffset = -stackWidth * stacks.length / 2;
+        var stackOffset = stackWidth * j + groupOffset;
 
         return new BarStackDrawable(
           bars: barDrawables,
