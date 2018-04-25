@@ -1,4 +1,5 @@
 import 'package:fcharts/fcharts.dart';
+import 'package:fcharts_example/bar/simple.dart';
 import 'package:fcharts_example/line/cities.dart';
 import 'package:fcharts_example/line/simple.dart';
 import 'package:fcharts_example/line/sparkline.dart';
@@ -20,17 +21,22 @@ class ChartExample {
 
 final charts = [
   new ChartExample(
-    'Simple',
+    'Simple Bar Chart',
+    new SimpleBarChart(),
+    '',
+  ),
+  new ChartExample(
+    'Simple Line Chart',
     new SimpleLineChart(),
     'Strings on the X-Axis and their index in the list on the Y-Axis.',
   ),
   new ChartExample(
-    'City Coolness & Size',
+    'City Coolness & Size Line Chart',
     new CityLineChart(),
     'Cities on the X-Axis with coolness & size on the Y-Axis with painted lines.',
   ),
   new ChartExample(
-    'Random Sparkline',
+    'Random Sparkline Chart',
     new SparklineChart(),
     'Just a list of doubles was provided to the constructor.',
   ),
