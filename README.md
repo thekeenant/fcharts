@@ -49,3 +49,7 @@ class SimpleLineChart extends StatelessWidget {
   }
 }
 ```
+
+The above code creates:
+
+![line chart](https://i.imgur.com/839SSin.jpg)
