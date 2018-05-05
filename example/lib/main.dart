@@ -73,11 +73,10 @@ class _MyAppState extends State<FChartsExampleApp> {
                 ),
               ),
               new Padding(
-                padding: new EdgeInsets.all(20.0),
-                child: new Container(
-                  child: chart.widget,
-                )
-              ),
+                  padding: new EdgeInsets.all(20.0),
+                  child: new Container(
+                    child: chart.widget,
+                  )),
             ],
           ),
         ),

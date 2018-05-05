@@ -15,19 +15,19 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 class Line<Datum, X, Y> {
-  Line({
-    @required this.data,
-    @required this.xFn,
-    @required this.yFn,
-    ChartAxis<X> xAxis,
-    ChartAxis<Y> yAxis,
-    this.stroke: const PaintOptions.stroke(color: Colors.black),
-    this.fill,
-    this.curve: LineCurves.monotone,
-    this.marker: const MarkerOptions(),
-    this.markerFn,
-    this.legend
-  })  : this.xAxis = xAxis ?? new ChartAxis<X>(),
+  Line(
+      {@required this.data,
+      @required this.xFn,
+      @required this.yFn,
+      ChartAxis<X> xAxis,
+      ChartAxis<Y> yAxis,
+      this.stroke: const PaintOptions.stroke(color: Colors.black),
+      this.fill,
+      this.curve: LineCurves.monotone,
+      this.marker: const MarkerOptions(),
+      this.markerFn,
+      this.legend})
+      : this.xAxis = xAxis ?? new ChartAxis<X>(),
         this.yAxis = yAxis ?? new ChartAxis<Y>();
 
   List<Datum> data;
@@ -174,15 +174,17 @@ class _LineChartState extends State<LineChart> {
 
     final legendItems =
         widget.lines.where((line) => line.legend != null).map((line) {
-          return line.legend.toDrawable();
-        });
+      return line.legend.toDrawable();
+    });
 
-    final legend = legendItems.isEmpty ? null : new LegendDrawable(
-      items: legendItems.toList(),
-      position: widget.legendPosition,
-      layout: widget.legendLayout,
-      offset: widget.legendOffset,
-    );
+    final legend = legendItems.isEmpty
+        ? null
+        : new LegendDrawable(
+            items: legendItems.toList(),
+            position: widget.legendPosition,
+            layout: widget.legendLayout,
+            offset: widget.legendOffset,
+          );
 
     return new ChartView(
       charts: lineCharts,

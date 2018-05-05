@@ -33,7 +33,7 @@ class CityLineChart extends StatelessWidget {
     final xAxis = new ChartAxis<String>();
 
     return new AspectRatio(
-      aspectRatio: 4/3,
+      aspectRatio: 4 / 3,
       child: new LineChart(
         chartPadding: new EdgeInsets.fromLTRB(60.0, 20.0, 30.0, 30.0),
         lines: [
