@@ -51,10 +51,8 @@ class Bar<Datum, X, Y> {
 
   List<PaintOptions> get paint {
     final result = <PaintOptions>[];
-    if (fill != null)
-      result.add(fill);
-    if (stroke != null)
-      result.add(stroke);
+    if (fill != null) result.add(fill);
+    if (stroke != null) result.add(stroke);
     return result;
   }
 

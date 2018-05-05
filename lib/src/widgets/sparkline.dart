@@ -1,4 +1,5 @@
 import 'package:fcharts/src/line/curves.dart';
+import 'package:fcharts/src/utils/marker.dart';
 import 'package:fcharts/src/utils/painting.dart';
 import 'package:fcharts/src/utils/span.dart';
 import 'package:fcharts/src/utils/utils.dart';
@@ -40,8 +41,7 @@ class Sparkline extends Line<_SparklinePoint, int, double> {
           curve: curve,
           marker: marker,
           markerFn: (point) {
-            if (markerFn == null)
-              return null;
+            if (markerFn == null) return null;
             return markerFn(point.value);
           },
           xAxis: new ChartAxis<int>(

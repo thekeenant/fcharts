@@ -16,7 +16,7 @@ class SimpleLineChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new AspectRatio(
-      aspectRatio: 4/3,
+      aspectRatio: 4 / 3,
       child: new LineChart(
         lines: [
           new Line<List<String>, String, String>(

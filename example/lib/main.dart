@@ -21,11 +21,6 @@ class ChartExample {
 
 final charts = [
   new ChartExample(
-    'Simple Bar Chart',
-    new SimpleBarChart(),
-    '',
-  ),
-  new ChartExample(
     'Simple Line Chart',
     new SimpleLineChart(),
     'Strings on the X-Axis and their index in the list on the Y-Axis.',
@@ -39,6 +34,11 @@ final charts = [
     'Random Sparkline Chart',
     new SparklineChart(),
     'Just a list of doubles was provided to the constructor.',
+  ),
+  new ChartExample(
+    'Simple Bar Chart',
+    new SimpleBarChart(),
+    'Bar charts are not quite ready yet.',
   ),
 ];
 

@@ -28,12 +28,11 @@ class SimpleBarChart extends StatelessWidget {
     );
 
     final yAxis = new ChartAxis<int>(
-      span: new IntSpan(0, 35),
+      span: new IntSpan(0, 75),
       tickGenerator: IntervalTickGenerator.byN(15),
     );
 
-    final group = new BarGroup();
-    final stack = new BarStack<int>();
+    final barStack1 = new BarStack<int>();
 
     return new AspectRatio(
       aspectRatio: 2.0,
@@ -46,16 +45,19 @@ class SimpleBarChart extends StatelessWidget {
             xFn: (sales) => sales.season,
             valueFn: (sales) => sales.chocolate,
             fill: new PaintOptions.fill(color: Colors.brown),
+            stack: barStack1,
           ),
           new Bar<Sales, String, int>(
             xFn: (sales) => sales.season,
             valueFn: (sales) => sales.cookies,
             fill: new PaintOptions.fill(color: Colors.orange),
+            stack: barStack1,
           ),
           new Bar<Sales, String, int>(
             xFn: (sales) => sales.season,
             valueFn: (sales) => sales.iceCream,
             fill: new PaintOptions.fill(color: Colors.yellow),
+            stack: barStack1,
           ),
         ],
       ),

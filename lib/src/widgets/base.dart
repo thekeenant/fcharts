@@ -1,6 +1,8 @@
 import 'package:fcharts/src/decor/axis.dart';
+import 'package:fcharts/src/decor/legend.dart';
 import 'package:fcharts/src/decor/tick.dart';
 import 'package:fcharts/src/utils/chart_position.dart';
+import 'package:fcharts/src/utils/marker.dart';
 import 'package:fcharts/src/utils/painting.dart';
 import 'package:fcharts/src/utils/span.dart';
 import 'package:fcharts/src/utils/utils.dart';
@@ -9,6 +11,33 @@ import 'package:meta/meta.dart';
 
 abstract class Chart extends StatefulWidget {
   const Chart({Key key}) : super(key: key);
+}
+
+class LegendItem {
+  const LegendItem({
+    @required this.paint,
+    @required this.text,
+    this.textStyle: const TextStyle(color: Colors.black),
+    this.padding: const EdgeInsets.all(5.0),
+  });
+
+  final PaintOptions paint;
+
+  final String text;
+
+  final TextStyle textStyle;
+
+  final EdgeInsets padding;
+
+  LegendItemDrawable toDrawable() {
+    return new LegendItemDrawable(
+      markerShape: MarkerShapes.square,
+      markerPaint: [paint],
+      text: text,
+      textStyle: textStyle,
+      padding: padding,
+    );
+  }
 }
 
 abstract class TickGenerator<T> {

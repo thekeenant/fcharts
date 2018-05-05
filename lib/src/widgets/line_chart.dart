@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:fcharts/src/decor/decor.dart';
+import 'package:fcharts/src/decor/legend.dart';
 import 'package:fcharts/src/line/curves.dart';
 import 'package:fcharts/src/line/drawable.dart';
 import 'package:fcharts/src/utils/chart_position.dart';
@@ -12,23 +13,6 @@ import 'package:fcharts/src/widgets/base.dart';
 import 'package:fcharts/src/widgets/chart_view.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
-
-class MarkerOptions {
-  const MarkerOptions({
-    this.paint: const PaintOptions.fill(),
-    this.shape: MarkerShapes.circle,
-    this.size: 3.0,
-  });
-
-  final PaintOptions paint;
-
-  // TODO: list of paint vs single paint
-  List<PaintOptions> get paintList => paint == null ? [] : [paint];
-
-  final MarkerShape shape;
-
-  final double size;
-}
 
 class Line<Datum, X, Y> {
   Line({
@@ -42,6 +26,7 @@ class Line<Datum, X, Y> {
     this.curve: LineCurves.monotone,
     this.marker: const MarkerOptions(),
     this.markerFn,
+    this.legend
   })  : this.xAxis = xAxis ?? new ChartAxis<X>(),
         this.yAxis = yAxis ?? new ChartAxis<Y>();
 
@@ -65,9 +50,9 @@ class Line<Datum, X, Y> {
 
   UnaryFunction<Datum, MarkerOptions> markerFn;
 
-  MarkerOptions markerFor(Datum datum) {
-    return marker ?? markerFn(datum);
-  }
+  LegendItem legend;
+
+  MarkerOptions markerFor(Datum datum) => marker ?? markerFn(datum);
 
   Iterable<X> get xs => data.map(xFn);
 
@@ -120,6 +105,9 @@ class LineChart extends Chart {
     @required this.lines,
     this.vertical: false,
     this.chartPadding: const EdgeInsets.all(20.0),
+    this.legendPosition: ChartPosition.top,
+    this.legendLayout: LegendLayout.horizontal,
+    this.legendOffset: Offset.zero,
   }) : super(key: key);
 
   final List<Line> lines;
@@ -127,6 +115,12 @@ class LineChart extends Chart {
   final bool vertical;
 
   final EdgeInsets chartPadding;
+
+  final ChartPosition legendPosition;
+
+  final LegendLayout legendLayout;
+
+  final Offset legendOffset;
 
   @override
   _LineChartState createState() => new _LineChartState();
@@ -178,10 +172,23 @@ class _LineChartState extends State<LineChart> {
       return line.generateChartData(xValues, yValues);
     }).toList();
 
+    final legendItems =
+        widget.lines.where((line) => line.legend != null).map((line) {
+          return line.legend.toDrawable();
+        });
+
+    final legend = legendItems.isEmpty ? null : new LegendDrawable(
+      items: legendItems.toList(),
+      position: widget.legendPosition,
+      layout: widget.legendLayout,
+      offset: widget.legendOffset,
+    );
+
     return new ChartView(
       charts: lineCharts,
       decor: new ChartDecor(
         axes: axesData,
+        legend: legend,
       ),
       chartPadding: widget.chartPadding,
       rotation: widget.vertical ? ChartRotation.clockwise : ChartRotation.none,

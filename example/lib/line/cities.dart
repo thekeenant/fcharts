@@ -35,7 +35,7 @@ class CityLineChart extends StatelessWidget {
     return new AspectRatio(
       aspectRatio: 4/3,
       child: new LineChart(
-        chartPadding: new EdgeInsets.fromLTRB(60.0, 10.0, 30.0, 30.0),
+        chartPadding: new EdgeInsets.fromLTRB(60.0, 20.0, 30.0, 30.0),
         lines: [
           // coolness line
           new Line<City, String, Level>(
@@ -51,6 +51,10 @@ class CityLineChart extends StatelessWidget {
               paint: const PaintOptions.fill(color: Colors.blue),
             ),
             stroke: const PaintOptions.stroke(color: Colors.blue),
+            legend: new LegendItem(
+              paint: const PaintOptions.fill(color: Colors.blue),
+              text: 'Coolness',
+            ),
           ),
 
           // size line
@@ -70,6 +74,10 @@ class CityLineChart extends StatelessWidget {
               shape: MarkerShapes.square,
             ),
             stroke: const PaintOptions.stroke(color: Colors.green),
+            legend: new LegendItem(
+              paint: const PaintOptions.fill(color: Colors.green),
+              text: 'Size',
+            ),
           ),
         ],
       ),

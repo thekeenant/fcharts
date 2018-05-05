@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:fcharts/fcharts.dart';
 import 'package:fcharts/src/utils/chart_position.dart';
 import 'package:fcharts/src/utils/painting.dart';
 import 'package:flutter/material.dart';
@@ -17,8 +18,8 @@ enum LegendLayout {
 }
 
 @immutable
-class LegendDarawable {
-  const LegendDarawable({
+class LegendDrawable {
+  const LegendDrawable({
     this.items,
     this.layout: LegendLayout.vertical,
     this.position: ChartPosition.right,
@@ -83,7 +84,6 @@ class LegendDarawable {
           legendArea.width,
           legendRect.height / items.length,
         ));
-        legendItemArea.drawDebugCross(color: Colors.blue);
         items[i].draw(legendItemArea);
         d += curr.height;
       }
@@ -106,19 +106,24 @@ class LegendDarawable {
 @immutable
 class LegendItemDrawable {
   const LegendItemDrawable({
-    this.symbol,
+    this.markerShape,
+    this.markerPaint,
     this.text: '',
     this.textStyle: const TextStyle(color: Colors.black),
     this.padding: const EdgeInsets.all(0.0),
   });
 
-  final LegendSymbol symbol;
+  final MarkerShape markerShape;
+
+  final List<PaintOptions> markerPaint;
 
   final String text;
 
   final TextStyle textStyle;
 
   final EdgeInsets padding;
+
+  final markerSize = 10.0;
 
   void draw(CanvasArea area) {
     // contract area by padding
@@ -129,32 +134,37 @@ class LegendItemDrawable {
     final textPainter = textOptions.build(text);
 
     // used to center vertically
-    final maxHeight = math.max(textPainter.height, symbol.height);
+    final maxHeight = math.max(textPainter.height, markerSize);
 
     // draw the text
     final textArea = area.child(new Rect.fromLTWH(
-        symbol.width,
-        (maxHeight - textPainter.height),
-        width - symbol.width,
-        textPainter.height));
+      markerSize,
+      (maxHeight - textPainter.height),
+      width - markerSize,
+      textPainter.height,
+    ));
     textArea.drawText(new Offset(3.0, 0.0), text, options: textOptions);
 
     // draw symbol
     final symbolArea = area.child(new Rect.fromLTWH(
-        0.0, (maxHeight - symbol.height) / 2, symbol.width, symbol.height));
-    symbol.draw(symbolArea);
+      0.0,
+      (maxHeight - markerSize) / 2,
+      markerSize,
+      markerSize,
+    ));
+
+    markerShape.draw(symbolArea, markerPaint);
   }
 
   TextOptions get _textOptions => new TextOptions(style: textStyle);
 
   /// The total height of this legend.
   double get height =>
-      math.max(symbol.height, _textOptions.build(text).height) +
-      padding.vertical;
+      math.max(markerSize, _textOptions.build(text).height) + padding.vertical;
 
   /// The total width of this legend.
   double get width =>
-      symbol.width + _textOptions.build(text).width + padding.horizontal + 3.0;
+      markerSize + _textOptions.build(text).width + padding.horizontal;
 }
 
 @immutable
