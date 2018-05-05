@@ -212,7 +212,12 @@ class _ChartViewState extends State<ChartView> with TickerProviderStateMixin {
       child: new CustomPaint(
         key: _paintKey,
         painter: _painter,
-        child: new Container(),
+        child: new Container(
+          constraints: new BoxConstraints(
+            minWidth: 10.0,
+            minHeight: 10.0,
+          ),
+        ),
       ),
     );
   }

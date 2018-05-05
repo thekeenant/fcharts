@@ -253,7 +253,10 @@ class NotchTickLabeler implements TickLabeler {
     }
 
     // draw the line from start to end
-    tickArea.drawLine(lineStart, lineStart.translate(lineX, lineY),
-        _paintWithOpacity(opacity));
+    tickArea.drawLine(
+      lineStart,
+      lineStart.translate(lineX, lineY),
+      _paintWithOpacity(opacity),
+    );
   }
 }

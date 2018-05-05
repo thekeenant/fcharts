@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:fcharts/src/decor/decor.dart';
+import 'package:fcharts/src/decor/legend.dart';
 import 'package:fcharts/src/line/curves.dart';
 import 'package:fcharts/src/line/drawable.dart';
 import 'package:fcharts/src/utils/chart_position.dart';
@@ -12,23 +13,6 @@ import 'package:fcharts/src/widgets/base.dart';
 import 'package:fcharts/src/widgets/chart_view.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
-
-class MarkerOptions {
-  const MarkerOptions({
-    this.paint: const PaintOptions.fill(),
-    this.shape: MarkerShapes.circle,
-    this.size: 3.0,
-  });
-
-  final PaintOptions paint;
-
-  // TODO: list of paint vs single paint
-  List<PaintOptions> get paintList => paint == null ? [] : [paint];
-
-  final MarkerShape shape;
-
-  final double size;
-}
 
 class Line<Datum, X, Y> {
   Line({
@@ -42,6 +26,7 @@ class Line<Datum, X, Y> {
     this.curve: LineCurves.monotone,
     this.marker: const MarkerOptions(),
     this.markerFn,
+    this.legend
   })  : this.xAxis = xAxis ?? new ChartAxis<X>(),
         this.yAxis = yAxis ?? new ChartAxis<Y>();
 
@@ -65,10 +50,9 @@ class Line<Datum, X, Y> {
 
   UnaryFunction<Datum, MarkerOptions> markerFn;
 
-  MarkerOptions markerFor(Datum datum) {
-    if (markerFn != null) return markerFn(datum);
-    return marker;
-  }
+  LegendItem legend;
+
+  MarkerOptions markerFor(Datum datum) => marker ?? markerFn(datum);
 
   Iterable<X> get xs => data.map(xFn);
 
@@ -90,7 +74,9 @@ class Line<Datum, X, Y> {
   }
 
   List<LinePointDrawable> _generatePoints(
-      SpanBase<X> xSpan, SpanBase<Y> ySpan) {
+    SpanBase<X> xSpan,
+    SpanBase<Y> ySpan,
+  ) {
     return new List.generate(data.length, (j) {
       final datum = data[j];
       final X x = xFn(datum);
@@ -99,25 +85,29 @@ class Line<Datum, X, Y> {
       final xPos = xSpan.toDouble(x);
       final yPos = y == null ? null : ySpan.toDouble(y);
 
+      // todo: should this be able to be null
       final marker = markerFor(datum);
 
       return new LinePointDrawable(
         x: xPos,
         y: yPos,
-        paint: marker.paintList,
-        shape: marker.shape,
-        size: marker.size,
+        paint: marker == null ? [] : marker.paintList,
+        shape: marker == null ? MarkerShapes.circle : marker.shape,
+        size: marker == null ? 4.0 : marker.size,
       );
     });
   }
 }
 
 class LineChart extends Chart {
-  const LineChart({
+  LineChart({
     Key key,
     @required this.lines,
     this.vertical: false,
     this.chartPadding: const EdgeInsets.all(20.0),
+    this.legendPosition: ChartPosition.top,
+    this.legendLayout: LegendLayout.horizontal,
+    this.legendOffset: Offset.zero,
   }) : super(key: key);
 
   final List<Line> lines;
@@ -125,6 +115,12 @@ class LineChart extends Chart {
   final bool vertical;
 
   final EdgeInsets chartPadding;
+
+  final ChartPosition legendPosition;
+
+  final LegendLayout legendLayout;
+
+  final Offset legendOffset;
 
   @override
   _LineChartState createState() => new _LineChartState();
@@ -176,10 +172,23 @@ class _LineChartState extends State<LineChart> {
       return line.generateChartData(xValues, yValues);
     }).toList();
 
+    final legendItems =
+        widget.lines.where((line) => line.legend != null).map((line) {
+          return line.legend.toDrawable();
+        });
+
+    final legend = legendItems.isEmpty ? null : new LegendDrawable(
+      items: legendItems.toList(),
+      position: widget.legendPosition,
+      layout: widget.legendLayout,
+      offset: widget.legendOffset,
+    );
+
     return new ChartView(
       charts: lineCharts,
       decor: new ChartDecor(
         axes: axesData,
+        legend: legend,
       ),
       chartPadding: widget.chartPadding,
       rotation: widget.vertical ? ChartRotation.clockwise : ChartRotation.none,

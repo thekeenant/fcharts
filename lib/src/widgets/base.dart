@@ -1,6 +1,8 @@
 import 'package:fcharts/src/decor/axis.dart';
+import 'package:fcharts/src/decor/legend.dart';
 import 'package:fcharts/src/decor/tick.dart';
 import 'package:fcharts/src/utils/chart_position.dart';
+import 'package:fcharts/src/utils/marker.dart';
 import 'package:fcharts/src/utils/painting.dart';
 import 'package:fcharts/src/utils/span.dart';
 import 'package:fcharts/src/utils/utils.dart';
@@ -11,8 +13,43 @@ abstract class Chart extends StatefulWidget {
   const Chart({Key key}) : super(key: key);
 }
 
+class LegendItem {
+  const LegendItem({
+    @required this.paint,
+    @required this.text,
+    this.textStyle: const TextStyle(color: Colors.black),
+    this.padding: const EdgeInsets.all(5.0),
+  });
+
+  final PaintOptions paint;
+
+  final String text;
+
+  final TextStyle textStyle;
+
+  final EdgeInsets padding;
+
+  LegendItemDrawable toDrawable() {
+    return new LegendItemDrawable(
+      markerShape: MarkerShapes.square,
+      markerPaint: [paint],
+      text: text,
+      textStyle: textStyle,
+      padding: padding,
+    );
+  }
+}
+
 abstract class TickGenerator<T> {
   List<T> generate(List<T> values, SpanBase<T> span);
+}
+
+@immutable
+class EmptyTickGenerator<T> implements TickGenerator<T> {
+  const EmptyTickGenerator();
+
+  @override
+  List<T> generate(List<T> values, SpanBase<T> span) => <T>[];
 }
 
 @immutable
@@ -101,6 +138,7 @@ class ChartAxis<Value> {
     this.size,
     this.offset: 0.0,
     this.paint: const PaintOptions.stroke(),
+    this.hideLine: false,
   })  : this.spanFn = spanFn ??
             ((values) => new ListSpan<Value>(values.toSet().toList())),
         this.tickGenerator = tickGenerator ?? new AutoTickGenerator<Value>();
@@ -121,12 +159,16 @@ class ChartAxis<Value> {
 
   final PaintOptions paint;
 
+  final bool hideLine;
+
   ChartAxisDrawable generateAxisData(
       ChartPosition position, List<dynamic> values) {
     final castedValues = values.map((dynamic value) => value as Value).toList();
     final axisSpan = span ?? spanFn(castedValues);
 
     final tickData = generateAxisTicks(axisSpan, castedValues);
+
+    final paint = hideLine ? null : this.paint;
 
     return new ChartAxisDrawable(
       ticks: tickData,

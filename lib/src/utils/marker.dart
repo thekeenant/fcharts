@@ -3,6 +3,23 @@ import 'dart:ui';
 
 import 'package:fcharts/src/utils/painting.dart';
 
+class MarkerOptions {
+  const MarkerOptions({
+    this.paint: const PaintOptions.fill(),
+    this.shape: MarkerShapes.square,
+    this.size: 3.0,
+  });
+
+  final PaintOptions paint;
+
+  // TODO: list of paint vs single paint
+  List<PaintOptions> get paintList => paint == null ? [] : [paint];
+
+  final MarkerShape shape;
+
+  final double size;
+}
+
 class MarkerShapes {
   /// All the available default marker shapes.
   static const List<MarkerShape> all = const [

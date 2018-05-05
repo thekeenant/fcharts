@@ -86,7 +86,9 @@ class CanvasArea {
 
   /// Force a point into this area's bounds.
   Offset boundPoint(Offset p) => new Offset(
-      p.dx.clamp(0.0, width).toDouble(), p.dy.clamp(0.0, height).toDouble());
+        p.dx.clamp(0.0, width < 1 ? 1 : width).toDouble(),
+        p.dy.clamp(0.0, height < 1 ? 1 : height).toDouble(),
+      );
 
   /// Force a rectangle into this area's bounds.
   Rect boundRect(Rect rect) => new Rect.fromPoints(

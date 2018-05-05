@@ -26,7 +26,7 @@ class ChartDecor {
   final List<ChartAxisDrawable> axes;
 
   /// A legend for the chart.
-  final LegendDarawable legend;
+  final LegendDrawable legend;
 
   void draw(CanvasArea fullArea, CanvasArea chartArea) {
     if (axes != null) {
