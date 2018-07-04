@@ -96,7 +96,7 @@ abstract class TickLabeler {
 class TextTickLabeler implements TickLabeler {
   const TextTickLabeler({
     @required this.text,
-    this.style: const TextStyle(color: Colors.black),
+    @required this.style,
     this.offset: Offset.zero,
     this.rotation: 0.0,
     this.distance: 8.0,

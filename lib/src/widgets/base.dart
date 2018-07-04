@@ -139,6 +139,8 @@ class ChartAxis<Value> {
     this.offset: 0.0,
     this.paint: const PaintOptions.stroke(),
     this.hideLine: false,
+    this.hideTickNotch: false,
+    this.tickLabelerStyle: const TextStyle(color: Colors.black),
   })  : this.spanFn = spanFn ??
             ((values) => new ListSpan<Value>(values.toSet().toList())),
         this.tickGenerator = tickGenerator ?? new AutoTickGenerator<Value>();
@@ -160,6 +162,10 @@ class ChartAxis<Value> {
   final PaintOptions paint;
 
   final bool hideLine;
+
+  final bool hideTickNotch;
+
+  final TextStyle tickLabelerStyle;
 
   ChartAxisDrawable generateAxisData(
       ChartPosition position, List<dynamic> values) {
@@ -189,15 +195,18 @@ class ChartAxis<Value> {
 
       final label = (tickLabelFn ?? defaultTickLabelFn)(tick);
 
+      final labelers = <TickLabeler>[
+        new TextTickLabeler(text: label, style: tickLabelerStyle)
+      ];
+
+      if (!hideTickNotch) {
+        labelers.insert(0, new NotchTickLabeler(paint: paint));
+      }
+
       return new AxisTickDrawable(
         value: pos,
         width: 1 / ticks.length,
-        labelers: [
-          new NotchTickLabeler(
-            paint: paint,
-          ),
-          new TextTickLabeler(text: label),
-        ],
+        labelers: labelers,
       );
     });
   }
