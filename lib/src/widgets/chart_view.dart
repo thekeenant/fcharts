@@ -158,6 +158,10 @@ class _ChartViewState extends State<ChartView> with TickerProviderStateMixin {
     var duration = widget.animationDuration ?? Duration.zero;
     if (duration.inMilliseconds == 0) duration = new Duration(milliseconds: 1);
 
+    if (null != _controller) {
+      _controller.dispose();
+    }
+
     _controller = new AnimationController(vsync: this, duration: duration);
     _curve = new CurvedAnimation(
       parent: _controller,
