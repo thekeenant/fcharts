@@ -1,16 +1,12 @@
 import 'dart:collection';
 
 import 'package:fcharts/src/bar/drawable.dart';
-import 'package:fcharts/src/decor/axis.dart';
-import 'package:fcharts/src/decor/decor.dart';
-import 'package:fcharts/src/utils/chart_position.dart';
 import 'package:fcharts/src/utils/painting.dart';
 import 'package:fcharts/src/utils/utils.dart';
 import 'package:fcharts/src/widgets/base.dart';
 import 'package:fcharts/src/widgets/chart_view.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
-import 'dart:math' as math;
 
 class BarGroup {
   BarGroup({
