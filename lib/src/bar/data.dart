@@ -11,7 +11,7 @@ import 'package:meta/meta.dart';
 /// discrete data), or a histogram (continuous data).
 @immutable
 @deprecated
-class BarGraphData implements ChartData {
+class BarGraphData implements ChartData<BarGraphDrawable> {
   BarGraphData({
     @required this.groups,
     @required this.groupWidthFraction,
