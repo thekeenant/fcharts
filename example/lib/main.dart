@@ -1,8 +1,7 @@
-import 'package:fcharts/fcharts.dart';
-import 'package:fcharts_example/bar/simple.dart';
-import 'package:fcharts_example/line/cities.dart';
-import 'package:fcharts_example/line/simple.dart';
-import 'package:fcharts_example/line/sparkline.dart';
+import 'bar/simple.dart';
+import 'line/cities.dart';
+import 'line/simple.dart';
+import 'line/sparkline.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(new FChartsExampleApp());

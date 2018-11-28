@@ -1,7 +1,5 @@
 import 'package:fcharts/fcharts.dart';
-import 'package:fcharts_example/data.dart';
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 
 /// Our sparkline data.
 const data = [0.0, -0.2, -0.9, -0.5, 0.0, 0.5, 0.6, 0.9, 0.8, 1.2, 0.5, 0.0];
