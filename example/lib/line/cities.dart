@@ -45,6 +45,7 @@ class CityLineChart extends StatelessWidget {
             xAxis: xAxis,
             yAxis: new ChartAxis(
               tickLabelFn: (coolness) => coolness.toString().split("\.")[1],
+              tickLabelerStyle: new TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
               paint: const PaintOptions.stroke(color: Colors.blue),
             ),
             marker: const MarkerOptions(
@@ -68,6 +69,7 @@ class CityLineChart extends StatelessWidget {
               opposite: true,
               tickGenerator: IntervalTickGenerator.byN(1),
               paint: const PaintOptions.stroke(color: Colors.green),
+              tickLabelerStyle: new TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
             ),
             marker: const MarkerOptions(
               paint: const PaintOptions.fill(color: Colors.green),
