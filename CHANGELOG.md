@@ -1,3 +1,11 @@
+# 0.0.9 - 0.0.10
+
+* Fix for latest Dart/Flutter updates
+* Dispose animation controller
+* Improved bar chart support
+
+**Note:** Next updates will be focused on an improved API, better bar chart support, and interactive charts. I've got some additional time to dedicate to the library.
+
 # 0.0.8
 
 * Added more examples
