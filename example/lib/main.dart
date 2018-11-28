@@ -4,7 +4,7 @@ import 'line/simple.dart';
 import 'line/sparkline.dart';
 import 'package:flutter/material.dart';
 
-void main() => runApp(new FChartsExampleApp());
+void main() => runApp(FChartsExampleApp());
 
 class ChartExample {
   ChartExample(
@@ -19,31 +19,31 @@ class ChartExample {
 }
 
 final charts = [
-  new ChartExample(
+  ChartExample(
     'Simple Line Chart',
-    new SimpleLineChart(),
+    SimpleLineChart(),
     'Strings on the X-Axis and their index in the list on the Y-Axis.',
   ),
-  new ChartExample(
+  ChartExample(
     'City Coolness & Size Line Chart',
-    new CityLineChart(),
+    CityLineChart(),
     'Cities on the X-Axis with coolness & size on the Y-Axis with painted lines.',
   ),
-  new ChartExample(
+  ChartExample(
     'Random Sparkline Chart',
-    new SparklineChart(),
+    SparklineChart(),
     'Just a list of doubles was provided to the constructor.',
   ),
-  new ChartExample(
+  ChartExample(
     'Simple Bar Chart',
-    new SimpleBarChart(),
+    SimpleBarChart(),
     'Bar charts are not quite ready yet.',
   ),
 ];
 
 class FChartsExampleApp extends StatefulWidget {
   @override
-  _MyAppState createState() => new _MyAppState();
+  _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<FChartsExampleApp> {
@@ -53,37 +53,38 @@ class _MyAppState extends State<FChartsExampleApp> {
   Widget build(BuildContext context) {
     final chart = charts[_chartIndex % charts.length];
 
-    return new MaterialApp(
-      home: new Scaffold(
-        appBar: new AppBar(
-          title: new Text('Example: ${chart.name}'),
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Example: ${chart.name}'),
         ),
-        body: new Container(
-          decoration: new BoxDecoration(
+        body: Container(
+          decoration: BoxDecoration(
             color: Colors.white,
           ),
-          child: new Column(
+          child: Column(
             children: [
-              new Padding(
-                padding: new EdgeInsets.all(30.0),
-                child: new Text(
+              Padding(
+                padding: EdgeInsets.all(30.0),
+                child: Text(
                   chart.description,
                   textAlign: TextAlign.center,
                 ),
               ),
-              new Padding(
-                  padding: new EdgeInsets.all(20.0),
-                  child: new Container(
-                    child: chart.widget,
-                  )),
+              Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Container(
+                  child: chart.widget,
+                ),
+              ),
             ],
           ),
         ),
-        floatingActionButton: new FloatingActionButton(
+        floatingActionButton: FloatingActionButton(
           onPressed: () {
             setState(() => _chartIndex++);
           },
-          child: new Icon(Icons.refresh),
+          child: Icon(Icons.refresh),
         ),
       ),
     );

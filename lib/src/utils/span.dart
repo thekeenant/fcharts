@@ -65,7 +65,7 @@ abstract class NumSpan<T extends num> implements SpanBase<T> {
   num get length => max - min;
 
   DoubleSpan mapToScale(Scale scale) {
-    return new DoubleSpan(
+    return DoubleSpan(
       scale.apply(min.toDouble()),
       scale.apply(max.toDouble()),
     );
@@ -89,7 +89,7 @@ class DoubleSpan extends NumSpan<double> {
 
   /// Linearly interpolate between two range values and a given time.
   static DoubleSpan lerp(DoubleSpan begin, DoubleSpan end, double t) {
-    return new DoubleSpan(
+    return DoubleSpan(
       lerpDouble(begin.min, end.min, t),
       lerpDouble(begin.max, end.max, t),
     );

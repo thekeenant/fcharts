@@ -29,7 +29,7 @@ class CanvasArea {
   /// the height of the paint area
   double get height => size.height;
 
-  Offset get center => new Offset(width / 2, height / 2);
+  Offset get center => Offset(width / 2, height / 2);
 
   /// the size of the paint area (the width and height)
   Size get size => rect.size;
@@ -42,9 +42,9 @@ class CanvasArea {
     final top = rect.top + delta.top;
     final width = rect.width - delta.left - delta.right;
     final height = rect.height - delta.top - delta.bottom;
-    return new CanvasArea._(
+    return CanvasArea._(
       canvas,
-      new Rect.fromLTWH(left, top, width, height),
+      Rect.fromLTWH(left, top, width, height),
     );
   }
 
@@ -72,7 +72,7 @@ class CanvasArea {
   /// Construct a canvas area that resides somewhere within this canvas area.
   CanvasArea child(Rect child) {
     final offsetRect = child.shift(rect.topLeft);
-    return new CanvasArea._(canvas, offsetRect);
+    return CanvasArea._(canvas, offsetRect);
   }
 
   /// Clips the canvas to this canvas area for the operations that exist
@@ -85,13 +85,13 @@ class CanvasArea {
   }
 
   /// Force a point into this area's bounds.
-  Offset boundPoint(Offset p) => new Offset(
+  Offset boundPoint(Offset p) => Offset(
         p.dx.clamp(0.0, width < 1 ? 1 : width).toDouble(),
         p.dy.clamp(0.0, height < 1 ? 1 : height).toDouble(),
       );
 
   /// Force a rectangle into this area's bounds.
-  Rect boundRect(Rect rect) => new Rect.fromPoints(
+  Rect boundRect(Rect rect) => Rect.fromPoints(
       boundPoint(rect.topLeft), boundPoint(rect.bottomRight));
 
   /// Draw an arc within a rectangle.
@@ -147,7 +147,7 @@ class CanvasArea {
     var x = cx;
     var y = cy;
 
-    final path = new Path();
+    final path = Path();
     path.moveTo(cx, cy - outerRadius);
 
     for (var i = 0; i < spikes; i++) {
@@ -213,10 +213,10 @@ class CanvasArea {
 
   /// Draw an X pattern (for debugging).
   void drawDebugCross({Color color: Colors.red}) {
-    drawLine(Offset.zero, new Offset(size.width, size.height),
-        new PaintOptions.stroke(color: color));
-    drawLine(new Offset(0.0, size.height), new Offset(size.width, 0.0),
-        new PaintOptions.stroke(color: color));
+    drawLine(Offset.zero, Offset(size.width, size.height),
+        PaintOptions.stroke(color: color));
+    drawLine(Offset(0.0, size.height), Offset(size.width, 0.0),
+        PaintOptions.stroke(color: color));
   }
 }
 
@@ -264,7 +264,7 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
   @override
   int get hashCode {
     // TODO
-    throw new UnimplementedError();
+    throw UnimplementedError();
   }
 
   /// The color of the paint.
@@ -283,7 +283,7 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
   final PaintingStyle style;
 
   Paint build({Rect rect}) {
-    final paint = new Paint();
+    final paint = Paint();
 
     if (color != null) paint.color = color;
 
@@ -306,7 +306,7 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
     Gradient gradient,
     PaintingStyle style,
   }) {
-    return new PaintOptions._(
+    return PaintOptions._(
       color: color ?? this.color,
       strokeWidth: strokeWidth ?? this.strokeWidth,
       strokeCap: strokeCap ?? this.strokeCap,
@@ -322,19 +322,19 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
     final endStyle = end?.style ?? end?.style;
 
     if (begin == null) {
-      begin = new PaintOptions._(
+      begin = PaintOptions._(
         color: endColor.withOpacity(0.0),
         style: endStyle,
       );
     }
     if (end == null) {
-      end = new PaintOptions._(
+      end = PaintOptions._(
         color: beginColor.withOpacity(0.0),
         style: beginStyle,
       );
     }
 
-    return new PaintOptions._(
+    return PaintOptions._(
       color: Color.lerp(begin.color, end.color, t),
       strokeWidth: lerpDouble(begin.strokeWidth, end.strokeWidth, t),
       strokeCap: t < 0.5 ? begin.strokeCap : end.strokeCap,
@@ -356,7 +356,7 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
     // otherwise fade to transparent gradient
     else {
       return this.copyWith(
-        gradient: new LinearGradient(
+        gradient: LinearGradient(
           colors: [Colors.transparent, Colors.transparent],
         ),
         strokeWidth: 0.0,
@@ -366,7 +366,7 @@ class PaintOptions implements MergeTweenable<PaintOptions> {
 
   @override
   Tween<PaintOptions> tweenTo(PaintOptions other) =>
-      new _PaintOptionsTween(this, other);
+      _PaintOptionsTween(this, other);
 }
 
 /// Lerp between tow paint options.
@@ -417,8 +417,8 @@ class TextOptions {
   final double scaleFactor;
 
   TextPainter build(String text) {
-    TextPainter span = new TextPainter(
-      text: new TextSpan(text: text, style: style),
+    TextPainter span = TextPainter(
+      text: TextSpan(text: text, style: style),
       textAlign: textAlign,
       textDirection: TextDirection.ltr,
       maxLines: maxLines,

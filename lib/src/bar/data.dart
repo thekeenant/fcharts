@@ -22,16 +22,16 @@ class BarGraphData implements ChartData<BarGraphDrawable> {
     @required List<BinData> bins,
     @required DoubleSpan range,
   }) {
-    final groups = new List.generate(bins.length, (i) {
+    final groups = List.generate(bins.length, (i) {
       final bin = bins[i];
 
-      return new BarGroupData(
+      return BarGroupData(
         stacks: [
-          new BarStackData(
+          BarStackData(
             range: range,
             base: 0.0,
             bars: [
-              new BarData(
+              BarData(
                 base: 0.0,
                 value: bin.value,
                 paint: bin.paint,
@@ -44,7 +44,7 @@ class BarGraphData implements ChartData<BarGraphDrawable> {
       );
     });
 
-    return new BarGraphData(
+    return BarGraphData(
       groups: groups,
       groupWidthFraction: 1.0,
     );
@@ -61,7 +61,7 @@ class BarGraphData implements ChartData<BarGraphDrawable> {
     List<BarGroupData> groups,
     double groupWidthFraction,
   }) {
-    return new BarGraphData(
+    return BarGraphData(
       groups: groups ?? this.groups,
       groupWidthFraction: groupWidthFraction ?? this.groupWidthFraction,
     );
@@ -97,7 +97,7 @@ class BarGraphData implements ChartData<BarGraphDrawable> {
           final scaledValue =
               isNull ? null : bar.value / range.length - yOffset;
 
-          return new BarDrawable(
+          return BarDrawable(
             base: scaledBase,
             value: scaledValue,
             stackBase: stack.base,
@@ -107,7 +107,7 @@ class BarGraphData implements ChartData<BarGraphDrawable> {
         });
 
         j++;
-        return new BarStackDrawable(
+        return BarStackDrawable(
           x: stackX,
           width: stackWidth,
           bars: barDrawables.toList(),
@@ -115,12 +115,12 @@ class BarGraphData implements ChartData<BarGraphDrawable> {
       });
 
       i++;
-      return new BarGroupDrawable(
+      return BarGroupDrawable(
         stacks: stackDrawables.toList(),
       );
     });
 
-    return new BarGraphDrawable(
+    return BarGraphDrawable(
       groups: groupDrawables.toList(),
     );
   }
@@ -167,7 +167,7 @@ class BarGroupData {
     List<BarStackData> stacks,
     double stackWidthFraction,
   }) {
-    return new BarGroupData(
+    return BarGroupData(
       stacks: stacks ?? this.stacks,
       stackWidthFraction: stackWidthFraction ?? this.stackWidthFraction,
     );
@@ -201,7 +201,7 @@ class BarStackData {
     DoubleSpan range,
     double base,
   }) {
-    return new BarStackData(
+    return BarStackData(
       bars: bars ?? this.bars,
       range: range ?? this.range,
       base: base ?? this.base,
@@ -241,7 +241,7 @@ class BarData {
     List<PaintOptions> paint,
     PaintGenerator paintGenerator,
   }) {
-    return new BarData(
+    return BarData(
       value: value ?? this.value,
       base: base ?? this.base,
       paint: paint ?? this.paint,

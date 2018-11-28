@@ -23,40 +23,40 @@ class SimpleBarChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final xAxis = new ChartAxis<String>(
-      span: new ListSpan(myData.map((sales) => sales.season).toList()),
+    final xAxis = ChartAxis<String>(
+      span: ListSpan(myData.map((sales) => sales.season).toList()),
     );
 
-    final yAxis = new ChartAxis<int>(
-      span: new IntSpan(0, 75),
+    final yAxis = ChartAxis<int>(
+      span: IntSpan(0, 75),
       tickGenerator: IntervalTickGenerator.byN(15),
     );
 
-    final barStack1 = new BarStack<int>();
+    final barStack1 = BarStack<int>();
 
-    return new AspectRatio(
+    return AspectRatio(
       aspectRatio: 2.0,
-      child: new BarChart<Sales, String, int>(
+      child: BarChart<Sales, String, int>(
         data: myData,
         xAxis: xAxis,
         yAxis: yAxis,
         bars: [
-          new Bar<Sales, String, int>(
+          Bar<Sales, String, int>(
             xFn: (sales) => sales.season,
             valueFn: (sales) => sales.chocolate,
-            fill: new PaintOptions.fill(color: Colors.brown),
+            fill: PaintOptions.fill(color: Colors.brown),
             stack: barStack1,
           ),
-          new Bar<Sales, String, int>(
+          Bar<Sales, String, int>(
             xFn: (sales) => sales.season,
             valueFn: (sales) => sales.cookies,
-            fill: new PaintOptions.fill(color: Colors.orange),
+            fill: PaintOptions.fill(color: Colors.orange),
             stack: barStack1,
           ),
-          new Bar<Sales, String, int>(
+          Bar<Sales, String, int>(
             xFn: (sales) => sales.season,
             valueFn: (sales) => sales.iceCream,
-            fill: new PaintOptions.fill(color: Colors.yellow),
+            fill: PaintOptions.fill(color: Colors.yellow),
             stack: barStack1,
           ),
         ],

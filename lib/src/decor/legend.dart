@@ -48,7 +48,7 @@ class LegendDrawable {
     }
 
     double x, y;
-    Size size = new Size(width, height);
+    Size size = Size(width, height);
 
     switch (position) {
       case ChartPosition.right:
@@ -78,7 +78,7 @@ class LegendDrawable {
     if (layout == LegendLayout.vertical) {
       for (var i = 0; i < items.length; i++) {
         final curr = items[i];
-        final legendItemArea = legendArea.child(new Rect.fromLTWH(
+        final legendItemArea = legendArea.child(Rect.fromLTWH(
           (legendRect.width - curr.width) / 2,
           d,
           legendArea.width,
@@ -90,7 +90,7 @@ class LegendDrawable {
     } else {
       for (var i = 0; i < items.length; i++) {
         final curr = items[i];
-        final legendItemArea = legendArea.child(new Rect.fromLTWH(
+        final legendItemArea = legendArea.child(Rect.fromLTWH(
           d,
           (legendRect.height - curr.height) / 2,
           legendArea.width / items.length,
@@ -137,16 +137,16 @@ class LegendItemDrawable {
     final maxHeight = math.max(textPainter.height, markerSize);
 
     // draw the text
-    final textArea = area.child(new Rect.fromLTWH(
+    final textArea = area.child(Rect.fromLTWH(
       markerSize,
       (maxHeight - textPainter.height),
       width - markerSize,
       textPainter.height,
     ));
-    textArea.drawText(new Offset(3.0, 0.0), text, options: textOptions);
+    textArea.drawText(Offset(3.0, 0.0), text, options: textOptions);
 
     // draw symbol
-    final symbolArea = area.child(new Rect.fromLTWH(
+    final symbolArea = area.child(Rect.fromLTWH(
       0.0,
       (maxHeight - markerSize) / 2,
       markerSize,
@@ -156,7 +156,7 @@ class LegendItemDrawable {
     markerShape.draw(symbolArea, markerPaint);
   }
 
-  TextOptions get _textOptions => new TextOptions(style: textStyle);
+  TextOptions get _textOptions => TextOptions(style: textStyle);
 
   /// The total height of this legend.
   double get height =>

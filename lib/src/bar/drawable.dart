@@ -26,9 +26,9 @@ class BarGraphDrawable
   }
 
   @override
-  BarGraphDrawable get empty => new BarGraphDrawable(
+  BarGraphDrawable get empty => BarGraphDrawable(
         groups: groups.map((group) {
-          return new BarGroupDrawable(
+          return BarGroupDrawable(
             stacks: group.stacks.map((stack) {
               return stack.empty;
             }).toList(),
@@ -44,20 +44,20 @@ class BarGraphDrawable
 
   @override
   _BarGraphDrawableTween tweenTo(BarGraphDrawable end) =>
-      new _BarGraphDrawableTween(this, end);
+      _BarGraphDrawableTween(this, end);
 }
 
 /// Lerp between two bar graphs.
 class _BarGraphDrawableTween extends Tween<BarGraphDrawable> {
   _BarGraphDrawableTween(BarGraphDrawable begin, BarGraphDrawable end)
-      : _groupsTween = new MergeTween(begin.groups, end.groups),
+      : _groupsTween = MergeTween(begin.groups, end.groups),
         super(begin: begin, end: end);
 
   final MergeTween<BarGroupDrawable> _groupsTween;
 
   @override
   BarGraphDrawable lerp(double t) {
-    return new BarGraphDrawable(
+    return BarGraphDrawable(
       groups: _groupsTween.lerp(t),
     );
   }
@@ -74,11 +74,11 @@ class BarGroupDrawable implements MergeTweenable<BarGroupDrawable> {
   final List<BarStackDrawable> stacks;
 
   @override
-  BarGroupDrawable get empty => new BarGroupDrawable(stacks: []);
+  BarGroupDrawable get empty => BarGroupDrawable(stacks: []);
 
   @override
   Tween<BarGroupDrawable> tweenTo(BarGroupDrawable other) {
-    return new _BarGroupDrawableTween(this, other);
+    return _BarGroupDrawableTween(this, other);
   }
 
   void draw(CanvasArea graphArea) {
@@ -91,14 +91,14 @@ class BarGroupDrawable implements MergeTweenable<BarGroupDrawable> {
 /// Lerp between two bar groups.
 class _BarGroupDrawableTween extends Tween<BarGroupDrawable> {
   _BarGroupDrawableTween(BarGroupDrawable begin, BarGroupDrawable end)
-      : this._stacksTween = new MergeTween(begin.stacks, end.stacks),
+      : this._stacksTween = MergeTween(begin.stacks, end.stacks),
         super(begin: begin, end: end);
 
   final MergeTween<BarStackDrawable> _stacksTween;
 
   @override
   BarGroupDrawable lerp(double t) {
-    return new BarGroupDrawable(
+    return BarGroupDrawable(
       stacks: _stacksTween.lerp(t),
     );
   }
@@ -138,16 +138,16 @@ class BarStackDrawable implements MergeTweenable<BarStackDrawable> {
 
   @override
   Tween<BarStackDrawable> tweenTo(BarStackDrawable other) =>
-      new _BarStackDrawableTween(this, other);
+      _BarStackDrawableTween(this, other);
 
   void draw(CanvasArea chartArea) {
     for (final bar in bars) {
       // the size of the stack (stack width x chart height)
-      final stackSize = new Size(width * chartArea.width, chartArea.height);
+      final stackSize = Size(width * chartArea.width, chartArea.height);
 
       // the area of the stack
       final stackArea =
-          chartArea.child(new Offset(x * chartArea.width, 0.0) & stackSize);
+          chartArea.child(Offset(x * chartArea.width, 0.0) & stackSize);
 
       // draw the bar
       bar.draw(stackArea);
@@ -159,7 +159,7 @@ class BarStackDrawable implements MergeTweenable<BarStackDrawable> {
   ///
   /// This can be overridden on a per-barstack basis with [collapsed].
   static BarStackDrawable collapse(BarStackDrawable stack) =>
-      new BarStackDrawable(
+      BarStackDrawable(
         x: stack.x,
         width: 0.0,
         bars: [],
@@ -169,14 +169,14 @@ class BarStackDrawable implements MergeTweenable<BarStackDrawable> {
 /// Lerp between two bar stacks.
 class _BarStackDrawableTween extends Tween<BarStackDrawable> {
   _BarStackDrawableTween(BarStackDrawable begin, BarStackDrawable end)
-      : _barsTween = new MergeTween(begin.bars, end.bars),
+      : _barsTween = MergeTween(begin.bars, end.bars),
         super(begin: begin, end: end);
 
   final MergeTween<BarDrawable> _barsTween;
 
   @override
   BarStackDrawable lerp(double t) {
-    return new BarStackDrawable(
+    return BarStackDrawable(
         x: lerpDouble(begin.x, end.x, t),
         width: lerpDouble(begin.width, end.width, t),
         bars: _barsTween.lerp(t));
@@ -240,7 +240,7 @@ class BarDrawable implements MergeTweenable<BarDrawable> {
     double xOffset,
     BarDrawable collapsed,
   }) {
-    return new BarDrawable(
+    return BarDrawable(
       value: value ?? this.value,
       base: base ?? this.base,
       stackBase: stackBase ?? this.stackBase,
@@ -268,7 +268,7 @@ class BarDrawable implements MergeTweenable<BarDrawable> {
 
   @override
   Tween<BarDrawable> tweenTo(BarDrawable other) {
-    return new _BarDrawableTween(this, other);
+    return _BarDrawableTween(this, other);
   }
 
   void draw(CanvasArea stackArea) {
@@ -289,7 +289,7 @@ class BarDrawable implements MergeTweenable<BarDrawable> {
     final actualHeight = stackArea.height * barHeight;
 
     // the area of the bar
-    CanvasArea barArea = stackArea.child(new Rect.fromLTWH(
+    CanvasArea barArea = stackArea.child(Rect.fromLTWH(
       actualXOffset,
       actualTop,
       actualWidth,
@@ -306,7 +306,7 @@ class BarDrawable implements MergeTweenable<BarDrawable> {
   /// to the original bar's stack base.
   ///
   /// This result be overridden on a per-bar basis with [collapsed].
-  static BarDrawable collapse(BarDrawable bar) => new BarDrawable(
+  static BarDrawable collapse(BarDrawable bar) => BarDrawable(
         base: bar.stackBase ?? bar.base,
         stackBase: bar.stackBase,
         value: 0.0,
@@ -320,14 +320,14 @@ class BarDrawable implements MergeTweenable<BarDrawable> {
 /// Lerp between two bars.
 class _BarDrawableTween extends Tween<BarDrawable> {
   _BarDrawableTween(BarDrawable begin, BarDrawable end)
-      : this._paintTween = new MergeTween(begin.paint, end.paint),
+      : this._paintTween = MergeTween(begin.paint, end.paint),
         super(begin: begin, end: end);
 
   final MergeTween<PaintOptions> _paintTween;
 
   @override
   BarDrawable lerp(double t) {
-    return new BarDrawable(
+    return BarDrawable(
       base: lerpDouble(begin.base, end.base, t),
       stackBase: lerpDouble(begin.stackBase, end.stackBase, t),
       value: lerpDouble(begin.value, end.value, t),

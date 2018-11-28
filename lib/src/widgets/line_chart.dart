@@ -27,8 +27,8 @@ class Line<Datum, X, Y> {
       this.marker: const MarkerOptions(),
       this.markerFn,
       this.legend})
-      : this.xAxis = xAxis ?? new ChartAxis<X>(),
-        this.yAxis = yAxis ?? new ChartAxis<Y>();
+      : this.xAxis = xAxis ?? ChartAxis<X>(),
+        this.yAxis = yAxis ?? ChartAxis<Y>();
 
   List<Datum> data;
 
@@ -65,7 +65,7 @@ class Line<Datum, X, Y> {
     final xSpan = xAxis.span ?? xAxis.spanFn(xValuesCasted);
     final ySpan = yAxis.span ?? yAxis.spanFn(yValuesCasted);
 
-    return new LineChartDrawable(
+    return LineChartDrawable(
       points: _generatePoints(xSpan, ySpan),
       stroke: stroke,
       fill: fill,
@@ -77,7 +77,7 @@ class Line<Datum, X, Y> {
     SpanBase<X> xSpan,
     SpanBase<Y> ySpan,
   ) {
-    return new List.generate(data.length, (j) {
+    return List.generate(data.length, (j) {
       final datum = data[j];
       final X x = xFn(datum);
       final Y y = yFn(datum);
@@ -88,7 +88,7 @@ class Line<Datum, X, Y> {
       // todo: should this be able to be null
       final marker = markerFor(datum);
 
-      return new LinePointDrawable(
+      return LinePointDrawable(
         x: xPos,
         y: yPos,
         paint: marker == null ? [] : marker.paintList,
@@ -123,7 +123,7 @@ class LineChart extends Chart {
   final Offset legendOffset;
 
   @override
-  _LineChartState createState() => new _LineChartState();
+  _LineChartState createState() => _LineChartState();
 }
 
 class _LineChartState extends State<LineChart> {
@@ -132,8 +132,8 @@ class _LineChartState extends State<LineChart> {
     final vertical = widget.vertical;
 
     // TODO: Deal with axes
-    final xAxes = new LinkedHashSet<ChartAxis>();
-    final yAxes = new LinkedHashSet<ChartAxis>();
+    final xAxes = LinkedHashSet<ChartAxis>();
+    final yAxes = LinkedHashSet<ChartAxis>();
 
     final axisData = <ChartAxis, List<dynamic>>{};
 
@@ -179,16 +179,16 @@ class _LineChartState extends State<LineChart> {
 
     final legend = legendItems.isEmpty
         ? null
-        : new LegendDrawable(
+        : LegendDrawable(
             items: legendItems.toList(),
             position: widget.legendPosition,
             layout: widget.legendLayout,
             offset: widget.legendOffset,
           );
 
-    return new ChartView(
+    return ChartView(
       charts: lineCharts,
-      decor: new ChartDecor(
+      decor: ChartDecor(
         axes: axesData,
         legend: legend,
       ),

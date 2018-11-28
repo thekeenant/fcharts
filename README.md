@@ -36,15 +36,15 @@ class SimpleLineChart extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    return new LineChart(
+    return LineChart(
       lines: [
-        new Line<List<String>, String, String>(
+        Line<List<String>, String, String>(
           data: myData,
           xFn: (datum) => datum[0],
           yFn: (datum) => datum[1],
         ),
       ],
-      chartPadding: new EdgeInsets.fromLTRB(30.0, 10.0, 10.0, 30.0),
+      chartPadding: EdgeInsets.fromLTRB(30.0, 10.0, 10.0, 30.0),
     );
   }
 }

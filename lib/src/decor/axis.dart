@@ -42,30 +42,31 @@ class ChartAxisDrawable implements MergeTweenable<ChartAxisDrawable> {
     Offset lineStart;
     Offset lineEnd;
 
+    // TODO: refactor this out
     switch (position) {
       case ChartPosition.top:
-        axisRect = new Offset(paddingLeft, offset) &
-            new Size(chartArea.width, size ?? paddingTop);
+        axisRect = Offset(paddingLeft, offset) &
+            Size(chartArea.width, size ?? paddingTop);
         lineStart = axisRect.bottomLeft;
         lineEnd = axisRect.bottomRight;
         break;
       case ChartPosition.left:
         vertical = true;
-        axisRect = new Offset(offset, paddingTop) &
-            new Size(size ?? paddingLeft, chartArea.height);
+        axisRect = Offset(offset, paddingTop) &
+            Size(size ?? paddingLeft, chartArea.height);
         lineStart = axisRect.bottomRight;
         lineEnd = axisRect.topRight;
         break;
       case ChartPosition.right:
         vertical = true;
         axisRect = chartArea.rect.topRight.translate(offset, 0.0) &
-            new Size(size ?? paddingRight, chartArea.height);
+            Size(size ?? paddingRight, chartArea.height);
         lineStart = axisRect.bottomLeft;
         lineEnd = axisRect.topLeft;
         break;
       case ChartPosition.bottom:
         axisRect = chartArea.rect.bottomLeft.translate(0.0, offset) &
-            new Size(chartArea.width, size ?? paddingBottom);
+            Size(chartArea.width, size ?? paddingBottom);
         lineStart = axisRect.topLeft;
         lineEnd = axisRect.topRight;
         break;
@@ -88,11 +89,9 @@ class ChartAxisDrawable implements MergeTweenable<ChartAxisDrawable> {
       Rect tickRect;
 
       if (vertical) {
-        tickRect =
-            new Rect.fromLTWH(0.0, tickPosition, secondary, tickAreaSize);
+        tickRect = Rect.fromLTWH(0.0, tickPosition, secondary, tickAreaSize);
       } else {
-        tickRect =
-            new Rect.fromLTWH(tickPosition, 0.0, tickAreaSize, secondary);
+        tickRect = Rect.fromLTWH(tickPosition, 0.0, tickAreaSize, secondary);
       }
 
       tick.draw(axisArea.child(tickRect), position);
@@ -100,7 +99,7 @@ class ChartAxisDrawable implements MergeTweenable<ChartAxisDrawable> {
   }
 
   @override
-  ChartAxisDrawable get empty => new ChartAxisDrawable(
+  ChartAxisDrawable get empty => ChartAxisDrawable(
         position: position,
         ticks: ticks.map((tick) => tick.empty).toList(),
         paint: paint,
@@ -110,20 +109,20 @@ class ChartAxisDrawable implements MergeTweenable<ChartAxisDrawable> {
 
   @override
   Tween<ChartAxisDrawable> tweenTo(ChartAxisDrawable other) =>
-      new _ChartAxisDrawableTween(this, other);
+      _ChartAxisDrawableTween(this, other);
 }
 
 /// Lerp between two [ChartAxisDrawable]'s.
 class _ChartAxisDrawableTween extends Tween<ChartAxisDrawable> {
   _ChartAxisDrawableTween(ChartAxisDrawable begin, ChartAxisDrawable end)
-      : _ticksTween = new MergeTween(begin.ticks, end.ticks),
+      : _ticksTween = MergeTween(begin.ticks, end.ticks),
         super(begin: begin, end: end);
 
   final MergeTween<AxisTickDrawable> _ticksTween;
 
   @override
   ChartAxisDrawable lerp(double t) {
-    return new ChartAxisDrawable(
+    return ChartAxisDrawable(
       position: t < 0.5 ? begin.position : end.position,
       ticks: _ticksTween.lerp(t),
       paint: PaintOptions.lerp(begin.paint, end.paint, t),

@@ -49,16 +49,16 @@ class CardinalSpline implements LineCurve {
   @override
   List<Offset> generate(List<Offset> points) {
     final result = <Offset>[];
-    final pts = new List<Offset>.from(points);
+    final pts = List<Offset>.from(points);
 
     pts.insert(0, points[0]);
     pts.add(points[points.length - 1]);
 
     for (var i = 1; i < pts.length - 2; i++) {
-      var t1 = new Offset(
+      var t1 = Offset(
           pts[i + 1].dx - pts[i - 1].dx, pts[i + 1].dy - pts[i - 1].dy);
 
-      var t2 = new Offset(pts[i + 2].dx - pts[i].dx, pts[i + 2].dy - pts[i].dy);
+      var t2 = Offset(pts[i + 2].dx - pts[i].dx, pts[i + 2].dy - pts[i].dy);
 
       t1 *= tension;
       t2 *= tension;
@@ -78,7 +78,7 @@ class CardinalSpline implements LineCurve {
         final y = c1 * pts[i].dy + c2 * pts[i + 1].dy + c3 * t1.dy + c4 * t2.dy;
 
         //store points in array
-        result.add(new Offset(x, y));
+        result.add(Offset(x, y));
       }
     }
     return result;
@@ -96,9 +96,9 @@ class MonotoneCurve implements LineCurve {
 
   @override
   List<Offset> generate(List<Offset> points) {
-    if (points.length <= 1) return new List.from(points);
+    if (points.length <= 1) return List.from(points);
 
-    final interpolator = new MonotoneInterpolator.fromPoints(points);
+    final interpolator = MonotoneInterpolator.fromPoints(points);
     final count = points.length * stepsPer;
 
     final firstX = points.first.dx;
@@ -108,7 +108,7 @@ class MonotoneCurve implements LineCurve {
 
     final result = <Offset>[];
     for (var x = firstX; x <= lastX; x += step) {
-      result.add(new Offset(x, interpolator.interpolate(x)));
+      result.add(Offset(x, interpolator.interpolate(x)));
     }
 
     // make sure we add the last point, just in case we didn't quite get to

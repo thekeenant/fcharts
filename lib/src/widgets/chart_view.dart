@@ -83,11 +83,11 @@ class ChartView extends StatefulWidget {
   final ChartTouchCallback onRelease;
 
   @override
-  _ChartViewState createState() => new _ChartViewState();
+  _ChartViewState createState() => _ChartViewState();
 }
 
 class _ChartViewState extends State<ChartView> with TickerProviderStateMixin {
-  final GlobalKey _paintKey = new GlobalKey();
+  final GlobalKey _paintKey = GlobalKey();
 
   AnimationController _controller;
   Animation<double> _curve;
@@ -144,7 +144,7 @@ class _ChartViewState extends State<ChartView> with TickerProviderStateMixin {
       toCharts.add(tween.animate(_curve) as Animation<ChartDrawable>);
     }
 
-    return new _ChartPainter(
+    return _ChartPainter(
       charts: toCharts,
       decor: toDecor,
       rotation: rotation,
@@ -156,14 +156,14 @@ class _ChartViewState extends State<ChartView> with TickerProviderStateMixin {
   void _updatePainter() {
     // TODO: Figure out why Duration.zero doesn't actually work...
     var duration = widget.animationDuration ?? Duration.zero;
-    if (duration.inMilliseconds == 0) duration = new Duration(milliseconds: 1);
+    if (duration.inMilliseconds == 0) duration = Duration(milliseconds: 1);
 
     if (null != _controller) {
       _controller.dispose();
     }
 
-    _controller = new AnimationController(vsync: this, duration: duration);
-    _curve = new CurvedAnimation(
+    _controller = AnimationController(vsync: this, duration: duration);
+    _curve = CurvedAnimation(
       parent: _controller,
       curve: widget.animationCurve,
     );
@@ -190,7 +190,7 @@ class _ChartViewState extends State<ChartView> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return new Listener(
+    return Listener(
       onPointerDown: (event) {
         if (widget.onTouch != null) {
           RenderBox box = _paintKey.currentContext.findRenderObject();
@@ -213,11 +213,11 @@ class _ChartViewState extends State<ChartView> with TickerProviderStateMixin {
           widget.onRelease(event.pointer);
         }
       },
-      child: new CustomPaint(
+      child: CustomPaint(
         key: _paintKey,
         painter: _painter,
-        child: new Container(
-          constraints: new BoxConstraints(
+        child: Container(
+          constraints: BoxConstraints(
             minWidth: 10.0,
             minHeight: 10.0,
           ),
@@ -260,7 +260,7 @@ class _ChartPainter extends CustomPainter {
       final chart = charts[i];
 
       final event =
-          chart.value.resolveTouch(new Size(width, height), touchChart);
+          chart.value.resolveTouch(Size(width, height), touchChart);
       events[i] = event;
     }
 
@@ -278,7 +278,7 @@ class _ChartPainter extends CustomPainter {
     canvas.clipRect(Offset.zero & size);
     canvas.save();
 
-    var canvasArea = new CanvasArea.fromCanvas(canvas, size);
+    var canvasArea = CanvasArea.fromCanvas(canvas, size);
     var chartArea = canvasArea.contract(chartPadding);
 
     if (decor != null) {
@@ -307,8 +307,7 @@ class _ChartPainter extends CustomPainter {
         break;
     }
 
-    var rotatedCanvasArea =
-        new CanvasArea.fromCanvas(canvas, rotatedCanvasSize);
+    var rotatedCanvasArea = CanvasArea.fromCanvas(canvas, rotatedCanvasSize);
     var rotatedChartArea = rotatedCanvasArea.contract(chartPadding);
 
     for (final animation in charts) {

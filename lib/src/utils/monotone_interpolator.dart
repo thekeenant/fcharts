@@ -63,7 +63,7 @@ class MonotoneInterpolator {
       c3s.add(common_ * invDx * invDx);
     }
 
-    return new MonotoneInterpolator._(points, c1s, c2s, c3s);
+    return MonotoneInterpolator._(points, c1s, c2s, c3s);
   }
 
   double interpolate(double x) {

@@ -40,12 +40,12 @@ class AxisTickDrawable implements MergeTweenable<AxisTickDrawable> {
   }
 
   @override
-  AxisTickDrawable get empty => new AxisTickDrawable(
+  AxisTickDrawable get empty => AxisTickDrawable(
       value: value, width: width, labelers: labelers, opacity: 0.0);
 
   @override
   Tween<AxisTickDrawable> tweenTo(AxisTickDrawable other) =>
-      new _AxisTickDataTween(this, other);
+      _AxisTickDataTween(this, other);
 }
 
 /// Lerp between two axis ticks.
@@ -70,7 +70,7 @@ class _AxisTickDataTween extends Tween<AxisTickDrawable> {
         opacity = lerpDouble(0.0, end.opacity, (t - 0.5) * 2);
     }
 
-    return new AxisTickDrawable(
+    return AxisTickDrawable(
         value: lerpDouble(begin.value, end.value, t),
         width: lerpDouble(begin.width, end.width, t),
         labelers: t < 0.5 ? begin.labelers : end.labelers,
@@ -138,7 +138,7 @@ class TextTickLabeler implements TickLabeler {
   @override
   int get hashCode {
     // TODO
-    throw new UnimplementedError();
+    throw UnimplementedError();
   }
 
   @override
@@ -164,7 +164,7 @@ class TextTickLabeler implements TickLabeler {
 
     // Todo: Pass in rotation all the way down here?
 
-    final textOptions = new TextOptions(
+    final textOptions = TextOptions(
         minWidth: minWidth,
         textAlign: TextAlign.center,
         style: _styleWithOpacity(opacity));
@@ -172,10 +172,10 @@ class TextTickLabeler implements TickLabeler {
     tickArea.drawText(
       tickArea.center,
       text,
-      shift: new Offset(0.5, 0.5),
+      shift: Offset(0.5, 0.5),
       options: textOptions,
       rotation: rotation,
-      rotationOrigin: new Offset(0.5, 0.5),
+      rotationOrigin: Offset(0.5, 0.5),
     );
   }
 }
@@ -218,7 +218,7 @@ class NotchTickLabeler implements TickLabeler {
   @override
   int get hashCode {
     // TODO
-    throw new UnimplementedError();
+    throw UnimplementedError();
   }
 
   @override
@@ -230,22 +230,22 @@ class NotchTickLabeler implements TickLabeler {
     switch (position) {
       case ChartPosition.top:
         // starts at center and goes up
-        lineStart = new Offset(tickArea.width / 2, tickArea.height + begin);
+        lineStart = Offset(tickArea.width / 2, tickArea.height + begin);
         lineY = -length;
         break;
       case ChartPosition.left:
         // start at center vertically and go left
-        lineStart = new Offset(tickArea.width + begin, tickArea.height / 2);
+        lineStart = Offset(tickArea.width + begin, tickArea.height / 2);
         lineX = -length;
         break;
       case ChartPosition.right:
         // start at middle vertically and go right
-        lineStart = new Offset(-begin, tickArea.height / 2);
+        lineStart = Offset(-begin, tickArea.height / 2);
         lineX = length;
         break;
       case ChartPosition.bottom:
         // start at center and down
-        lineStart = new Offset(tickArea.width / 2, -begin);
+        lineStart = Offset(tickArea.width / 2, -begin);
         lineY = length;
         break;
       default:

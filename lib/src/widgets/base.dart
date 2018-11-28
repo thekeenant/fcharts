@@ -30,7 +30,7 @@ class LegendItem {
   final EdgeInsets padding;
 
   LegendItemDrawable toDrawable() {
-    return new LegendItemDrawable(
+    return LegendItemDrawable(
       markerShape: MarkerShapes.square,
       markerPaint: [paint],
       text: text,
@@ -70,7 +70,7 @@ class IntervalTickGenerator<T> implements TickGenerator<T> {
     T n, [
     bool includeMax = true,
   ]) {
-    return new IntervalTickGenerator<T>(
+    return IntervalTickGenerator<T>(
       increment: (num) => num + n,
       comparator: (a, b) => a.compareTo(b),
       includeMax: includeMax,
@@ -81,7 +81,7 @@ class IntervalTickGenerator<T> implements TickGenerator<T> {
     Duration n, [
     bool includeMax = true,
   ]) {
-    return new IntervalTickGenerator<DateTime>(
+    return IntervalTickGenerator<DateTime>(
       increment: (date) => date.add(n),
       comparator: (a, b) => a.compareTo(b),
       includeMax: includeMax,
@@ -142,8 +142,8 @@ class ChartAxis<Value> {
     this.hideTickNotch: false,
     this.tickLabelerStyle: const TextStyle(color: Colors.black),
   })  : this.spanFn = spanFn ??
-            ((values) => new ListSpan<Value>(values.toSet().toList())),
-        this.tickGenerator = tickGenerator ?? new AutoTickGenerator<Value>();
+            ((values) => ListSpan<Value>(values.toSet().toList())),
+        this.tickGenerator = tickGenerator ?? AutoTickGenerator<Value>();
 
   final SpanBase<Value> span;
 
@@ -176,7 +176,7 @@ class ChartAxis<Value> {
 
     final paint = hideLine ? null : this.paint;
 
-    return new ChartAxisDrawable(
+    return ChartAxisDrawable(
       ticks: tickData,
       position: position,
       size: size,
@@ -189,21 +189,21 @@ class ChartAxis<Value> {
       SpanBase<Value> span, List<Value> values) {
     final ticks = tickGenerator.generate(values, span);
 
-    return new List.generate(ticks.length, (i) {
+    return List.generate(ticks.length, (i) {
       final tick = ticks[i];
       final pos = span.toDouble(tick);
 
       final label = (tickLabelFn ?? defaultTickLabelFn)(tick);
 
       final labelers = <TickLabeler>[
-        new TextTickLabeler(text: label, style: tickLabelerStyle)
+        TextTickLabeler(text: label, style: tickLabelerStyle)
       ];
 
       if (!hideTickNotch) {
-        labelers.insert(0, new NotchTickLabeler(paint: paint));
+        labelers.insert(0, NotchTickLabeler(paint: paint));
       }
 
-      return new AxisTickDrawable(
+      return AxisTickDrawable(
         value: pos,
         width: 1 / ticks.length,
         labelers: labelers,

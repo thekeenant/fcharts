@@ -47,20 +47,20 @@ class ChartDecor {
     legend?.draw(fullArea, chartArea);
   }
 
-  Tween<ChartDecor> tweenTo(ChartDecor end) => new ChartDecorTween(this, end);
+  Tween<ChartDecor> tweenTo(ChartDecor end) => ChartDecorTween(this, end);
 }
 
 /// Lerp between two [ChartDecor]'s.
 class ChartDecorTween extends Tween<ChartDecor> {
   ChartDecorTween(ChartDecor begin, ChartDecor end)
-      : _axesTween = new MergeTween(begin.axes, end.axes),
+      : _axesTween = MergeTween(begin.axes, end.axes),
         super(begin: begin, end: end);
 
   final MergeTween<ChartAxisDrawable> _axesTween;
 
   @override
   ChartDecor lerp(double t) {
-    return new ChartDecor(
+    return ChartDecor(
       axes: _axesTween.lerp(t),
       legend: t < 0.5 ? begin.legend : end.legend,
     );

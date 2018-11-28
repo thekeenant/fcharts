@@ -77,7 +77,7 @@ class LineChartDrawable
       }
     }
 
-    return new LineChartTouch(nearestHoriz);
+    return LineChartTouch(nearestHoriz);
   }
 
   void _moveToLineTo(
@@ -98,7 +98,7 @@ class LineChartDrawable
   /// get the top-, right-most point
   Offset _topRight(Offset a, Offset b) {
     // yes this is correct (y is inverted)
-    return new Offset(math.max(a.dx, b.dx), math.min(a.dy, b.dy));
+    return Offset(math.max(a.dx, b.dx), math.min(a.dy, b.dy));
   }
 
   /// Generate the sequence of points based on any given curve.
@@ -141,11 +141,11 @@ class LineChartDrawable
 
     // each segment gets its own paths
     for (final segment in lineSegments) {
-      // create a new line
-      final linePath = new Path();
+      // create a line
+      final linePath = Path();
 
-      // create a new fill area
-      final fillPath = new Path();
+      // create a fill area
+      final fillPath = Path();
 
       // save points to their corresponding absolute location in the canvas
       final pointToLoc = <LinePointDrawable, Offset>{};
@@ -165,7 +165,7 @@ class LineChartDrawable
 
       // bounding box of fill area
       var leftMostX = double.infinity;
-      var topRight = new Offset(-double.infinity, double.infinity);
+      var topRight = Offset(-double.infinity, double.infinity);
 
       for (final loc in curvedPoints) {
         // if the first line, we move the fill path to the bottom left
@@ -184,7 +184,7 @@ class LineChartDrawable
 
       // a rectangle covering the entire area of the line
       Rect lineRect =
-          new Rect.fromPoints(new Offset(leftMostX, area.height), topRight);
+          Rect.fromPoints(Offset(leftMostX, area.height), topRight);
 
       // finish off the fill area
       fillPath.lineTo(lineRect.bottomRight.dx, lineRect.bottomRight.dy);
@@ -204,22 +204,22 @@ class LineChartDrawable
           final r = point.size;
 
           // create rectangle for arc
-          final pointSquare = loc.translate(-r, -r) & new Size.fromRadius(r);
+          final pointSquare = loc.translate(-r, -r) & Size.fromRadius(r);
           final pointArea = area.child(pointSquare);
 
           // draw point given its arc rectangle
           point.draw(pointArea);
         }
-      }, new EdgeInsets.all(clipPointPadding));
+      }, EdgeInsets.all(clipPointPadding));
     }
   }
 
   @override
   _LineChartDrawableTween tweenTo(LineChartDrawable end) =>
-      new _LineChartDrawableTween(this, end);
+    _LineChartDrawableTween(this, end);
 
   @override
-  LineChartDrawable get empty => new LineChartDrawable(
+  LineChartDrawable get empty => LineChartDrawable(
         points: points.map((point) => point.copyWith(value: 0.0)).toList(),
         curve: curve,
         stroke: stroke,
@@ -231,13 +231,13 @@ class LineChartDrawable
 /// Lerp between two line charts.
 class _LineChartDrawableTween extends Tween<LineChartDrawable> {
   _LineChartDrawableTween(LineChartDrawable begin, LineChartDrawable end)
-      : _pointsTween = new MergeTween(begin.points, end.points),
+      : _pointsTween = MergeTween(begin.points, end.points),
         super(begin: begin, end: end);
 
   final MergeTween<LinePointDrawable> _pointsTween;
 
   @override
-  LineChartDrawable lerp(double t) => new LineChartDrawable(
+  LineChartDrawable lerp(double t) => LineChartDrawable(
       points: _pointsTween.lerp(t),
       stroke: PaintOptions.lerp(begin.stroke, end.stroke, t),
       fill: PaintOptions.lerp(begin.fill, end.fill, t),
@@ -284,7 +284,7 @@ class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
     List<PaintOptions> paint,
     LinePointDrawable collapsed,
   }) {
-    return new LinePointDrawable(
+    return LinePointDrawable(
       x: x ?? this.x,
       y: value ?? this.y,
       size: size ?? this.size,
@@ -306,7 +306,7 @@ class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
     final actualX = x * width;
     final actualY = y == null ? null : (1 - y) * height;
 
-    return new Offset(actualX, actualY);
+    return Offset(actualX, actualY);
   }
 
   @override
@@ -318,24 +318,24 @@ class LinePointDrawable implements MergeTweenable<LinePointDrawable> {
 
   @override
   Tween<LinePointDrawable> tweenTo(LinePointDrawable other) {
-    return new _LinePointDrawableTween(this, other);
+    return _LinePointDrawableTween(this, other);
   }
 
   static LinePointDrawable collapse(LinePointDrawable point) {
-    return new LinePointDrawable(x: 1.0, y: point.y);
+    return LinePointDrawable(x: 1.0, y: point.y);
   }
 }
 
 /// Lerp between two line points.
 class _LinePointDrawableTween extends Tween<LinePointDrawable> {
   _LinePointDrawableTween(LinePointDrawable begin, LinePointDrawable end)
-      : _paintsTween = new MergeTween(begin.paint, end.paint),
+      : _paintsTween = MergeTween(begin.paint, end.paint),
         super(begin: begin, end: end);
 
   final MergeTween<PaintOptions> _paintsTween;
 
   @override
-  LinePointDrawable lerp(double t) => new LinePointDrawable(
+  LinePointDrawable lerp(double t) => LinePointDrawable(
         x: lerpDouble(begin.x, end.x, t),
         y: lerpDouble(begin.y, end.y, t),
         paint: _paintsTween.lerp(t),

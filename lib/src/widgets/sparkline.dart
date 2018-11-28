@@ -15,8 +15,8 @@ class _SparklinePoint {
   final int index;
 
   static List<_SparklinePoint> createPoints(List<double> values) {
-    return new List.generate(values.length, (i) {
-      return new _SparklinePoint(values[i], i);
+    return List.generate(values.length, (i) {
+      return _SparklinePoint(values[i], i);
     });
   }
 }
@@ -44,16 +44,16 @@ class Sparkline extends Line<_SparklinePoint, int, double> {
             if (markerFn == null) return null;
             return markerFn(point.value);
           },
-          xAxis: new ChartAxis<int>(
-            span: new IntSpan(0, data.length - 1),
+          xAxis: ChartAxis<int>(
+            span: IntSpan(0, data.length - 1),
             tickGenerator: const EmptyTickGenerator(),
             hideLine: true,
           ),
-          yAxis: new ChartAxis<double>(
+          yAxis: ChartAxis<double>(
             spanFn: (values) {
               final sorted = values.where((num) => num != null).toList();
               sorted.sort();
-              return new DoubleSpan(sorted.first, sorted.last);
+              return DoubleSpan(sorted.first, sorted.last);
             },
             tickGenerator: const EmptyTickGenerator(),
             hideLine: true,

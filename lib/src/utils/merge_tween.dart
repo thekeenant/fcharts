@@ -41,7 +41,7 @@ class MergeTween<T extends MergeTweenable<T>> extends Tween<List<T>> {
 
   @override
   List<T> lerp(double t) {
-    return new List.generate(
+    return List.generate(
       _tweens.length,
       (i) => _tweens[i].lerp(t),
     );

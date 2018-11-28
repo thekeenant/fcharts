@@ -30,53 +30,53 @@ class CityLineChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // set x-axis here so that both lines can use it
-    final xAxis = new ChartAxis<String>();
+    final xAxis = ChartAxis<String>();
 
-    return new AspectRatio(
+    return AspectRatio(
       aspectRatio: 4 / 3,
-      child: new LineChart(
-        chartPadding: new EdgeInsets.fromLTRB(60.0, 20.0, 30.0, 30.0),
+      child: LineChart(
+        chartPadding: EdgeInsets.fromLTRB(60.0, 20.0, 30.0, 30.0),
         lines: [
           // coolness line
-          new Line<City, String, Level>(
+          Line<City, String, Level>(
             data: cities,
             xFn: (city) => city.name,
             yFn: (city) => city.coolness,
             xAxis: xAxis,
-            yAxis: new ChartAxis(
+            yAxis: ChartAxis(
               tickLabelFn: (coolness) => coolness.toString().split("\.")[1],
-              tickLabelerStyle: new TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+              tickLabelerStyle: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
               paint: const PaintOptions.stroke(color: Colors.blue),
             ),
             marker: const MarkerOptions(
               paint: const PaintOptions.fill(color: Colors.blue),
             ),
             stroke: const PaintOptions.stroke(color: Colors.blue),
-            legend: new LegendItem(
+            legend: LegendItem(
               paint: const PaintOptions.fill(color: Colors.blue),
               text: 'Coolness',
             ),
           ),
 
           // size line
-          new Line<City, String, int>(
+          Line<City, String, int>(
             data: cities,
             xFn: (city) => city.name,
             yFn: (city) => city.size,
             xAxis: xAxis,
-            yAxis: new ChartAxis(
-              span: new IntSpan(0, 10),
+            yAxis: ChartAxis(
+              span: IntSpan(0, 10),
               opposite: true,
               tickGenerator: IntervalTickGenerator.byN(1),
               paint: const PaintOptions.stroke(color: Colors.green),
-              tickLabelerStyle: new TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+              tickLabelerStyle: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
             ),
             marker: const MarkerOptions(
               paint: const PaintOptions.fill(color: Colors.green),
               shape: MarkerShapes.square,
             ),
             stroke: const PaintOptions.stroke(color: Colors.green),
-            legend: new LegendItem(
+            legend: LegendItem(
               paint: const PaintOptions.fill(color: Colors.green),
               text: 'Size',
             ),

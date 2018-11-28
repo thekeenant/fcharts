@@ -8,5 +8,5 @@ List<double> generateContinuousTicks(int count) {
 
 List<double> generateCategoricalTicks(int count) {
   final categoryWidth = 1 / count;
-  return new List.generate(count, (i) => i * categoryWidth + categoryWidth / 2);
+  return List.generate(count, (i) => i * categoryWidth + categoryWidth / 2);
 }
