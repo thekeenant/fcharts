@@ -15,11 +15,11 @@ library) you will find the high level API to be somewhat familiar.
 
 ## Demo
 
-![Bar chart demo](https://i.imgur.com/D1Rd7jk.gif) ![Touch demo](https://i.imgur.com/pvHhenr.gif)
+![Bar chart demo](https://i.imgur.com/D1Rd7jk.gif) 
+
+<!-- ![Touch demo](https://i.imgur.com/pvHhenr.gif) -->
 
 ## Example Usage
-
-
 
 ```dart
 class SimpleLineChart extends StatelessWidget {
