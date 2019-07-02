@@ -77,6 +77,8 @@ class MarkerShapes {
 }
 
 abstract class MarkerShape {
+  const MarkerShape();
+
   void draw(CanvasArea area, List<PaintOptions> paints);
 }
 

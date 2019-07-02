@@ -1,7 +1,7 @@
 import 'bar/simple.dart';
 import 'line/cities.dart';
 import 'line/simple.dart';
-import 'line/sparkline.dart';
+import 'line/updating.dart';
 import 'package:flutter/material.dart';
 
 void main() => runApp(new FChartsExampleApp());
@@ -30,9 +30,9 @@ final charts = [
     'Cities on the X-Axis with coolness & size on the Y-Axis with painted lines.',
   ),
   new ChartExample(
-    'Random Sparkline Chart',
-    new SparklineChart(),
-    'Just a list of doubles was provided to the constructor.',
+    'Updating Sparkline Chart',
+    new UpdatingChart(),
+    'Just a list of doubles that updates periodically.',
   ),
   new ChartExample(
     'Simple Bar Chart',

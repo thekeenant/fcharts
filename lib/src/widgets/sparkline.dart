@@ -51,6 +51,10 @@ class Sparkline extends Line<_SparklinePoint, int, double> {
           ),
           yAxis: new ChartAxis<double>(
             spanFn: (values) {
+              if (values.isEmpty) {
+                return new DoubleSpan(0, 0);
+              }
+
               final sorted = values.where((num) => num != null).toList();
               sorted.sort();
               return new DoubleSpan(sorted.first, sorted.last);

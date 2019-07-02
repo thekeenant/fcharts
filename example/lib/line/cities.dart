@@ -26,11 +26,38 @@ const cities = [
   const City("Palo Alto", Level.Very, 5),
 ];
 
+int counter = 0;
+
+class LabeledMarkerShape extends MarkerShape {
+  const LabeledMarkerShape(this.child) : super();
+
+  final MarkerShape child;
+
+  @override
+  void draw(CanvasArea area, List<PaintOptions> paints) {
+    child.draw(area, paints);
+
+    area.drawText(
+      const Offset(0, 5),
+      cities[counter].size.toString(),
+      options: const TextOptions(
+        style: const TextStyle(
+          color: Colors.green,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+    counter = (counter + 1) % cities.length;
+  }
+}
+
 class CityLineChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // set x-axis here so that both lines can use it
     final xAxis = new ChartAxis<String>();
+
+    counter = 0;
 
     return new AspectRatio(
       aspectRatio: 4 / 3,
@@ -45,7 +72,10 @@ class CityLineChart extends StatelessWidget {
             xAxis: xAxis,
             yAxis: new ChartAxis(
               tickLabelFn: (coolness) => coolness.toString().split("\.")[1],
-              tickLabelerStyle: new TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+              tickLabelerStyle: new TextStyle(
+                color: Colors.blue,
+                fontWeight: FontWeight.bold,
+              ),
               paint: const PaintOptions.stroke(color: Colors.blue),
             ),
             marker: const MarkerOptions(
@@ -69,11 +99,14 @@ class CityLineChart extends StatelessWidget {
               opposite: true,
               tickGenerator: IntervalTickGenerator.byN(1),
               paint: const PaintOptions.stroke(color: Colors.green),
-              tickLabelerStyle: new TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+              tickLabelerStyle: new TextStyle(
+                color: Colors.green,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             marker: const MarkerOptions(
               paint: const PaintOptions.fill(color: Colors.green),
-              shape: MarkerShapes.square,
+              shape: const LabeledMarkerShape(MarkerShapes.circle),
             ),
             stroke: const PaintOptions.stroke(color: Colors.green),
             legend: new LegendItem(

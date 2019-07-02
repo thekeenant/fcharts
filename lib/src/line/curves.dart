@@ -105,7 +105,7 @@ class MonotoneCurve implements LineCurve {
     final lastX = points.last.dx;
 
     final step = (lastX - firstX) / count;
-    
+
     if (step == 0) return points;
 
     final result = <Offset>[];

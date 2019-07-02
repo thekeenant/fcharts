@@ -15,19 +15,19 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 class Line<Datum, X, Y> {
-  Line(
-      {@required this.data,
-      @required this.xFn,
-      @required this.yFn,
-      ChartAxis<X> xAxis,
-      ChartAxis<Y> yAxis,
-      this.stroke: const PaintOptions.stroke(color: Colors.black),
-      this.fill,
-      this.curve: LineCurves.monotone,
-      this.marker: const MarkerOptions(),
-      this.markerFn,
-      this.legend})
-      : this.xAxis = xAxis ?? new ChartAxis<X>(),
+  Line({
+    @required this.data,
+    @required this.xFn,
+    @required this.yFn,
+    ChartAxis<X> xAxis,
+    ChartAxis<Y> yAxis,
+    this.stroke: const PaintOptions.stroke(color: Colors.black),
+    this.fill,
+    this.curve: LineCurves.monotone,
+    this.marker: const MarkerOptions(),
+    this.markerFn,
+    this.legend,
+  })  : this.xAxis = xAxis ?? new ChartAxis<X>(),
         this.yAxis = yAxis ?? new ChartAxis<Y>();
 
   List<Datum> data;
